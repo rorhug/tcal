@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  google_uid: MyString
+  email: MyString
+  auth_hash: 
+
+two:
+  google_uid: MyString
+  email: MyString
+  auth_hash: 

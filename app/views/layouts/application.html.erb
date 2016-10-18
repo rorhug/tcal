@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Tcal</title>
+    <%= csrf_meta_tags %>
+
+    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.css">
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+  </head>
+
+
+  <body>
+    <div class="ui text container">
+      <br>
+      <h1 class="ui dividing header">
+        <i class="calendar icon"></i>
+        <div class="content">
+          Tcal
+          <div class="sub header">Sync your TCD timetable into Google Calendar</div>
+        </div>
+      </h1>
+
+      <% if flash[:error] %>
+        <div class="ui error message">
+          <div class="header">
+            Error
+          </div>
+          <p><%= flash[:error] %></p>
+        </div>
+      <% end %>
+
+      <% if flash[:success] %>
+        <div class="ui success message">
+          <div class="header">
+            Success
+          </div>
+          <p><%= flash[:success] %></p>
+        </div>
+      <% end %>
+
+      <%= yield %>
+
+      <p><br></p>
+      <div class="ui divider"></div>
+      <div class="ui center aligned basic tiny segment disabled">
+        Made by Rory
+        <br>
+        <% if current_user %>
+          You are user #<%= current_user.id %>
+        <% end %>
+      </div>
+    </div>
+  </body>
+</html>

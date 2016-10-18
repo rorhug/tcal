@@ -1,0 +1,1199 @@
+//Javascript file to produce the static timetable (SIW_XTTB_1) popup style screen
+//HEPD1 PPL 10029 Jun/08  Created file
+//-----------------------------------------------------------------------------
+// Modified:
+// Developer      Date      Version  Comments
+// VISD1        08/10/13   8.7.1    29275
+//  Create new function - return_month_list, update_month_list
+//  change the function - tt_ajax_send, tt_ajax_return
+//------------------------------------------------------------------------------
+var globValue;
+//ANGG1 Start  PPL 15081
+var g_ttb_evi_seqn;
+var g_ttb_eir_seqn;
+var g_ttb_nkey = "";
+var g_ttb_eir_mess;
+//var g_ttb_eva_evec;
+var g_ttb_eva_evis;
+var g_ttb_eva_code;
+var g_ttb_eva_type;
+var g_ttb_eva_evas;
+var g_ttb_prs_code;
+//var g_ttb_show_options;
+//ANGG1 End PPL 15081
+var g_ttb_date_picker_init = false; //have the date pickers for the popup been initialised
+//var g_ttb_time_picker_init = false //have the time pickers for the popup been initialised
+
+var g_ttb_next_but = "";
+var g_ttb_prev_but = "";
+
+var g_ttb_startup_run = false;
+
+// ANGG1 Start PPL 15081
+//Called when page loads in order to set up other events
+sits_attach_event(window, "load", function () {
+  ttb_startup();
+});
+
+function ttb_startup() {
+
+  if(g_ttb_startup_run) return;
+
+  if(typeof g_ttb_show_options !== "object") {
+    setTimeout("ttb_startup();", 100);
+    return;
+  }
+
+  if(g_ttb_prev_but == "") g_ttb_prev_but = sits_get_value("timetable_prev");
+  if(g_ttb_next_but == "") g_ttb_next_but = sits_get_value("timetable_next");
+  ttb_set_buttons();
+
+  setDisplay("");
+  
+  ttb_blankWhirlygig();
+  
+  g_ttb_startup_run = true;
+
+}
+
+function ttb_set_buttons() {
+
+  if(g_ttb_show_options["BTNS"] == "Y") {
+    $("#timetable_buttons").hide();
+    return true;
+  }
+
+  var view = sits_get_value("viewStyle");
+  var view_name = "";
+
+  if (view != "D" && view != "W" && view != "M") {
+    $("#timetable_buttons").hide();
+  } else {
+    $("#timetable_buttons").show();
+  }
+
+  if (view != "") {
+    view_name = $("#viewStyle").find("[value=" + view + "]").html();
+    if(typeof view_name === "undefined") view_name = "";
+  }
+
+  sits_set_value("timetable_prev", g_ttb_prev_but + " " + view_name);
+  sits_set_value("timetable_next", g_ttb_next_but + " " + view_name);
+
+}
+
+// ANGG1 End PPL 15081
+function showDumDates() {
+  //shows the date selection table
+  var viewStyle = document.getElementById('viewStyle'); //get the variables required
+  var bp208 = document.getElementById('bp208');
+  var dumDates = document.getElementById('dumDates');
+  var dumDatesBegd = document.getElementById('dumDatesBegd');
+  var dumDatesEndd = document.getElementById('dumDatesEndd');
+  var dumDatesYear = document.getElementById('dumDatesYear');
+  var dumDatesEnddSelect = document.getElementById('dumDatesEnddSelect');
+  var dumDatesEndw = document.getElementById('dumDatesEndw');
+  var yearList = document.getElementById('yearList');
+  var monthList = document.getElementById('monthList');
+  var dayView = document.getElementById('dayView');
+
+  if (!yearList) {
+    yearList = 'UNKNOWN'; //set some variables to unknown if not defined on HTS
+  } else {
+    if (yearList.value == '') {
+      yearList = 'UNKNOWN';
+    } else {
+      yearList = yearList.value;
+    }
+  }
+  if (!monthList) {
+    monthList = 'UNKNOWN';
+  } else {
+    if (monthList.value == '') {
+      monthList = 'UNKNOWN';
+    } else {
+      monthList = monthList.value;
+    }
+  }
+
+  ttb_blankWhirlygig();
+
+  //set the variables and work out whether the year and/or month has been altered.
+  var startDate = sits_to_date(dumDatesBegd.value)
+    var endDate = sits_to_date(dumDatesEndd.value)
+    if (yearList != 'UNKNOWN') {
+      var dateArray = yearList.split('~');
+      var startYearDate = sits_to_date(dateArray[0], "yymmdd");
+      var endYearDate = sits_to_date(dateArray[1], "yymmdd");
+      var academicYear = dateArray[2]; //HEPD1 11130
+      dateArray = monthList.split('~');
+      var startMonthDate = sits_to_date(dateArray[0], "yymmdd");
+      var endMonthDate = sits_to_date(dateArray[1], "yymmdd");
+
+      //does the current selected year span the dates the timetable is being shown for
+      if (startYearDate <= endDate && startDate <= endYearDate) {
+        //the year has not changed so still need to check if the month has
+        if (monthList != 'UNKNOWN') {
+          //does the current selected month span the dates the timetable is being shown for
+          if (startMonthDate <= endDate && startDate <= endMonthDate && startMonthDate == startDate) { //ROSM2 PPL29369 -- Don't skip if we're not trying to switch to the next calendar month
+          } else {
+            //the Month has changed so update the dates and continue
+            dumDatesBegd.value = sits_date_to_string(startMonthDate);
+            dumDatesEndd.value = sits_date_to_string(endMonthDate);
+            dumDatesYear.value = academicYear; //HEPD1 11130
+          }
+        }
+      } else {
+        //the year has changed so update the dates and continue. update the months from the selected month
+        startYearDate.setMonth(startMonthDate.getMonth(), 1);
+        dumDatesBegd.value = sits_date_to_string(startYearDate);
+        endYearDate.setMonth(endMonthDate.getMonth(), endMonthDate.getDate());
+        endYearDate.setYear(startYearDate.getFullYear());
+        dumDatesEndd.value = sits_date_to_string(endYearDate);
+        dumDatesYear.value = academicYear; //HEPD1 11130
+      }
+    } else {
+      //the year has not changed but the Month has not
+      if (monthList != 'UNKNOWN') {
+        var dateArray = monthList.split('~');
+        var startMonthDate = sits_to_date(dateArray[0], "yymmdd");
+        var endMonthDate = sits_to_date(dateArray[1], "yymmdd");
+
+        //does the current selected month span the dates the timetable is being shown for
+        if (startMonthDate <= endDate && startDate <= endMonthDate) {
+        } else {
+          //the Month has changed so update the dates and continue
+          dumDatesBegd.value = sits_date_to_string(startMonthDate);
+          dumDatesEndd.value = sits_date_to_string(endMonthDate);
+        }
+      }
+    }
+
+    if (viewStyle.value == '' || viewStyle.value == 'D' || viewStyle.value == 'W' || viewStyle.value == 'M') {
+      //if the view style has not been defined or if defined as Month then just refresh the timetable
+
+      //bp208.style.display='';
+      sits_dialog_close(false, "ttb_dates_dialog"); //PPL16335
+      acceptDumDates();
+    } else {
+      //the view style has been defined so show the table
+
+      //set-up Suggestion boxes (similar to a selection list)
+      InstallAjax(null, document.getElementById("dumDatesYear"), null, null);
+      SetupCall("YEAR.DUM_DATES.CAMS.1", "", "CAMS", "AYR", "", "AYR_IUSE=Y;AYR_CODE", "AYR_CODE;AYR_NAME", -1);
+
+      //PPL16335 - build a dialog
+      var m_contentObj = $("#dumDates");
+
+      ttb_showDialog($("#ttb_datesTitle").val(), " ", {}, 60, true, "ttb_dates_dialog");
+
+      //move the standard table in to the dialog
+      $("#ttb_dates_dialog").append(m_contentObj);
+
+      bp208.style.display = 'none';
+      if (viewStyle == 'M') {
+        dumDatesEndd.style.display = 'none';
+        //dumDatesEnddSelect.style.display='none';
+        dumDatesEndw.style.display = 'none';
+      } else {
+        dumDatesEndd.style.display = '';
+        //dumDatesEnddSelect.style.display='';
+        dumDatesEndw.style.display = '';
+      }
+
+      ttb_openDialog("ttb_dates_dialog"); //PPL16335 - open the dialog
+
+      //    if (!g_ttb_date_picker_init) { //HEPD1 017711 - add the events but only do it once
+      //      g_ttb_date_picker_init = true
+
+      sits_date_picker("#dumDatesBegd", true, null, null);
+      $("#dumDatesBegd").bind("change", function () {
+        changeDate("dumDatesBegd", sits_get_value("dumDatesBegd"));
+      });
+      $("#dumDatesBegw").bind("change", function () {
+        changeDate("dumDatesBegw", sits_get_value("dumDatesBegw"));
+      });
+
+      sits_date_picker("#dumDatesEndd", true, null, null);
+      $("#dumDatesEndd").bind("change", function () {
+        changeDate("dumDatesEndd", sits_get_value("dumDatesEndd"));
+      });
+      $("#dumDatesEndw").bind("change", function () {
+        changeDate("dumDatesEndw", sits_get_value("dumDatesEndw"));
+      });
+
+      //    }
+
+      setDisplay('HIDE'); //HEPD1 PPL 12826 Jan 09 - hide the input fields when displaying the popup screen
+    }
+
+    return false;
+}
+
+function cancelDumDates() {
+  //cancel the Date selection table. Undim the main page and hide the table
+
+  $("#ttb_hiddenDumDates").append($("#dumDates")); //17711
+
+  //PPL19061 - destroy only if it exists (to prevent weird div appearing)
+  if ($("#dumDatesBegd").hasClass("hasDatepicker")) {
+    $("#dumDatesBegd").datepicker("destroy"); //17711
+  }
+
+  $("#dumDatesBegd").unbind("change", changeDate(this.id, this.value));
+  $("#dumDatesBegw").unbind("change", changeDate(this.id, this.value));
+
+  //PPL19061 - destroy only if it exists (to prevent weird div appearing)
+  if ($("#dumDatesEndd").hasClass("hasDatepicker")) {
+    $("#dumDatesEndd").datepicker("destroy"); //17711
+  }
+
+  $("#dumDatesEndd").unbind("change", changeDate(this.id, this.value));
+  $("#dumDatesEndw").unbind("change", changeDate(this.id, this.value));
+
+  sits_dialog_close(false, "ttb_dates_dialog"); //PPL16335 & 27355
+  setDisplay('') //HEPD1 PPL 12826 Jan 09 - hide the input fields when displaying the popup screen
+  return false;
+}
+
+function acceptDumDates(viewStyleParam) {
+
+  var instanceNumber = document.getElementById('instance_number');
+  //accept the date selection table.  Need to check that values are populated and error if not
+  var dumDatesBegd = document.getElementById('dumDatesBegd');
+  var dumDatesEndd = document.getElementById('dumDatesEndd');
+  var dumDatesYear = document.getElementById('dumDatesYear');
+  var dumDatesBegw = document.getElementById('dumDatesBegw');
+  var dumDatesEndw = document.getElementById('dumDatesEndw');
+  var viewStyle = (viewStyleParam) ? viewStyleParam : document.getElementById('viewStyle').value; //either use the provided value or get it from the ID on the web page
+  var dayView = document.getElementById('dayView');
+
+  ttb_blankWhirlygig();
+
+  if (dumDatesBegd.value == '') {
+    if (dumDatesYear.value == '' || dumDatesBegw.value == '') {
+      //no start date defined and no year or start week defined so cannot work out start of range so error
+      tt_ajax_stat("cross", document.getElementById('bp204').innerHTML, 'img-working-dumDatesBegd');
+      tt_ajax_stat("cross", document.getElementById('bp204').innerHTML, 'img-working-dumDatesYear');
+      tt_ajax_stat("cross", document.getElementById('bp204').innerHTML, 'img-working-dumDatesWeek');
+      return false;
+    }
+  } else {
+    //check validity of date entered
+    if (!sits_validate_date(dumDatesBegd.value)) {
+      tt_ajax_stat("cross", document.getElementById('bp206').innerHTML, 'img-working-dumDatesBegd');
+      return false;
+    }
+  }
+
+  if (dumDatesEndd.value == '') {
+    if (dumDatesYear.value == '' || dumDatesEndw.value == '') {
+      //no end date defined and no year or end week defined so cannot work out end of range so error
+      tt_ajax_stat("cross", document.getElementById('bp205').innerHTML, 'img-working-dumDatesEndd');
+      tt_ajax_stat("cross", document.getElementById('bp205').innerHTML, 'img-working-dumDatesYear');
+      tt_ajax_stat("cross", document.getElementById('bp205').innerHTML, 'img-working-dumDatesWeek');
+      return false;
+    }
+  } else {
+    //check validity of date entered
+    if (!sits_validate_date(dumDatesBegd.value)) {
+      tt_ajax_stat("cross", document.getElementById('bp207').innerHTML, 'img-working-dumDatesEndd');
+      return false;
+    }
+  }
+
+  $("#ttb_hiddenDumDates").append($("#dumDates")); //PPL27355
+
+  //PPL19061 - destroy only if it exists (to prevent weird div appearing)
+  if ($("#dumDatesBegd").hasClass("hasDatepicker")) {
+    $("#dumDatesBegd").datepicker("destroy"); //17711
+  }
+
+  $("#dumDatesBegd").unbind("change", changeDate(this.id, this.value));
+  $("#dumDatesBegw").unbind("change", changeDate(this.id, this.value));
+
+  //PPL19061 - destroy only if it exists (to prevent weird div appearing)
+  if ($("#dumDatesEndd").hasClass("hasDatepicker")) {
+    $("#dumDatesEndd").datepicker("destroy"); //17711
+  }
+
+  $("#dumDatesEndd").unbind("change", changeDate(this.id, this.value));
+  $("#dumDatesEndw").unbind("change", changeDate(this.id, this.value));
+
+  //update the timetable
+  var parData = '';
+  parData = replaceQueryStringItem(parData, 'P01', dumDatesBegd.value);
+  parData = replaceQueryStringItem(parData, 'P02', dumDatesEndd.value);
+  parData = replaceQueryStringItem(parData, 'P03', dumDatesYear.value);
+  parData = replaceQueryStringItem(parData, 'P04', dumDatesBegw.value);
+  parData = replaceQueryStringItem(parData, 'P05', dumDatesEndw.value);
+  parData = replaceQueryStringItem(parData, 'P06', viewStyle); //(.value) not required as it is set when vairable created
+  parData = replaceQueryStringItem(parData, 'P07', dayView.value);
+  parData = replaceQueryStringItem(parData, 'P08', instanceNumber.value);
+
+  tt_ajax_send('UPDATETIMETABLE', parData);
+
+  sits_dialog_close(false, "ttb_dates_dialog"); //PPL27355
+
+  return false;
+}
+
+function calendarSelect(viewStyle, viewDate) {
+  //function used when the user selects a value from the calendar
+
+  var dateArray = sits_get_value("yearList").split('~'); //HEPD1 11130
+  sits_set_value("dumDatesYear", dateArray[2]);
+  sits_set_value("dumDatesBegd", viewDate);
+
+  acceptDumDates(viewStyle);
+}
+
+function showDumPersonalise() {
+  //function to show the personalise timetable screen
+  var dumPersonalise = document.getElementById('dumPersonalise');
+  if (!dumPersonalise) {
+    return false;
+  }
+
+  //PPL16335 - build a dialog
+  var m_contentObj = $("#dumPersonalise");
+
+  ttb_showDialog($("#ttb_personaliseTitle").val(), " ", {}, 60, true, "ttb_personalise_dialog");
+
+  //move the standard table in to the dialog
+  $("#ttb_personalise_dialog").append(m_contentObj);
+
+  //if (!g_ttb_time_picker_init) { //HEPD1 017711 - add the events but only do it once
+  //  g_ttb_time_picker_init = true
+  //  sits_time_picker("#dumPersonaliseMtvBegt", true, false);
+  //  sits_time_picker("#dumPersonaliseMtvEndt", true, false);
+  //}
+
+  ttb_openDialog("ttb_personalise_dialog");
+  setDisplay('HIDE'); //HEPD1 PPL 12826 Jan 09 - hide the input fields when displaying the popup screen
+
+  if(sits_get_value("ttb_mode") != "OLD") {//New mode
+    $("#dumPersonaliseRow1").hide();
+    $("#dumPersonaliseRow2").hide();
+  }
+  
+  return false;
+}
+
+function cancelDumPersonalise() {
+  //cancel the Personalise Timetable table. Undim the main page and hide the table
+
+  $("#ttb_hiddenDumPersonalise").append($("#dumPersonalise")); //17711
+
+  //PPL16335 - hide a dialog now
+  sits_dialog_close(false, "ttb_personalise_dialog"); //PPL27355
+
+  setDisplay(''); //HEPD1 PPL 12826 Jan 09 - hide the input fields when displaying the popup screen
+  return false;
+}
+
+function acceptDumPersonalise() {
+  //accept the changes to the Personalise Timetable screen
+  //loop the TGE and create a list to be converted in Uniface of TGE and whether it has been selected
+  var tgeList = "",
+  tgeId,
+  tgeActv,
+  tgeSelected = 'N',
+  i = 1,
+  status = 'OK',
+  flag = "";
+  while (status == 'OK') {
+
+    tgeId = document.getElementsByName('ID.TGE.CAMS.' + i);
+    tgeActv = document.getElementsByName('TGE_ACTV.TGE.CAMS.' + i);
+    if (tgeId.length == 0) { //if no more TGE to check
+      status = 'NOTOK';
+    } else {
+      if (tgeActv[0].checked) {
+        tgeSelected = 'Y'; //indicate at least on TGE selected
+        flag = "=T";
+      } else {
+        flag = "=F";
+      }
+      if (tgeList != "") {
+        tgeList += ';';
+      }
+      tgeList += tgeId[0].value + flag;
+    }
+    i = i + 1
+  }
+
+  //check at least one TGE is selected.
+  if (tgeSelected == 'N') {
+    tt_ajax_stat("cross", document.getElementById('bp210').innerHTML, 'img-working-dumPersonaliseTge');
+    return false; //HEPD1 014749
+  }
+
+  //get the values for the MTV
+  var dumPersonaliseMtvBegt = document.getElementById('dumPersonaliseMtvBegt');
+  var dumPersonaliseMtvEndt = document.getElementById('dumPersonaliseMtvEndt');
+
+  ttb_blankWhirlygig();
+
+  //check the start time is before the end time
+  if (dumPersonaliseMtvEndt.value <= dumPersonaliseMtvBegt.value) {
+    tt_ajax_stat("cross", document.getElementById('bp209').innerHTML, 'img-working-dumPersonaliseTimes');
+    return false; //HEPD1 014749
+  }
+
+  $("#ttb_hiddenDumPersonalise").append($("#dumPersonalise")); //PPL27355
+
+  var dateArray = sits_get_value("yearList").split('~'); //HEPD1 11130
+  sits_set_value("dumDatesYear", dateArray[2]);
+
+  var parData = '';
+  parData = replaceQueryStringItem(parData, 'P01', document.getElementById('dumDatesBegd').value);
+  parData = replaceQueryStringItem(parData, 'P02', document.getElementById('dumDatesEndd').value);
+  parData = replaceQueryStringItem(parData, 'P03', dateArray[2]);
+  parData = replaceQueryStringItem(parData, 'P06', document.getElementById('viewStyle').value);
+  parData = replaceQueryStringItem(parData, 'P07', document.getElementById('dayView').value);
+  parData = replaceQueryStringItem(parData, 'P08', document.getElementById('instance_number').value);
+  parData = replaceQueryStringItem(parData, 'P09', tgeList);
+  parData = replaceQueryStringItem(parData, 'P10', document.getElementById('dumPersonaliseMtvAdys').value);
+  parData = replaceQueryStringItem(parData, 'P11', dumPersonaliseMtvBegt.value);
+  parData = replaceQueryStringItem(parData, 'P12', dumPersonaliseMtvEndt.value);
+  parData = replaceQueryStringItem(parData, 'P13', document.getElementById('dumPersonaliseMtvSlot').value);
+  parData = replaceQueryStringItem(parData, 'P14', document.getElementById('dumPersonaliseMtvView').value);
+  parData = replaceQueryStringItem(parData, 'P15', ((document.getElementById('dumPersonaliseMtvDupd').checked) ? "1" : "0"));
+  parData = replaceQueryStringItem(parData, 'P16', ((document.getElementById('dumPersonaliseMtvDupt').checked) ? "1" : "0"));
+  parData = replaceQueryStringItem(parData, 'P17', document.getElementById('dumPersonaliseMtvDatp').value);
+
+  tt_ajax_send('UPDATETIMETABLE', parData);
+
+  sits_dialog_close(false, "ttb_personalise_dialog"); //PPL27355
+
+  return false;
+}
+
+function ttb_blankWhirlygig() {
+  tt_ajax_stat("", "", null); //clear status DIV
+  if (document.getElementById('bp101')) { //ROSM2 PPL 24452 -- Make sure the button is present
+    tt_ajax_stat("", "", 'img-working-dumPersonalise'); //clear status DIV
+  }
+  tt_ajax_stat("", "", 'img-working-dumDates');
+  tt_ajax_stat("", "", 'img-working-dumDatesBegd');
+  tt_ajax_stat("", "", 'img-working-dumDatesEndd');
+  tt_ajax_stat("", "", 'img-working-dumDatesYear');
+  tt_ajax_stat("", "", 'img-working-dumDatesWeek');
+
+}
+
+function oldValue(parValue) {
+  globValue = parValue;
+  return false;
+}
+
+function changeDate(parField, parValue) {
+  //check if the value has changed and if so then call the update
+  if (globValue == parValue || parValue == '') {
+    return false;
+  }
+
+  var parData = '';
+  parData = replaceQueryStringItem(parData, 'P01', parField);
+  parData = replaceQueryStringItem(parData, 'P02', document.getElementById('dumDatesBegd').value);
+  parData = replaceQueryStringItem(parData, 'P03', document.getElementById('dumDatesEndd').value);
+  parData = replaceQueryStringItem(parData, 'P04', document.getElementById('dumDatesYear').value);
+  parData = replaceQueryStringItem(parData, 'P05', document.getElementById('dumDatesBegw').value);
+  parData = replaceQueryStringItem(parData, 'P06', document.getElementById('dumDatesEndw').value);
+
+  tt_ajax_send('CHANGEDATE', parData)
+
+  return false;
+}
+
+function setDisplay(parType) {
+  //set the display input fields on the background timetable screen when the overlay form is active or not
+
+  if (parType == '') {
+    $('#yearList').show();
+    $('#monthList').show();
+    //$('#dayView').show();
+    $('#viewStyle').show();
+    $('#bp105').show();
+    if ($('#bp101')) { //ROSM2 PPL24452 -- Check for the presence of the button
+      $('#bp101').show();
+    }
+  } else {
+    $('#yearList').hide();
+    $('#monthList').hide();
+    //$('#dayView').hide();
+    $('#viewStyle').hide();
+    $('#bp105').hide();
+    if ($('#bp101')) { //ROSM2 PPL24452 -- Check for the presence of the button
+      $('#bp101').hide();
+    }
+  }
+  //Only show options section if global variable tells us to
+  if (g_ttb_show_options["AYR"] == "Y" && g_ttb_show_options["MTH"] == "Y" && g_ttb_show_options["VIEW"] == "Y" && g_ttb_show_options["CAL"] == "Y" && g_ttb_show_options["PERS"] == "Y") {
+    $("#mainTable").hide();
+  } else {
+    if(g_ttb_show_options["AYR"] == "Y") {
+      $("#yearList").hide();
+    }
+    if(g_ttb_show_options["MTH"] == "Y") {
+      $("#monthList").hide();
+    }
+    if(g_ttb_show_options["VIEW"] == "Y") {
+      $("#viewStyle").hide();
+    }
+    if(g_ttb_show_options["CAL"] == "Y") {
+      $("#calendar").hide();
+    }
+  }
+  
+}
+
+function updateTimetable() {
+
+  var m_object = document.getElementById('monthList');
+
+  document.getElementById('dumDatesBegd').value = document.getElementById('dumDatesBegdReturn').innerHTML;
+  document.getElementById('dumDatesEndd').value = document.getElementById('dumDatesEnddReturn').innerHTML;
+  document.getElementById('dumDatesYear').value = document.getElementById('dumDatesYearReturn').innerHTML;
+  document.getElementById('dumDatesBegw').value = document.getElementById('dumDatesBegwReturn').innerHTML;
+  document.getElementById('dumDatesEndw').value = document.getElementById('dumDatesEndwReturn').innerHTML;
+  document.getElementById('dayView').value = document.getElementById('dayViewReturn').innerHTML;
+  document.getElementById('viewStyle').value = document.getElementById('viewStyleReturn').innerHTML;
+  document.getElementById('yearList').value = document.getElementById('yearListReturn').innerHTML;
+  document.getElementById('calendar').innerHTML = document.getElementById('calendarReturn').innerHTML;
+  var m_valrepList = document.getElementById('monthListListReturn').innerHTML;
+
+  //update the month list array. If user selected a new year then need to create a new month list as this is based on dates
+  var m_valrepArray = m_valrepList.split(';');
+  m_object.options.length = 0; //remove any existing options from drop-down
+  var m_temp, m_option, m_val, m_rep;
+  for (var i = 0; i < m_valrepArray.length; i++) {
+    m_temp = m_valrepArray[i].split("=");
+    m_val = m_temp[0];
+    if (m_temp.length > 1) {
+      m_rep = m_temp[1];
+    } else {
+      m_rep = m_temp[0]; //no Rep included so display Value instead
+    }
+    m_option = new Option(m_rep, m_val);
+    m_object.options[i] = m_option; //add Option on to drop-down
+  }
+
+  m_object.value = document.getElementById('monthListReturn').innerHTML;
+
+  setDisplay('') //HEPD1 PPL 12826 Jan 09 - hide the input fields when displaying the popup screen
+  
+  //blank out the tooltip when the page reloads.
+  tooltip(); //PPL16143
+  
+  //hide the popup screen again (PPL16335 - now dialogs)
+  //sits_dialog_close(false, "ttb_dates_dialog");
+  if (document.getElementById('bp101')) { //ROSM2 PPL24452 -- Check fro the presence of the option
+    sits_dialog_close(false, "ttb_personalise_dialog");
+  }
+
+}
+
+//AJAX call to replace the various frames
+function tt_ajax_init() {
+  //create request object
+  var a = null;
+  if (window.XMLHttpRequest) {
+    a = new XMLHttpRequest();
+  } else {
+    try {
+      a = new ActiveXObject("Msxml2.XMLHTTP");
+    } catch (e1) {
+      try {
+        a = new ActiveXObject("Microsoft.XMLHTTP");
+      } catch (e2) {
+        a = null;
+      }
+    }
+  }
+  return a;
+}
+
+function tt_ajax_stat(img, mes, id) {
+  if (id == null) id = "img-working"; //id of element to set image and message
+  
+  //set status image and message
+  if (img == "") {
+    document.getElementById(id).innerHTML = "";
+  } else {
+    var html = "<img title='" + img + "' alt='" + img + "' src='../images/" + img + ".gif'/>" + mes;
+    document.getElementById(id).innerHTML = html;
+
+  }
+}
+
+function tt_ajax_send(parMode, parData) {
+
+  //Grey out all buttons
+  ttb_disable_buttons("disabled");
+
+  //valid modes are GET, STORE, and GET_DETAILS
+  var varMessage,
+  varProcess,
+  varCheckDateRange = false,
+  m_getAllAttributes = "N";
+  //get request object
+  var a = tt_ajax_init();
+  varMessage = document.getElementById('bp200').innerHTML
+    if (a) {
+      switch (parMode) {
+      case "UPDATETIMETABLE": //get the start date for a year and week
+        varProcess = "SIW_XTTB_1.update_timetable"; //call the operation on the Uniface form
+        var varMess = "<img title=\"working\" alt=\"working\" src=\"../images/working.gif\"> " + varMessage;
+        sits_timetable_widget("#newtimetable", "CHANGETITLE", varMess);
+        $("#ttb_timetableTable caption").html(varMess);
+        break;
+      case "CHANGEDATE": //get the start date for a year and week
+        varProcess = "SIW_XTTB_1.change_date"; //call the operation on the Uniface form
+        break;
+        //--> VISD1    08/10/2013    PPL29275
+      case "MONTHLIST":
+        varMessage = document.getElementById('bp211').innerHTML;
+        varProcess = "SIW_XTTB_1.month_list";
+        break;
+        //<-- VISD1    08/10/2013    PPL29275
+      default:
+        return;
+      }
+
+      //pass over whether or not to retrieve all attributes (and so clash check them)
+      if (g_ttb_nkey == "") g_ttb_nkey = sits_get_value("xttb_nkey");
+      
+      parData = replaceQueryStringItem(parData, "nkey", g_ttb_nkey); //add items that are always needed by the process
+      parData = replaceQueryStringItem(parData, "runMode", document.getElementById('run_mode').value);
+
+      //show working status
+      tt_ajax_stat("working", varMessage, null);
+      tt_ajax_stat("working", varMessage, 'img-working-dumDates');
+      var dumPersonalise = document.getElementById('dumPersonalise');
+      if (!dumPersonalise) {
+        tt_ajax_stat("working", varMessage, 'img-working-dumPersonalise');
+      }
+      //send request
+      a.open("POST", varProcess, true);
+      //check ready state and status
+      a.onreadystatechange = function () {
+        if (a.readyState == 4) {
+          tt_ajax_return(parMode, a.status, a.responseText);
+        }
+      }
+      //set request header
+      a.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      //send relevant data
+      a.send(parData);
+    } else {
+      //show error message
+      tt_ajax_stat("cross", document.getElementById('bp201').innerHTML); //could not init Ajax object
+    }
+}
+
+function tt_ajax_return(parMode, parStatus, parResponse) {
+
+  //called on return from Ajax function to refresh page or display error
+  if (parStatus != 200) {
+    tt_ajax_stat("cross", document.getElementById('bp202').value + " " + parStatus, null);
+    tt_ajax_stat("cross", document.getElementById('bp202').value + " " + parStatus, 'img-working-dumDates');
+  } else {
+
+    var varReturnResponse,
+    varReturnStatus = parResponse.substr(0, 4);
+    if (varReturnStatus == "<OK>") {
+
+      varReturnResponse = parResponse.substr(4); //remove <OK>
+      switch (parMode) {
+      case "UPDATETIMETABLE":
+        //document.getElementById('timetable').innerHTML = varReturnResponse;
+        $('#timetable').html(varReturnResponse);
+        $('#timetable table').removeClass("sitstablenestedoutline").addClass("sitstableoutline");
+        sits_execute_script("timetable");
+        setTimeout(function () {
+          updateTimetable();
+          ttb_set_buttons();
+          ttb_blankWhirlygig();
+        }, 0);
+
+        break;
+
+      case "CHANGEDATE":
+        document.getElementById('dumDatesBegd').value = returnQueryStringItem(varReturnResponse, 'dumDatesBegd');
+        document.getElementById('dumDatesEndd').value = returnQueryStringItem(varReturnResponse, 'dumDatesEndd');
+        document.getElementById('dumDatesYear').value = returnQueryStringItem(varReturnResponse, 'dumDatesYear');
+        document.getElementById('dumDatesBegw').value = returnQueryStringItem(varReturnResponse, 'dumDatesBegw');
+        document.getElementById('dumDatesEndw').value = returnQueryStringItem(varReturnResponse, 'dumDatesEndw');
+
+        ttb_blankWhirlygig();
+
+        break;
+        //--> VISD1    08/10/2013    PPL29275
+      case "MONTHLIST":
+        document.getElementById('timetable2').innerHTML = varReturnResponse;
+        setTimeout(function () {
+          update_month_list();
+          ttb_blankWhirlygig();
+        }, 0);
+
+        break;
+        //<-- VISD1    08/10/2013    PPL29275
+      }
+
+    } else {
+    
+      //check for text sitsmessagebox - means error message has been returned so inc_decrypt probably failed
+      if (parMode == "UPDATETIMETABLE") {
+        //hide the popup screen again
+        sits_dialog_close(false, "ttb_dates_dialog"); //HEPD1 014749
+        sits_dialog_close(false, "ttb_personalise_dialog");
+        setDisplay('')
+        //setOpacity(document.getElementById('mainTable'), 100);
+      }
+      
+      //--> VISD1    08/10/2013    PPL29275
+      if (parMode == "MONTHLIST") {
+        //hide the popup screen again
+        var m_object = document.getElementById('monthList');
+        m_object.options.length = 0;
+        document.getElementById('bp105').style.visibility = 'hidden';
+      }
+      
+      //<-- VISD1    08/10/2013    PPL29275
+      if (parResponse.indexOf("sitsmessagebox") > -1) {
+        tt_ajax_stat("cross", document.getElementById('bp203').innerHTML, null);
+        tt_ajax_stat("cross", document.getElementById('bp203').innerHTML, 'img-working-dumDates'); //clear status DIV
+      } else {
+        tt_ajax_stat("cross", parResponse, null);
+        tt_ajax_stat("cross", parResponse, 'img-working-dumDates');
+      }
+    }
+    
+  }
+  
+  //Make all buttons available again
+  ttb_disable_buttons("");
+  
+  return
+  
+}
+
+// ANGG1 Start  PPL 15081
+//{{SEL:EAS_EVAC.EAS="<<$$prs_code>>"&<<EIR_EVIS.EIR=<EAS_EVIS.EAS>?;EIR_UDF1.EIR=<EAS_EVAC.EAS>&G[EIR.CAMS:SEL:EIR_TYPE="D":?<?<EIR_EVIS.EIR?>?>]>>"="?*":<<EIR_EVIS=<EAS_EVIS.EAS>?;EIR_UDF1.EIR=<EAS_EVAC.EAS>&G[EIR.CAMS:SEL:EIR_TYPE="D":<span id="?<?<EIR_EVIS.EIR?>?>-?<?<EIR_SEQN.EIR?>?>-?<?<EAS_EVAC.EAS?>?>">?<?<EIR_MESS.EIR?>?></span><br /><a  href="#" name="eir_details" id="eir_details" evi_seqn="?<?<EIR_EVIS.EIR?>?>" eir_seqn="?<?<EIR_SEQN.EIR?>?>" eir_mess="?<?<EIR_MESS.EIR?>?>" prs_code="?<?<EAS_EVAC.EAS?>?>">Edit Details</a><br />]>>}}
+//{{SEL:EAS_EVAC.EAS="<<$$prs_code>>":<span id="<<EAS_EVIS.EAS>>--<<EAS_EVAC.EAS>>"></span><br /><a  href="#" name="eir_details" id="eir_details" evi_seqn="<<EAS_EVIS.EAS>>" eir_seqn="" eir_mess="" prs_code="<<EAS_EVAC.EAS>>">Add Details</a><br/> <a  name ="ttb_remove" id="ttb_remove" href="#"  eas_evec="<<EAS_EVEC.EAS>>" eas_evis="<<EAS_EVIS.EAS>>" eas_evac="<<EAS_EVAC.EAS>>" eas_evat="<<EAS_EVAT.EAS>>" eas_evas="<<EAS_EVAS.EAS>>">Remove</a>}}
+
+/******************************************************
+ * Create/update EIR                                   *
+ ******************************************************/
+function ttb_editDetails(p_eire, p_eirr, p_eirh) {
+
+  //Not allowed to edit/add the event. Remove only.
+  if (p_eire == "") {
+    ttb_removeDetails(p_eirr, "N", p_eirh);
+    return true;
+  }
+
+  var mess = $("#evi_" + p_eire).html();
+
+  if (typeof p_eire == "undefined" || p_eire == "") return false;
+
+  var m_removeButton = sits_get_object("ttb_removeButton").value;
+  var m_confirmButton = sits_get_object("ttb_confirmButton").value;
+  var m_cancelButton = sits_get_object("ttb_cancelButton").value;
+  var m_dialogTitle = sits_get_object("ttb_edit_dialogTitle").value;
+  var m_dialogContent = "<textarea name=\"ttb_edetail\" id=\"ttb_edetail\" style=\"width:99%;\" rows=\"5\">" + mess + "</textarea>";
+
+  var m_buttons = {};
+  if (p_eirr != "") { //Both remove and edit/add
+
+    m_buttons[m_removeButton] = function () {
+      ttb_removeDetails(p_eirr, "Y", p_eirh);
+    }; //set-up buttons to display on screen (this is an Ok button to close the dialog)
+
+    m_buttons[m_confirmButton] = function () {
+      eir_confirmButtonClick(p_eire, "Y", p_eirh);
+    }; //set-up buttons to display on screen (this is an Ok button to close the dialog)
+
+  } else { //Only add/edit
+
+    m_buttons[m_confirmButton] = function () {
+      eir_confirmButtonClick(p_eire, "N", p_eirh);
+    }; //set-up buttons to display on screen (this is an Ok button to close the dialog)
+
+  }
+
+  m_buttons[m_cancelButton] = function () {
+    eir_cancelButtonClick();
+  }; //set-up buttons to display on screen (this is an Ok button to close the dialog)
+
+  return sits_dialog(m_dialogTitle, m_dialogContent, m_buttons, true, true, false, 10000, "sits_dialog_action");
+
+}
+
+//function called when Cancel is pressed
+function eir_cancelButtonClick() {
+  return sits_dialog_close(true, "sits_dialog_action");
+}
+
+//function called when Confirm is pressed
+function eir_confirmButtonClick(p_evis, p_remove, p_eirh) {
+
+  var mess = sits_get_object("ttb_edetail").value;
+
+  if (g_ttb_nkey == "") g_ttb_nkey = sits_get_value("xttb_nkey");
+
+  var m_data = "";
+  m_data = sits_put_item(m_data, "nkey", sits_escape_url(g_ttb_nkey), "&");
+  m_data = sits_put_item(m_data, "evi_seqn", sits_escape_url(p_evis), "&");
+  m_data = sits_put_item(m_data, "eir_mess", sits_escape_url(mess), "&");
+  m_data = sits_put_item(m_data, "remove", sits_escape_url(p_remove), "&");
+  m_data = sits_put_item(m_data, "hash", sits_escape_url(p_eirh), "&");
+
+  // Ajax call to create/update EIR
+  sits_send_query("POST", "SIW_XTTB_1.edit_detail", m_data, false, "ttb_editDetails_return");
+
+}
+
+function ttb_editDetails_return(p_results) {
+
+  // Check if data has stored/process completed
+  var data = sits_parse_json(p_results);
+  if (data == null || typeof data != 'object' || data["store"] != "Y") {
+
+    var m_eir_ttb_error = "";
+    if (data != null && typeof data === 'object') m_eir_ttb_error = data["error"];
+
+    // Output error (Sourced from BP056-57)
+    switch (m_eir_ttb_error) {
+
+    case "nkey":
+      var m_eir_ttb_errorDetails = sits_get_object("generic_error").value;
+      break;
+    case "ustore":
+      var m_eir_ttb_errorDetails = sits_get_object("store_error").value;
+      break;
+    case "inputs":
+      var m_eir_ttb_errorDetails = sits_get_object("generic_error").value;
+      break;
+    default:
+      var m_eir_ttb_errorDetails = sits_get_object("generic_error").value;
+    }
+
+    var m_closeButton = sits_get_object("ttb_closeButton").value;
+    var m_dialogTitle = sits_get_object("ttb_message_dialogTitle").value;
+
+    var m_buttons = {};
+    m_buttons[m_closeButton] = function () {
+      ttb_closeButtonClick()
+    }; //set-up buttons to display on screen (this is an Ok button to close the dialog)
+    // Error dialog
+    sits_dialog(m_dialogTitle, m_eir_ttb_errorDetails, m_buttons, true, true, false, 10000, "sits_dialog_message");
+
+  } else {
+
+    sits_dialog_close(true, "sits_dialog_action");
+
+    //Instead of trying to update the span, just go and get all the data again
+    //this needs to happen else the timetable data gets out of sync
+    /*var m_eir_mess = data["eir_mess"];
+    var m_evi_seqn = data["eir_evis"];
+
+    // Update Span containing EIR_MESS
+    $("#evi_" + m_evi_seqn).html(m_eir_mess);
+
+    var timetabledata = $("#newtimetable").data();
+
+    $("#newtimetable").sitsjqtimetable("RESETDATA", timetabledata, "" );*/
+
+    // Refresh slots
+    var viewstyle = document.getElementById('viewStyle').value;
+    if (viewstyle == "W" || viewstyle == "D") {
+      calendarSelect(viewstyle, document.getElementById('dumDatesBegd').value);
+    } else {
+      showDumDates();
+    }
+
+  }
+
+  return true;
+}
+
+function ttb_closeButtonClick() {
+
+  sits_dialog_close(true, "sits_dialog_message");
+  sits_dialog_close(true, "sits_dialog_action");
+
+  return;
+}
+
+/******************************************************
+ * Remove EAS                                          *
+ ******************************************************/
+function ttb_removeDetails(p_evis, p_addedit, p_eirh) {
+
+  if (typeof p_evis == "undefined" || p_evis == "") return false;
+
+  var m_confirmButton = sits_get_object("ttb_confirmButton").value;
+  var m_cancelButton = sits_get_object("ttb_cancelButton").value;
+
+  var m_dialogTitle = sits_get_object("ttb_delete_dialogTitle").value;
+  var m_dialogContent = sits_get_object("ttb_delete_dialogContent").value;
+  var m_dialogContent = "<span id=\"ttb_removeDetails_dialogContent\">" + m_dialogContent + "</span>";
+
+  var m_buttons = {};
+
+  m_buttons[m_confirmButton] = function () {
+    eas_confirmButtonClick(p_evis, p_addedit, p_eirh);
+  }; //set-up buttons to display on screen (this is an Ok button to close the dialog)
+
+  m_buttons[m_cancelButton] = function () {
+    eas_cancelButtonClick();
+  }; //set-up buttons to display on screen (this is an Ok button to close the dialog)
+
+
+  if (p_addedit == "Y") { //Just update the dialogue
+    $("#sits_dialog_action").dialog("option", "title", m_dialogTitle);
+    return sits_dialog_update(m_dialogContent, m_buttons, "sits_dialog_action");
+  } else {
+    return sits_dialog(m_dialogTitle, m_dialogContent, m_buttons, true, true, false, 10000, "sits_dialog_action");
+  }
+
+}
+
+function eas_confirmButtonClick(p_evis, p_addedit, p_eirh) {
+
+  if (g_ttb_nkey == "") g_ttb_nkey = sits_get_value("xttb_nkey");
+
+  var m_data = "";
+  m_data = sits_put_item(m_data, "nkey", sits_escape_url(g_ttb_nkey), "&");
+  m_data = sits_put_item(m_data, "evi_seqn", sits_escape_url(p_evis), "&");
+  m_data = sits_put_item(m_data, "addedit", sits_escape_url(p_addedit), "&");
+  m_data = sits_put_item(m_data, "hash", sits_escape_url(p_eirh), "&");
+
+  // Ajax call to remove EAS
+  sits_send_query("POST", "SIW_XTTB_1.remove_eva", m_data, false, "ttb_removeDetails_return");
+
+}
+
+function eas_cancelButtonClick() {
+  return sits_dialog_close(true, "sits_dialog_action");
+}
+
+function ttb_removeDetails_return(p_results) {
+
+  var data = sits_parse_json(p_results);
+  if (typeof data != 'object' || data == null || data["delete"] != "Y") {
+
+    var m_eas_ttb_error = "";
+    if (data != null && typeof data === 'object') m_eas_ttb_error = data["error"];
+
+    // Output error (Sourced from BP056-61)
+    switch (m_eas_ttb_error) {
+
+    case "nkey":
+      var m_eas_ttb_errorDetails = sits_get_object("generic_error").value;
+      break;
+    case "inputs":
+      var m_eas_ttb_errorDetails = sits_get_object("delete_error").value;
+      break;
+    case "onerec":
+      var m_eas_ttb_errorDetails = sits_get_object("onerecord_error").value;
+      break;
+    case "norec":
+      var m_eas_ttb_errorDetails = sits_get_object("norecords_error").value;
+      break;
+    case "erase":
+      var m_eas_ttb_errorDetails = sits_get_object("delete_error").value;
+    default:
+      var m_eas_ttb_errorDetails = sits_get_object("generic_error").value;
+    }
+
+    var m_closeButton = sits_get_object("ttb_closeButton").value;
+    var m_dialogTitle = sits_get_object("ttb_message_dialogTitle").value;
+
+    var m_buttons = {};
+    m_buttons[m_closeButton] = function () {
+      ttb_closeButtonClick()
+    }; //set-up buttons to display on screen (this is an Ok button to close the dialog)
+    // Error dialog
+    sits_dialog(m_dialogTitle, m_eas_ttb_errorDetails, m_buttons, true, true, false, 10000, "sits_dialog_message");
+
+  } else {
+
+    sits_dialog_close(true, "sits_dialog_action");
+
+    // Refresh slots
+    var viewstyle = document.getElementById('viewStyle').value;
+    if (viewstyle == "W" || viewstyle == "D") {
+      calendarSelect(viewstyle, document.getElementById('dumDatesBegd').value);
+    } else {
+      showDumDates();
+    }
+
+  }
+
+  return true;
+
+}
+
+// ANGG1 End  PPL 15081
+
+//PPL16335 - create a dialog overlay to display any pop-up information
+function ttb_showDialog(p_title, p_contents, p_buttons, p_width, p_update, p_id) {
+  if (typeof(p_id) == 'undefined' || p_id == "") p_id = "sits_dialog"; //use default ID if not specified
+  if (!p_update) sits_dialog_close(true, p_id); //destroy existing dialog and start again (reset the options, etc)
+  
+  sits_dialog(p_title, p_contents, p_buttons, true, true, false, 10000, p_id, false); //create modal dialog which cannot be resized but can be moved (don't open it yet though)
+  
+  //set a couple of additional options that cannot currently be set by the standard proc
+  if (p_width && p_width > 0) {
+    $("#" + p_id).dialog("option", "width", (((sits_window_size()).x) * (p_width / 100))); //adjust width (percentage) of dialog box
+    $("#" + p_id).dialog("option", "position", "center"); //re-centre the dialog box after adjusting the width
+  }
+}
+
+//show a dialog and ensure it's centred
+function ttb_openDialog(p_id) {
+  //  $("#"+p_id).dialog("option","position","center"); //re-centre the dialog box after adjusting the width
+  $("#" + p_id).dialog("open"); //open the dialog
+}
+
+//--> VISD1    08/10/2013    PPL29275
+//call the Operation MONTH_LIST on UNIFACE via AJAX to get the new MONTH LIST
+function return_month_list() {
+  document.getElementById('bp105').style.visibility = '';
+  var monthList = document.getElementById('monthList').value;
+  var monthArray = monthList.split('~');
+  var dumDatesBegd = monthArray[0];
+  var dumDatesEndd = monthArray[1];
+
+  var dumDatesBegw = document.getElementById('dumDatesBegw').value;
+  var dumDatesEndw = document.getElementById('dumDatesEndw').value;
+  var viewStyle = document.getElementById('viewStyle').value;
+  var dayView = document.getElementById('dayView').value;
+  var instanceNumber = document.getElementById('instance_number').value;
+
+  var yearList1 = document.getElementById('yearList').value;
+  var dateArray = yearList1.split('~');
+  var dumDatesYear = dateArray[2];
+
+  var parData = '';
+  parData = replaceQueryStringItem(parData, 'P01', dumDatesBegd);
+  parData = replaceQueryStringItem(parData, 'P02', dumDatesEndd);
+  parData = replaceQueryStringItem(parData, 'P03', dumDatesYear);
+  parData = replaceQueryStringItem(parData, 'P04', dumDatesBegw);
+  parData = replaceQueryStringItem(parData, 'P05', dumDatesEndw);
+  parData = replaceQueryStringItem(parData, 'P06', viewStyle); //(.value) not required as it is set when vairable created
+  parData = replaceQueryStringItem(parData, 'P07', dayView);
+  parData = replaceQueryStringItem(parData, 'P08', instanceNumber);
+
+  tt_ajax_send('MONTHLIST', parData);
+}
+
+//Atributte the AJAX return to MONTH dropdownlist
+function update_month_list() {
+  var m_object = document.getElementById('monthList');
+  document.getElementById('dumDatesBegd').value = document.getElementById('dumDatesBegdReturn1').innerHTML;
+  document.getElementById('dumDatesEndd').value = document.getElementById('dumDatesEnddReturn1').innerHTML;
+  document.getElementById('dumDatesYear').value = document.getElementById('dumDatesYearReturn1').innerHTML;
+  document.getElementById('dumDatesBegw').value = document.getElementById('dumDatesBegwReturn1').innerHTML;
+  document.getElementById('dumDatesEndw').value = document.getElementById('dumDatesEndwReturn1').innerHTML;
+  var m_valrepList = document.getElementById('monthListListReturn1').innerHTML;
+
+  //update the month list array. If user selected a new year then need to create a new month list as this is based on dates
+  var m_valrepArray = m_valrepList.split(';');
+  m_object.options.length = 0; //remove any existing options from drop-down
+  var m_temp,
+  m_option,
+  m_val,
+  m_rep;
+  for (var i = 0; i < m_valrepArray.length; i++) {
+    m_temp = m_valrepArray[i].split("=");
+
+    m_val = m_temp[0];
+    if (m_temp.length > 1) {
+      m_rep = m_temp[1];
+    } else {
+      m_rep = m_temp[0]; //no Rep included so display Value instead
+    }
+    m_option = new Option(m_rep, m_val);
+    m_object.options[i] = m_option; //add Option on to drop-down
+  }
+
+  m_object.value = document.getElementById('monthListReturn1').innerHTML;
+  if (m_object.value == "") {
+    m_object.value = m_temp[0];
+  }
+}
+//<-- VISD1    08/10/2013    PPL29275
+
+function ttb_toggle_settings(e) {
+  $("[id^=ttb_more_details]").toggle();
+  $("#mainTableCaption").toggleClass("roundCorners");
+
+  if (e != null) {
+    sits_cancel_event(e);
+  }
+
+  return false;
+}
+
+function ttb_timetable_move(direction) {
+  var view = sits_get_value("viewStyle");
+  var current_date = sits_to_date(document.getElementById('dumDatesBegd').value);
+  
+  if(typeof current_date === "undefined") return false;
+  
+  switch (view) {
+  case "D":
+    if(direction == "P") { //(P)revious
+      current_date.setDate( current_date.getDate() - 1 );
+    } else { //(N)ext
+      current_date.setDate( current_date.getDate() + 1 );
+    }
+    calendarSelect('D', ttb_format_date(current_date));
+    break;
+  case "W":
+    if(direction == "P") { //(P)revious
+      current_date.setDate( current_date.getDate() - 7 );
+    } else { //(N)ext
+      current_date.setDate( current_date.getDate() + 7 );
+    }
+    calendarSelect('W', ttb_format_date(current_date));
+    break;
+  case "M":
+    if(direction == "P") { //(P)revious
+      current_date.setMonth( current_date.getMonth() - 1 );
+    } else { //(N)ext
+      current_date.setMonth( current_date.getMonth() + 1 );
+    }
+    calendarSelect('M', ttb_format_date(current_date));
+    break;
+  default:
+    return false;
+  }
+
+  return false;
+}
+
+function ttb_format_date(the_date) {
+  
+  var year = the_date.getFullYear();
+  var month = the_date.getMonth() + 1; //0 indexed
+  var day = the_date.getDate();
+
+  if(month <= 9) month = "0" + month;
+  if(day <= 9) day = "0" + day;
+  
+  return "" + year + month + day;
+  
+}
+
+function ttb_disable_buttons(attr_value) {
+  $("#timetable_prev").prop("disabled", attr_value);
+  $("#timetable_next").prop("disabled", attr_value);
+  $("#bp101").prop("disabled", attr_value);
+  $("#bp105").prop("disabled", attr_value);
+}

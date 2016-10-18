@@ -1,0 +1,24 @@
+<% if user_ready_to_sync? %>
+  <%= link_to root_path, class: "ui button labeled icon basic" do %>
+    <i class="icon chevron left"></i> Back
+  <% end %>
+<% end %>
+
+<div class="ui two ordered steps">
+  <%= link_to setup_user_path(step: "google"),
+    class: "#{"completed" if current_user} #{"active" if @step == "google"} step" do %>
+    <div class="content">
+      <div class="title">Google<%= ": #{current_user.name}" if current_user %></div>
+      <div class="description">Connect your Google Calendar</div>
+    </div>
+  <% end %>
+  <%= link_to setup_user_path(step: "my_tcd"),
+    class: "#{"completed" if user_ready_to_sync?} #{"active" if @step == "my_tcd"} #{"disabled" unless current_user} step" do %>
+    <div class="content">
+      <div class="title">My TCD</div>
+      <div class="description">Connect my.tcd.ie</div>
+    </div>
+  <% end %>
+</div>
+
+<%= render partial: "#{@step}_step" %>

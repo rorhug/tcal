@@ -1,0 +1,23 @@
+<% google_segment_color = current_user ? "green" : "yellow" %>
+
+<div class="ui tall raised segment <%= google_segment_color %>">
+  <span class="ui ribbon large label <%= google_segment_color %>">Your TCD Google Account</span>
+  <p></p>
+
+  <div class="ui items">
+    <div class="item">
+      <div class="ui tiny image left floated">
+        <img src="<%= current_user.image_url %>">
+      </div>
+      <div class="content">
+        <span class="header"><%= current_user.name %></span>
+        <div class="meta">
+          <span><%= current_user.email %></span>
+        </div>
+        <div class="extra">
+          Created: <%= current_user.created_at.strftime("%a, %e %b %Y %H:%M") %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
