@@ -1,11 +1,13 @@
 class User < ApplicationRecord
   # user https://github.com/attr-encrypted/attr_encrypted for tcd details
 
-  EMAIL_DOMAINS = ENV['GOOGLE_EMAIL_DOMAIN_CSV'].split(',')
+  EMAIL_DOMAINS = Rails.application.secrets.google_email_domain_csv.split(',')
   MY_TCD_LOGIN_COLUMNS = %w(
     my_tcd_username
     my_tcd_password
   )
+
+  attr_encrypted :my_tcd_password, key: Rails.application.secrets.encrypted_my_tcd_password_key
 
   before_save :ensure_no_my_tcd_changes!
   has_many :sync_attempts
@@ -95,9 +97,9 @@ class User < ApplicationRecord
 
   def refresh_access_token!
     oauth_client = OAuth2::Client.new(
-      ENV["GOOGLE_CLIENT_ID"],
-      ENV["GOOGLE_CLIENT_SECRET"],
-      site: "https://tcal.dev",
+      Rails.application.secrets.google_client_id,
+      Rails.application.secrets.google_client_secret,
+      site: Rails.env.production? ? "https://www.tcal.me" : "http://tcal.dev",
       token_url: "https://accounts.google.com/o/oauth2/token",
       authorize_url: "https://accounts.google.com/o/oauth2/auth"
     )

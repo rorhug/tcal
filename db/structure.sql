@@ -144,11 +144,12 @@ CREATE TABLE users (
     oauth_access_token text,
     oauth_access_token_expires_at timestamp without time zone,
     my_tcd_username text,
-    my_tcd_password text,
     my_tcd_last_attempt_at timestamp without time zone,
     my_tcd_login_success boolean,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    encrypted_my_tcd_password text,
+    encrypted_my_tcd_password_iv text
 );
 
 
@@ -252,6 +253,6 @@ CREATE INDEX index_sync_attempts_on_user_id ON sync_attempts USING btree (user_i
 
 SET search_path TO "$user", public;
 
-INSERT INTO schema_migrations (version) VALUES ('0'), ('20160927143053'), ('20161018113229'), ('20161018224616');
+INSERT INTO schema_migrations (version) VALUES ('0'), ('20160927143053'), ('20161018113229'), ('20161018224616'), ('20161019214527');
 
 
