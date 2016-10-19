@@ -1,5 +1,3 @@
-<!-- <div class="ui horizontal divider"></div> -->
-
 <div class="ui segment">
   <% if @que_job %>
     <div class="ui divided list">
@@ -13,7 +11,9 @@
           <div class="header">In Progress</div>
           <div class="description">
             Doing the magic...
-            <div><small>Started <%= time_ago_in_words(@que_job.run_at) %> ago</small></div>
+            <div><small>
+              Started <span id="sync-run-at"><%= time_ago_in_words(@que_job.run_at) %></span> ago
+            </small></div>
           </div>
         </div>
       </div>

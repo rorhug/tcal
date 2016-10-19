@@ -13,5 +13,6 @@ Rails.application.routes.draw do
     get "/setup/:step", action: :setup, as: :setup
 
     post :manual_sync
+    get :sync_status
   end
 end

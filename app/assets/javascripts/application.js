@@ -15,9 +15,24 @@
 //= require turbolinks
 //= require_tree .
 
-// document.addEventListener("turbolinks:load", function() {
-
-// });
+document.addEventListener("turbolinks:load", function() {
+  var sync_status_interval;
+  var sync_run_at = $("#sync-run-at")[0];
+  if (sync_run_at) {
+    var sync_status_interval = setInterval(function() {
+      $.getJSON("/user/sync_status").done(function(response) {
+        if (response.run_at) {
+          $(sync_run_at).html(response.run_at);
+        } else {
+          clearInterval(sync_status_interval);
+          Turbolinks.visit("/", { action: "replace" })
+        }
+      }).fail(function() {
+        $(sync_run_at).html("<span class=\"label tiny red\">Error getting status</span>");
+      });
+    }, 5000);
+  }
+});
 
 $(document).ready(function() {
   $(document.body).on("click", "button[type=submit]", function(e) {

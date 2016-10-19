@@ -44,6 +44,11 @@ class UsersController < ApplicationController
     redirect_to root_path
   end
 
+  def sync_status
+    que_job = current_user.ongoing_sync_job
+    render json: { run_at: que_job && view_context.time_ago_in_words(que_job.run_at) }
+  end
+
   private
 
   def user_params
