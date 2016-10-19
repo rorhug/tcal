@@ -1,0 +1,55 @@
+<!-- <div class="ui horizontal divider"></div> -->
+
+<div class="ui segment">
+  <% if @que_job %>
+    <div class="ui divided list">
+      <div class="item">
+        <div class="label-cell">
+          <span class="ui circular label">
+            <div class="ui active mini inline loader"></div>
+          </span>
+        </div>
+        <div class="content">
+          <div class="header">In Progress</div>
+          <div class="description">
+            Doing the magic...
+            <div><small>Started <%= time_ago_in_words(@que_job.run_at) %> ago</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <% if @attempts.any? %>
+    <h2 class="ui sub header">Recent Attempts</h2>
+    <div class="ui divided list">
+      <% @attempts.each do |attempt| %>
+        <div class="item">
+          <div class="label-cell">
+            <% if attempt.successful? %>
+              <span class="ui green circular label">
+                <i class="check icon"></i>
+              </span>
+            <% else %>
+              <span class="ui red circular label">
+                <i class="frown icon"></i>
+              </span>
+            <% end %>
+          </div>
+          <div class="content">
+            <div class="header"><%= attempt.successful? ? "Synced Successfully" : "Sync Failed" %></div>
+            <div class="description">
+              <%=
+                [:events_created, :events_deleted].map do |count_attr|
+                  count = attempt.send(count_attr)
+                  "#{pluralize(count, 'event')} #{count_attr.to_s.split("_")[1]}" if count > 0
+                end.compact.join(", ")
+              %>
+              <div><small>Finished <%= time_ago_in_words(attempt.finished_at) %> ago</small></div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

@@ -8,6 +8,7 @@ class User < ApplicationRecord
   )
 
   before_save :ensure_no_my_tcd_changes!
+  has_many :sync_attempts
 
   def ensure_no_my_tcd_changes!
     # if login details change, invalidate the success check
@@ -39,6 +40,59 @@ class User < ApplicationRecord
     user
   end
 
+  def enqueue_sync
+    # raise if job currently in queue
+    ActiveRecord::Base.transaction do
+      SyncTimetable.enqueue(id)
+    end
+  end
+
+  def do_the_feckin_thing!
+    started_at = Time.now
+    counts = {}
+    sync_exception = nil
+    begin
+      ensure_valid_access_token!
+
+      scraper = MyTcd::TimetableScraper.new(self)
+      events_from_tcd = scraper.fetch_events
+
+      gcal = GoogleCalendarSync.new(self)
+      counts = gcal.sync_events!(events_from_tcd)
+    rescue Exception => e
+      sync_exception = e
+      # sentry e
+    ensure
+      sync_attempts.create!({
+        started_at: started_at,
+        finished_at: Time.now,
+        error_message: sync_exception && "Error syncing calendar"
+      }.merge(counts))
+    end
+  end
+
+  def synced_lots_recently?
+    return @synced_lots_recently if defined?(@synced_lots_recently)
+    @synced_lots_recently = sync_attempts.where(
+      created_at: 1.hour.ago..1.minute.since
+    ).count >= GoogleCalendarSync::MAX_SYNCS_PER_HOUR
+  end
+
+  def ongoing_sync_job
+    return @ongoing_sync_job if defined?(@ongoing_sync_job)
+    @ongoing_sync_job = QueJob.where(job_class: "SyncTimetable").where("args->>0 = ?", id.to_s).last
+  end
+
+  def sync_blocked_reason
+    if ongoing_sync_job
+      "There is already a sync in progress!"
+    elsif Rails.env.development?
+      nil
+    elsif synced_lots_recently?
+      "You may not sync more than #{GoogleCalendarSync::MAX_SYNCS_PER_HOUR} times per hour."
+    end
+  end
+
   def refresh_access_token!
     oauth_client = OAuth2::Client.new(
       ENV["GOOGLE_CLIENT_ID"],
@@ -65,5 +119,6 @@ class User < ApplicationRecord
     else
       true
     end
+    # true
   end
 end

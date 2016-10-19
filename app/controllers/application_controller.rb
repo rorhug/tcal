@@ -2,7 +2,7 @@ class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception unless Rails.env.development?
-  helper_method :current_user, :user_ready_to_sync?
+  helper_method :current_user, :user_setup_complete?
   before_action :authenticate!
 
   def current_user
@@ -10,7 +10,7 @@ class ApplicationController < ActionController::Base
     @current_user ||= User.find_by_id(session[:user_id])
   end
 
-  def user_ready_to_sync?
+  def user_setup_complete?
     current_user && current_user.my_tcd_login_success?
   end
 

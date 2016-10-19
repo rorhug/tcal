@@ -1,0 +1,91 @@
+//custom Text colours
+$text-colors: blue, green, orange, pink, purple, red, teal, yellow, black, grey, white;
+@each $tc in $text-colors{
+  .text.#{$tc}{
+  color: #{$tc};
+  }
+}
+
+//custom Hide/show mobile/desktop
+/* Mobile */
+@media only screen and (max-width: 767px) {
+  .mobile.hidden,
+  .tablet.only,
+  .computer.only,
+  .large.monitor.only,
+  .widescreen.monitor.only {
+    display: none !important;
+  }
+}
+
+/* Tablet / iPad Portrait */
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+  .mobile.only,
+  .tablet.hidden,
+  .computer.only,
+  .large.monitor.only,
+  .widescreen.monitor.only {
+    display: none !important;
+  }
+}
+
+/* Computer / Desktop / iPad Landscape */
+@media only screen and (min-width: 992px) and (max-width: 1199px) {
+  .mobile.only,
+  .tablet.only,
+  .computer.hidden,
+  .large.monitor.only,
+  .widescreen.monitor.only {
+    display: none !important;
+  }
+}
+
+/* Large Monitor */
+@media only screen and (min-width: 1200px) and (max-width: 1919px) {
+  .mobile.only,
+  .tablet.only,
+  .computer.only,
+  .large.monitor.hidden,
+  .widescreen.monitor.only {
+    display: none !important;
+  }
+}
+
+/* Widescreen Monitor */
+@media only screen and (min-width: 1920px) {
+  .mobile.only,
+  .tablet.only,
+  .computer.only,
+  .large.monitor.only,
+  .widescreen.monitor.hidden  {
+    display: none !important;
+  }
+}
+
+//custom semanticui list label
+.ui.list .list > .item > .label-cell,
+.ui.list > .item > .label-cell {
+  display: table-cell;
+  margin: 0em;
+  vertical-align: top;
+}
+
+.ui.list .list > .item > .label-cell + .content,
+.ui.list > .item > .label-cell + .content {
+  display: table-cell;
+  padding: 0 0 0 .5em;
+  vertical-align: top;
+}
+
+.label .icon:last-child {
+  margin-right: 0;
+}
+
+//custom .container.text
+.ui.container.text {
+  font-size: 1em;
+}
+
+.message.thinner {
+  padding: 0.7em 1em;
+}

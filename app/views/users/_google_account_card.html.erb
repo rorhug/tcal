@@ -6,17 +6,17 @@
 
   <div class="ui items">
     <div class="item">
-      <div class="ui tiny image left floated">
-        <img src="<%= current_user.image_url %>">
-      </div>
       <div class="content">
         <span class="header"><%= current_user.name %></span>
         <div class="meta">
           <span><%= current_user.email %></span>
         </div>
         <div class="extra">
-          Created: <%= current_user.created_at.strftime("%a, %e %b %Y %H:%M") %>
+          Joined: <%= current_user.created_at.strftime("%a, %Y-%b-%e") %>
         </div>
+      </div>
+      <div class="ui tiny image right floated mobile hidden">
+        <img src="<%= current_user.image_url %>">
       </div>
     </div>
   </div>

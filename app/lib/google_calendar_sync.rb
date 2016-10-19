@@ -3,10 +3,14 @@ require 'google/apis/calendar_v3'
 class GoogleCalendarSync
   CALENDAR_SUMMARY = "Tcal#{ " - " + Rails.env unless Rails.env.production? }"
   TIMEZONE_STRING = "Europe/Dublin"
+  MAX_SYNCS_PER_HOUR = 5
+  # SYNC_BLOCKED_MESSAGES = {
+  #   ongoing: "There is already a sync in progress!",
+  #   lots_recently: "You "
+  # }
 
-  def initialize(user, source_event_list)
+  def initialize(user)
     @user = user
-    @source_event_list = source_event_list
   end
 
   def cal_service
@@ -51,7 +55,6 @@ class GoogleCalendarSync
     gcal_events = []
     next_page = nil
     begin
-      puts "Fetching page of activities"
       response = cal_service.list_events(
         calendar_id,
         max_results: 200,
@@ -65,12 +68,12 @@ class GoogleCalendarSync
     gcal_events
   end
 
-  def sync_events
+  def sync_events!(source_event_list)
     # all events already on gcal
     all_gcal_events = fetch_gcal_events
 
     # remove tcal events...
-    events_to_create = @source_event_list.reject do |source_event|
+    events_to_create = source_event_list.reject do |source_event|
       event_exists = false
 
       all_gcal_events.delete_if do |gcal_event| # ...and gcal events
@@ -83,10 +86,15 @@ class GoogleCalendarSync
       event_exists
     end
 
-    ids_to_destroy = all_gcal_events.map(&:id)
-    destroy_remote_event_ids(ids_to_destroy) if ids_to_destroy.any?
+    ids_to_delete = all_gcal_events.map(&:id)
+    delete_remote_event_ids(ids_to_delete) if ids_to_delete.any?
 
     create_events(events_to_create) if events_to_create.any?
+
+    {
+      events_created: events_to_create.size,
+      events_deleted: ids_to_delete.size
+    }
   end
 
   def create_events(events)
@@ -100,7 +108,7 @@ class GoogleCalendarSync
     end
   end
 
-  def destroy_remote_event_ids(ids)
+  def delete_remote_event_ids(ids)
     callback = lambda { |event, err| raise err if err }
     ids.in_groups_of(50, false) do |ids|
       cal_service.batch do |cal_batch|

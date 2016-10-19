@@ -52,3 +52,4 @@ gem "omniauth-google-oauth2"
 gem "pry-rails", :group => :development
 gem "mechanize"
 gem "google-api-client"
+gem "que"

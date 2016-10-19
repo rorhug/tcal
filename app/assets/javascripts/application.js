@@ -14,3 +14,17 @@
 //= require jquery_ujs
 //= require turbolinks
 //= require_tree .
+
+// document.addEventListener("turbolinks:load", function() {
+
+// });
+
+$(document).ready(function() {
+  $(document.body).on("click", "button[type=submit]", function(e) {
+    $(e.target).parent("form").addClass("loading");
+  });
+
+  $(document.body).on("click", ".spinner-on-click", function(e) {
+    $(e.target).addClass("loading");
+  });
+})

@@ -9,6 +9,9 @@ Rails.application.routes.draw do
   end
 
   resource :user, only: [:update] do
+    get :setup, as: :setup_root
     get "/setup/:step", action: :setup, as: :setup
+
+    post :manual_sync
   end
 end
