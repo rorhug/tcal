@@ -81,6 +81,16 @@ $text-colors: blue, green, orange, pink, purple, red, teal, yellow, black, grey,
   margin-right: 0;
 }
 
+.site-header {
+  position: relative;
+}
+
+.beta-label {
+  position: absolute;
+  top: 3px;
+  right: 0;
+}
+
 //custom .container.text
 .ui.container.text {
   font-size: 1em;

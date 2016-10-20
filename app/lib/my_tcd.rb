@@ -212,8 +212,8 @@ module MyTcd
 
     def fix_casing(str, surname: false)
       fixed = str.gsub(/\b([a-zA-Z]+)\b/) { $1.downcase.capitalize } # capitalize words
-        .gsub(/\bI(i{2,6})\b/) { $1.upcase } # Telecoms Iii => III
-      surname ? fixed : fixed.gsub(/(?<=Mac|Mc)([a-z])/) { $1.capitalize }
+      # MacMcFix  :  Telecoms Iii => III
+      surname ? fixed.gsub(/(?<=Mac|Mc)([a-z])/) { $1.capitalize } : fixed.gsub(/\bIi{1,6}\b/, &:upcase)
     end
   end
 
