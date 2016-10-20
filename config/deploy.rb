@@ -53,7 +53,7 @@ namespace :deploy do
   desc "Recreate nginx.conf symlink"
   task :nginx_symlink do
     on roles(:app) do
-      execute "sudo rm -f /opt/nginx/conf/nginx.conf && sudo ln -s #{release_path}/config/nginx.conf /opt/nginx/conf/nginx.conf"
+      execute "sudo rm -f /etc/nginx/nginx.conf && sudo ln -s #{release_path}/config/nginx.conf /etc/nginx/nginx.conf"
     end
   end
   after :publishing, :nginx_symlink
