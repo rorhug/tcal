@@ -13,6 +13,8 @@ module Tcal
     # -- all .rb files in that directory are automatically loaded.
     config.active_record.schema_format = :sql
 
+    config.time_zone = 'Dublin'
+
     $IS_QUE = $PROGRAM_NAME.include?("que")
     if $IS_QUE
       config.logger = Logger.new("#{Rails.root}/log/que.log")
