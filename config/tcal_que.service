@@ -32,7 +32,7 @@ User=rh
 Type=simple
 WorkingDirectory=/home/rh/www/tcal/current
 # If you use rbenv:
-ExecStart=/bin/bash -lc 'RAILS_ENV=production bundle exec que --worker-count 4 --wake-interval 1 ./config/environment.rb'
+ExecStart=/bin/bash -lc 'RAILS_ENV=production PATH="$HOME/.rbenv/bin:$PATH" bundle exec que --worker-count 4 --wake-interval 1 ./config/environment.rb'
 
 # If you use the system's ruby:
 # ExecStart=/usr/local/bin/bundle exec que -e production
