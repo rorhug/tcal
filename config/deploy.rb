@@ -61,10 +61,10 @@ namespace :deploy do
 
   namespace :que do
     desc "Setup que systemd service"
-    task :service_symlink do
+    task :copy_service_file do
       on roles(:db) do
         path_on_host = "/lib/systemd/system/tcal_que.service"
-        execute "sudo rm -f #{path_on_host} && sudo ln -s #{release_path}/config/tcal_que.service #{path_on_host}"
+        execute "sudo rm -f #{path_on_host} && sudo cp #{release_path}/config/tcal_que.service #{path_on_host}"
       end
     end
 
@@ -75,7 +75,7 @@ namespace :deploy do
       end
     end
   end
-  after "deploy:finished", "deploy:que:service_symlink"
+  after "deploy:finished", "deploy:que:copy_service_file"
   after "deploy:finished", "deploy:que:restart"
 
   desc "Uploads YAML files."
