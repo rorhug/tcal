@@ -76,3 +76,11 @@ namespace :deploy do
     end
   end
 end
+
+desc 'Open the rails console on the primary remote server'
+task :rc do
+  on roles(:app), primary: true do |host|
+    command = "/home/#{host.user}/.rbenv/shims/ruby #{deploy_to}/current/bin/rails console #{fetch(:stage)}"
+    exec "ssh -l #{host.user} #{host.hostname} -p #{host.port || 22} -t 'cd #{deploy_to}/current && #{command}'"
+  end
+end

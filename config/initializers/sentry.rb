@@ -3,6 +3,6 @@ Raven.configure do |config|
 end
 
 Raven.configure do |config|
-  config.dsn = Rails.application.secrets.sentry_dns_app_prod
+  config.dsn = Rails.application.secrets.sentry_dns_app_prod if Rails.env.production?
   config.environments = ['production']
 end

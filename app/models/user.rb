@@ -29,6 +29,12 @@ class User < ApplicationRecord
     auth_hash["info"]["name"]
   end
 
+  def for_raven
+    %w(id email name my_tcd_username my_tcd_login_success).each_with_object({}) do |attr, hsh|
+      hsh[attr] = send(attr)
+    end
+  end
+
   def self.from_omniauth(auth_hash)
     fail SecurityError unless EMAIL_DOMAINS.include?(auth_hash['extra']['raw_info']['hd'])
     user = find_or_initialize_by(google_uid: auth_hash['uid'])
@@ -62,8 +68,7 @@ class User < ApplicationRecord
       gcal = GoogleCalendarSync.new(self)
       counts = gcal.sync_events!(events_from_tcd)
     rescue Exception => e
-      sync_exception = e
-      # sentry e
+      Raven.capture_exception(e, user: for_raven)
     ensure
       sync_attempts.create!({
         started_at: started_at,
