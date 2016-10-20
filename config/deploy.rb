@@ -48,3 +48,22 @@ set :migration_role, :db
 
 set :rbenv_type, :user
 set :rbenv_ruby, File.read('.ruby-version').strip
+
+namespace :deploy do
+  desc "Recreate nginx.conf symlink"
+  task :nginx_symlink do
+    on roles(:app) do
+      execute "sudo rm -f /opt/nginx/conf/nginx.conf && sudo ln -s #{release_path}/config/nginx.conf /opt/nginx/conf/nginx.conf"
+    end
+  end
+  after :publishing, :nginx_symlink
+
+  desc "Uploads YAML files."
+  task :upload_yml do
+    on roles(:all) do
+      upload!("./config/prod_database.yml", "#{shared_path}/config/database.yml")
+      upload!("./config/prod_secrets.yml", "#{shared_path}/config/secrets.yml")
+    end
+  end
+  before "deploy:check", :upload_yml
+end
