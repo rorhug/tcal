@@ -11,7 +11,6 @@ class UsersController < ApplicationController
   end
 
   def index
-    throw "LOL"
     @que_job = current_user.ongoing_sync_job
     @attempts = current_user.sync_attempts.for_feed.to_a
     @sync_block_reason = current_user.sync_blocked_reason

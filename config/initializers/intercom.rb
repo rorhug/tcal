@@ -1,7 +1,7 @@
 IntercomRails.config do |config|
   # == Intercom app_id
   #
-  config.app_id = ENV["INTERCOM_APP_ID"] || "xmlniwi7"
+  config.app_id = Rails.application.secrets.intercom_app_id || "shouldnt_be_using_intercom"
 
   # == Intercom session_duration
   #
