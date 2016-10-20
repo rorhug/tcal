@@ -1,5 +1,7 @@
 require 'google/apis/calendar_v3'
 
+Google::Apis.logger.level = Logger::INFO
+
 class GoogleCalendarSync
   CALENDAR_SUMMARY = "Tcal#{ " - " + Rails.env unless Rails.env.production? }"
   TIMEZONE_STRING = "Europe/Dublin"

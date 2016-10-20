@@ -87,7 +87,7 @@ class User < ApplicationRecord
 
   def ongoing_sync_job
     return @ongoing_sync_job if defined?(@ongoing_sync_job)
-    @ongoing_sync_job = QueJob.where(job_class: "SyncTimetable").where("args->>0 = ?", id.to_s).last
+    @ongoing_sync_job = QueJob.where(job_class: "SyncTimetable").where("args->>0 = ?", id.to_s).first
   end
 
   def sync_blocked_reason

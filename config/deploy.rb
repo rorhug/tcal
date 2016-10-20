@@ -53,10 +53,30 @@ namespace :deploy do
   desc "Recreate nginx.conf symlink"
   task :nginx_symlink do
     on roles(:app) do
-      execute "sudo rm -f /etc/nginx/nginx.conf && sudo ln -s #{release_path}/config/nginx.conf /etc/nginx/nginx.conf"
+      path_on_host = "/etc/nginx/nginx.conf"
+      execute "sudo rm -f #{path_on_host} && sudo ln -s #{release_path}/config/nginx.conf #{path_on_host}"
     end
   end
-  after :publishing, :nginx_symlink
+  before "passenger:restart", :nginx_symlink
+
+  namespace :que do
+    desc "Setup que systemd service"
+    task :service_symlink do
+      on roles(:db) do
+        path_on_host = "/lib/systemd/system/tcal_que.conf"
+        execute "sudo rm -f #{path_on_host} && sudo ln -s #{release_path}/config/tcal_que.conf #{path_on_host}"
+      end
+    end
+
+    task :restart do
+      on roles(:db) do
+        execute "sudo systemctl enable tcal_que"
+        execute "sudo systemctl restart tcal_que"
+      end
+    end
+  end
+  after "deploy:finished", "deploy:que:service_symlink"
+  after "deploy:finished", "deploy:que:restart"
 
   desc "Uploads YAML files."
   task :upload_yml do

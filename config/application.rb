@@ -12,5 +12,10 @@ module Tcal
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
     config.active_record.schema_format = :sql
+
+    $IS_QUE = $PROGRAM_NAME.include?("que")
+    if $IS_QUE
+      config.logger = Logger.new("#{Rails.root}/log/que.log")
+    end
   end
 end

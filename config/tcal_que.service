@@ -1,0 +1,54 @@
+# QUE systemd
+
+# adapted from https://github.com/mperham/sidekiq/blob/2dcd386301e38b9924e3bf8fabfbe8073a02f75a/examples/systemd/sidekiq.service
+# edited for que by rh
+
+#
+# systemd unit file for CentOS 7, Ubuntu 15.04
+#
+# Customize this file based on your bundler location, app directory, etc.
+# Put this in /usr/lib/systemd/system (CentOS) or /lib/systemd/system (Ubuntu).
+# Run:
+#   - systemctl enable tcal_que
+#   - systemctl {start,stop,restart} tcal_que
+#
+# This file corresponds to a single que process.  Add multiple copies
+# to run multiple processes (que-1, que-2, etc).
+#
+# See Inspeqtor's Systemd wiki page for more detail about Systemd:
+# https://github.com/mperham/inspeqtor/wiki/Systemd
+#
+[Unit]
+Description=tcal_que
+# start us only once the network and logging subsystems are available,
+# consider adding redis-server.service if Redis is local and systemd-managed.
+After=syslog.target network.target
+
+# See these pages for lots of options:
+# http://0pointer.de/public/systemd-man/systemd.service.html
+# http://0pointer.de/public/systemd-man/systemd.exec.html
+[Service]
+Type=simple
+WorkingDirectory=/home/rh/www/tcal/current
+# If you use rbenv:
+ExecStart=/bin/bash -lc 'RAILS_ENV=production bundle exec que --worker-count 4 --wake-interval 1 ./config/environment.rb'
+
+# If you use the system's ruby:
+# ExecStart=/usr/local/bin/bundle exec que -e production
+# User=deploy
+# Group=deploy
+# UMask=0002
+
+# if we crash, restart
+RestartSec=1
+Restart=on-failure
+
+# output goes to /var/log/syslog
+StandardOutput=syslog
+StandardError=syslog
+
+# This will default to "bundler" if we don't specify it
+SyslogIdentifier=tcal_que
+
+[Install]
+WantedBy=multi-user.target
