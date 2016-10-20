@@ -56,6 +56,8 @@ GEM
       capistrano (~> 3.1)
       sshkit (~> 1.2)
     capistrano-harrow (0.5.3)
+    capistrano-passenger (0.2.0)
+      capistrano (~> 3.0)
     capistrano-rails (1.1.8)
       capistrano (~> 3.1)
       capistrano-bundler (~> 1.1)
@@ -109,6 +111,8 @@ GEM
     httpclient (2.8.2.4)
     hurley (0.2)
     i18n (0.7.0)
+    intercom-rails (0.3.3)
+      activesupport (> 3.0)
     jbuilder (2.6.0)
       activesupport (>= 3.0.0, < 5.1)
       multi_json (~> 1.2)
@@ -276,11 +280,13 @@ DEPENDENCIES
   attr_encrypted (~> 3.0)
   byebug
   capistrano (~> 3.6)
+  capistrano-passenger
   capistrano-rails (~> 1.1)
   capistrano-rbenv (~> 2.0)
   coffee-rails (~> 4.2)
   dotenv-rails
   google-api-client
+  intercom-rails
   jbuilder (~> 2.5)
   jquery-rails
   listen (~> 3.0.5)
@@ -300,4 +306,4 @@ DEPENDENCIES
   web-console
 
 BUNDLED WITH
-   1.13.1
+   1.13.5

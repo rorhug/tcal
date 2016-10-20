@@ -4,6 +4,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception unless Rails.env.development?
   helper_method :current_user, :user_setup_complete?
   before_action :authenticate!
+  skip_after_action :intercom_rails_auto_include if Rails.env.development?
 
   def current_user
     return unless session[:user_id]

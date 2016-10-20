@@ -45,6 +45,7 @@ group :development do
   gem 'capistrano', '~> 3.6'
   gem 'capistrano-rails', '~> 1.1'
   gem 'capistrano-rbenv', '~> 2.0'
+  gem 'capistrano-passenger'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
@@ -57,3 +58,4 @@ gem "mechanize"
 gem "google-api-client"
 gem "que"
 gem "attr_encrypted", "~> 3.0"
+gem "intercom-rails"
