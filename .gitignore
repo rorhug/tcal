@@ -17,9 +17,13 @@
 !/log/.keep
 !/tmp/.keep
 
+.DS_Store
+
 # Ignore Byebug command history file.
 .byebug_history
 .env
 
 config/prod_database.yml
 config/prod_secrets.yml
+
+cert/*

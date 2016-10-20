@@ -3,7 +3,10 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception unless Rails.env.development?
   helper_method :current_user, :user_setup_complete?
+
   before_action :authenticate!
+  before_action :set_raven_context
+
   skip_after_action :intercom_rails_auto_include if Rails.env.development?
 
   def current_user
@@ -23,4 +26,8 @@ class ApplicationController < ActionController::Base
       end
     end
 
+    def set_raven_context
+      Raven.user_context(id: current_user.id) if current_user
+      Raven.extra_context(params: params.to_unsafe_h, url: request.url)
+    end
 end

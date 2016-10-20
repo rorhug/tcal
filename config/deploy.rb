@@ -66,4 +66,13 @@ namespace :deploy do
     end
   end
   before "deploy:check", :upload_yml
+
+  desc "Uploads cert files"
+  task :upload_certs do
+    on roles(:app) do
+      execute "mkdir -p /home/rh/cert/tcal_me"
+      upload!("./cert/tcal_me/cert_chain.crt", "/home/rh/cert/tcal_me/cert_chain.crt")
+      upload!("./cert/server.key", "/home/rh/cert/server.key")
+    end
+  end
 end
