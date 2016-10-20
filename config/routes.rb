@@ -8,9 +8,11 @@ Rails.application.routes.draw do
     delete "/", to: "sessions#destroy", as: :logout_user
   end
 
-  resource :user, only: [:update] do
+  resource :user, only: [] do
     get :setup, as: :setup_root
     get "/setup/:step", action: :setup, as: :setup
+    patch "/setup/:step", action: :update
+    put "/setup/:step", action: :update
 
     post :manual_sync
     get :sync_status

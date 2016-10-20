@@ -6,8 +6,13 @@ class UsersController < ApplicationController
 
   def setup
     @step = params[:step]
+
     raise ActionController::RoutingError.new('Not Found') if @step.present? && SETUP_STEPS.exclude?(@step)
     redirect_to setup_user_path(step: "google") if !current_user && @step != "google"
+
+    if @step == "my_tcd" && current_user.my_tcd_login_success == false
+      flash[:error] ||= "Your MyTcd details didn't work last time, try re-entering them to continue."
+    end
   end
 
   def index
@@ -22,7 +27,7 @@ class UsersController < ApplicationController
     if is_updated
       begin
         MyTcd::TimetableScraper.new(current_user).test_login_success!
-        flash[:success] = "Connection to my.tcd.ie successful!"
+        flash[:success] = "Connection to MyTcd successful!"
         redirect_to root_path
       rescue MyTcd::MyTcdError => e
         flash[:error] = e.message || "Unknown MyTcd login error :("

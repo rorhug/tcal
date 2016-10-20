@@ -1,4 +1,4 @@
-<%= form_for current_user, html: { class: "ui equal width form" }, url: user_path do |f| %>
+<%= form_for current_user, html: { class: "ui equal width form" }, url: setup_user_path(step: "my_tcd"), method: :patch do |f| %>
   <div class="fields">
     <div class="field">
       <label>my.tcd.ie username</label>

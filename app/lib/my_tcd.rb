@@ -217,7 +217,7 @@ module MyTcd
   end
 
   class MyTcdError < StandardError
-    def initialize(msg="Error communicating with my.tcd.ie")
+    def initialize(msg="Error communicating with MyTcd")
       super(msg)
     end
   end
