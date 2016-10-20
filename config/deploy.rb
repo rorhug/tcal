@@ -57,14 +57,14 @@ namespace :deploy do
       execute "sudo rm -f #{path_on_host} && sudo ln -s #{release_path}/config/nginx.conf #{path_on_host}"
     end
   end
-  before "passenger:restart", :nginx_symlink
+  before "passenger:restart", "deploy:nginx_symlink"
 
   namespace :que do
     desc "Setup que systemd service"
     task :service_symlink do
       on roles(:db) do
-        path_on_host = "/lib/systemd/system/tcal_que.conf"
-        execute "sudo rm -f #{path_on_host} && sudo ln -s #{release_path}/config/tcal_que.conf #{path_on_host}"
+        path_on_host = "/lib/systemd/system/tcal_que.service"
+        execute "sudo rm -f #{path_on_host} && sudo ln -s #{release_path}/config/tcal_que.service #{path_on_host}"
       end
     end
 
@@ -85,7 +85,7 @@ namespace :deploy do
       upload!("./config/prod_secrets.yml", "#{shared_path}/config/secrets.yml")
     end
   end
-  before "deploy:check", :upload_yml
+  before "deploy:check", "deploy:upload_yml"
 
   desc "Uploads cert files"
   task :upload_certs do
