@@ -203,7 +203,8 @@ module MyTcd
 
     def try_parse_time(time_string)
       begin
-        Time.parse(time_string)
+        # see comment on other Time.zone call in this class
+        Time.zone.parse(time_string)
       rescue ArgumentError, TypeError
         nil
       end
