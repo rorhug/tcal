@@ -149,7 +149,11 @@ module MyTcd
       timetable_page = get_standard_timetable_page
       form = timetable_page.form_with(action: "SIW_XTTB_1")
 
-      t = Time.now.freeze
+      # zone is set to dublin in the application.rb
+      # lets hope that daylight saving switches on my.tcd.ie server
+      # at the same time on this
+      t = Time.zone.now.freeze
+
       is_michaelmas = (1..8).exclude?(t.month)
       academic_year = is_michaelmas ? t.year : t.year - 1
 
