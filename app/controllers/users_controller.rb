@@ -24,7 +24,7 @@ class UsersController < ApplicationController
   def update
     @step = "my_tcd"
 
-    unless (user_params[:my_tcd_username] && user_params[:my_tcd_password])
+    if user_params[:my_tcd_username].blank? || user_params[:my_tcd_password].blank?
       flash[:error] = "Please provide a username and password"
       return render :setup
     end
