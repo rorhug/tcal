@@ -28,6 +28,7 @@ After=syslog.target network.target
 # http://0pointer.de/public/systemd-man/systemd.service.html
 # http://0pointer.de/public/systemd-man/systemd.exec.html
 [Service]
+User=rh
 Type=simple
 WorkingDirectory=/home/rh/www/tcal/current
 # If you use rbenv:
