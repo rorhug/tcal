@@ -68,6 +68,7 @@ class User < ApplicationRecord
       gcal = GoogleCalendarSync.new(self)
       counts = gcal.sync_events!(events_from_tcd)
     rescue Exception => e
+      sync_exception = e
       Raven.capture_exception(e, user: for_raven)
     ensure
       sync_attempts.create!({
