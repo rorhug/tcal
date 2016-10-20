@@ -8,7 +8,7 @@ class UsersController < ApplicationController
     @step = params[:step]
 
     raise ActionController::RoutingError.new('Not Found') if @step.present? && SETUP_STEPS.exclude?(@step)
-    redirect_to setup_user_path(step: "google") if !current_user && @step != "google"
+    return redirect_to setup_user_path(step: "google") unless @step == "google" || current_user
 
     if @step == "my_tcd" && current_user.my_tcd_login_success == false
       flash[:error] ||= "Your MyTcd details didn't work last time, try re-entering them to continue."
