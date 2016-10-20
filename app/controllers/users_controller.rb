@@ -23,6 +23,12 @@ class UsersController < ApplicationController
 
   def update
     @step = "my_tcd"
+
+    if user_params[:my_tcd_username] || user_params[:my_tcd_password]
+      flash[:error] = "Please provide a username and password"
+      return render :setup
+    end
+
     is_updated = current_user.update_attributes(user_params)
     if is_updated
       begin
