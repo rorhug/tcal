@@ -24,12 +24,13 @@ class UsersController < ApplicationController
   def update
     @step = "my_tcd"
 
-    if user_params[:my_tcd_username].blank? || user_params[:my_tcd_password].blank?
+    is_updated = current_user.update_attributes(user_params)
+
+    if User::MY_TCD_LOGIN_COLUMNS.select { |attr| current_user.send(attr).blank? }.any?
       flash[:error] = "Please provide a username and password"
       return render :setup
     end
 
-    is_updated = current_user.update_attributes(user_params)
     if is_updated
       begin
         MyTcd::TimetableScraper.new(current_user).test_login_success!
