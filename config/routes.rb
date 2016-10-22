@@ -9,14 +9,17 @@ Rails.application.routes.draw do
   end
 
   resource :user, only: [] do
-    get :setup, as: :setup_root
-    get "/setup/:step", action: :setup, as: :setup
-    patch "/setup/:step", action: :update
-    put "/setup/:step", action: :update
+    nested do
+      scope :setup, as: :setup do
+        get "/", action: :setup, as: :index
+        get "/:step", action: :setup, as: :step
+        match "/my_tcd", action: :update_my_tcd_details, via: [:put, :patch], as: nil
+      end
+    end
 
     post :manual_sync
+    match :update_sync_settings, via: [:put, :patch]
     get :sync_status
-    get :tcd_only
   end
 
   resource :invites, only: [:create] do

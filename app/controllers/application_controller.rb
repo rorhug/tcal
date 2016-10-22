@@ -24,7 +24,7 @@ class ApplicationController < ActionController::Base
     def authenticate!
       unless session[:user_id] && current_user
         reset_session
-        return redirect_to setup_user_path(step: "google")
+        return redirect_to user_setup_step_path(step: "google")
       end
     end
 
@@ -32,7 +32,7 @@ class ApplicationController < ActionController::Base
       if current_user && !current_user.tcd_email?
         flash[:error] = "This service is only available to tcd.ie Google Accounts"
         unless params >= { "controller" => "users", "action" => "setup", "step" => "google" }
-          return redirect_to setup_user_path(step: "google")
+          return redirect_to user_setup_step_path(step: "google")
         end
       end
     end

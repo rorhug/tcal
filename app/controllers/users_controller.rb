@@ -40,10 +40,17 @@ class UsersController < ApplicationController
     redirect_to root_path if current_user.tcd_email?
   end
 
-  def update
+  def update_sync_settings
+    current_user.update_attributes!(params.require(:user).permit(:auto_sync_enabled))
+    redirect_to root_path
+  end
+
+  def update_my_tcd_details
     @step = "my_tcd"
 
-    is_updated = current_user.update_attributes(user_params)
+    is_updated = current_user.update_attributes(
+      params.require(:user).permit(:my_tcd_username, :my_tcd_password)
+    )
 
     if User::MY_TCD_LOGIN_COLUMNS.select { |attr| current_user.send(attr).blank? }.any?
       flash[:error] = "Please provide a username and password"
@@ -85,11 +92,7 @@ class UsersController < ApplicationController
 
   private
 
-  def user_params
-    params.require(:user).permit(:my_tcd_username, :my_tcd_password)
-  end
-
-  def ensure_setup
-    redirect_to setup_user_path(step: "my_tcd") unless user_setup_complete?
-  end
+    def ensure_setup
+      redirect_to user_setup_step_path(step: "my_tcd") unless user_setup_complete?
+    end
 end
