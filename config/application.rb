@@ -17,7 +17,7 @@ module Tcal
 
     $IS_QUE = $PROGRAM_NAME.include?("que")
     if $IS_QUE
-      config.logger = Logger.new("#{Rails.root}/log/que.log")
+      config.logger = ActiveSupport::Logger.new("#{Rails.root}/log/que.log")
     end
 
     $MAIN_SHLOGAN = "Your TCD Timetable in Google Calendar".freeze
