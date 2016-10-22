@@ -11,7 +11,7 @@ class UsersController < ApplicationController
     when "google"
       # google step
     when "my_tcd"
-      if current_user.my_tcd_login_success == false
+      if current_user.my_tcd_login_success == false # Only if SET to false
         flash[:error] ||= "Your MyTCD details didn't work last time, try re-entering them to continue."
       end
     when nil
