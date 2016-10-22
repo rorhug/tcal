@@ -152,7 +152,7 @@ CREATE TABLE users (
     encrypted_my_tcd_password_iv text,
     invited_by_user_id integer,
     joined_at timestamp without time zone,
-    email text,
+    email text NOT NULL,
     auto_sync_enabled boolean DEFAULT true NOT NULL,
     is_admin boolean DEFAULT false NOT NULL
 );
@@ -272,6 +272,6 @@ CREATE UNIQUE INDEX index_users_on_google_uid ON users USING btree (google_uid);
 
 SET search_path TO "$user", public;
 
-INSERT INTO schema_migrations (version) VALUES ('20160927143053'), ('20161018113229'), ('20161018224616'), ('20161019214527'), ('20161020230639');
+INSERT INTO schema_migrations (version) VALUES ('20160927143053'), ('20161018113229'), ('20161018224616'), ('20161019214527'), ('20161020230639'), ('20161022004528');
 
 

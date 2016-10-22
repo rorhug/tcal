@@ -8,6 +8,14 @@ class AddInvitesToUsers < ActiveRecord::Migration[5.0]
 
     add_index :users, :google_uid, unique: true
     add_index :users, :email, unique: true
-    change_column :users, :google_uid, :text, null: true
+
+    reversible do |dir|
+      dir.up do
+        change_column :users, :google_uid, :text, null: true
+      end
+      dir.down do
+        change_column :users, :google_uid, :text, null: false
+      end
+    end
   end
 end
