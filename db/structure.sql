@@ -152,7 +152,7 @@ CREATE TABLE users (
     encrypted_my_tcd_password_iv text,
     invited_by_user_id integer,
     joined_at timestamp without time zone,
-    email text NOT NULL,
+    email text,
     auto_sync_enabled boolean DEFAULT true NOT NULL,
     is_admin boolean DEFAULT false NOT NULL
 );
