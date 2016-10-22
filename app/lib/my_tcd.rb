@@ -37,21 +37,29 @@ module MyTcd
       form.field_with!(name: "PASSWORD.DUMMY.MENSYS.1").value = @user.my_tcd_password
       signed_in_page = form.click_button
 
-      success = signed_in_page.link_with(text: "here").present?
-      unless success
+      unless signed_in_page.link_with(text: "here").present?
         if signed_in_page.at_css("td.pagetitle").try(:text).try(:include?, "Password Change")
           raise MyTcdError, "MyTCD wants you to change your password. Login and do so before returning here"
         elsif signed_in_page.at_css("span.sitsmessagetitle").try(:text).try(:include?, "Username and Password invalid")
           raise MyTcdError, "MyTCD says it doesn't recognise that username and password"
         else
-          raise MyTcdError, "Error logging into MyTCD..."
+          raise MyTcdError
         end
       end
 
       signed_in_page
-    ensure
-      save_login_success!(success)
-      log_line("submit_login done success=#{@user.my_tcd_login_success}")
+    rescue MyTcd::MyTcdError => e
+      Rails.logger.info Raven.capture_exception(
+        e,
+        level: "warning",
+        extra: { signed_in_page: signed_in_page.body }
+      ) if e.is_unknown_error # Only care if it's an unknown error
+      save_login_success!(false)
+      log_line("submit_login done success=false")
+      raise e # raise it again up to the controller
+    else
+      save_login_success!(true)
+      log_line("submit_login done success=true")
     end
 
     def fetch_events
@@ -218,8 +226,10 @@ module MyTcd
   end
 
   class MyTcdError < StandardError
-    def initialize(msg="Error communicating with MyTCD")
-      super(msg)
+    attr_reader :is_unknown_error
+    def initialize(msg=nil)
+      @is_unknown_error = !msg
+      super(msg || "Error logging into MyTCD...")
     end
   end
 end

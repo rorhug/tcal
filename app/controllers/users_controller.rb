@@ -47,11 +47,10 @@ class UsersController < ApplicationController
         MyTcd::TimetableScraper.new(current_user).test_login_success!
 
         current_user.enqueue_sync unless current_user.sync_blocked_reason
-
         flash[:success] = "Connection to MyTCD successful!"
         redirect_to root_path
       rescue MyTcd::MyTcdError => e
-        flash[:error] = e.message || "Unknown MyTCD login error :("
+        flash[:error] = e.message
         render :setup
       end
     else
