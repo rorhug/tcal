@@ -28,16 +28,16 @@
           <div class="label-cell">
             <% if attempt.successful? %>
               <span class="ui green circular label">
-                <i class="check icon"></i>
+                <i class="<%= attempt.triggered_manually? ? "checkmark" : "checked calendar" %> icon"></i>
               </span>
             <% else %>
               <span class="ui red circular label">
-                <i class="frown icon"></i>
+                <i class="<%= attempt.triggered_manually? ? "remove" : "delete calendar" %> icon"></i>
               </span>
             <% end %>
           </div>
           <div class="content">
-            <div class="header"><%= attempt.successful? ? "Synced Successfully" : "Sync Failed" %></div>
+            <div class="header"><%= "#{"Failed " unless attempt.successful?}#{attempt.triggered_manually? ? "Manual" : "Auto"} Sync" %></div>
             <div class="description">
               <%=
                 [:events_created, :events_deleted].map do |count_attr|

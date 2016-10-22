@@ -4,13 +4,13 @@ class SyncTimetable < Que::Job
   # @priority = 10
   # @run_at = proc { 1.minute.from_now }
 
-  def run(user_id)
+  def run(user_id, triggered_manually)
     # Do stuff.
     user = User.find(user_id)
 
     ActiveRecord::Base.transaction do
       # Write any changes you'd like to the database.
-      user.do_the_feckin_thing!
+      user.do_the_feckin_thing!(triggered_manually: triggered_manually)
 
       # It's best to destroy the job in the same transaction as any other
       # changes you make. Que will destroy the job for you after the run

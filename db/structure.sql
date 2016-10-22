@@ -109,7 +109,8 @@ CREATE TABLE sync_attempts (
     started_at timestamp without time zone NOT NULL,
     finished_at timestamp without time zone NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    triggered_manually boolean DEFAULT true NOT NULL
 );
 
 
@@ -272,6 +273,6 @@ CREATE UNIQUE INDEX index_users_on_google_uid ON users USING btree (google_uid);
 
 SET search_path TO "$user", public;
 
-INSERT INTO schema_migrations (version) VALUES ('20160927143053'), ('20161018113229'), ('20161018224616'), ('20161019214527'), ('20161020230639'), ('20161022004528');
+INSERT INTO schema_migrations (version) VALUES ('20160927143053'), ('20161018113229'), ('20161018224616'), ('20161019214527'), ('20161020230639'), ('20161022004528'), ('20161022005041');
 
 
