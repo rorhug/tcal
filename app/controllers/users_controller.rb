@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   # SETUP_STEPS = %w(my_tcd google)
 
-  skip_before_action :ensure_my_tcd_login_success!, only: [:setup, :update, :tcd_only]
+  skip_before_action :ensure_my_tcd_login_success!, only: [:setup, :update_my_tcd_details, :tcd_only]
   skip_before_action :ensure_is_tcd_email!, only: [:setup, :tcd_only]
 
   def setup
