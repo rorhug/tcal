@@ -68,7 +68,7 @@ class User < ApplicationRecord
 
     # add joined_at timestamp added if user is invited
     if user.invited_by_user_id? && !user.joined_at?
-      enable_account
+      user.enable_account
     end
 
     # oauth tokens

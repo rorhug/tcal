@@ -7,7 +7,6 @@ class UserInviteMailer < ApplicationMailer
     @subject = "Invite to Tcal#{ " from #{@inviter.email}" if @inviter }"
     mail(
       to: @user.email,
-      from: "Tcal <tcdcreator@gmail.com>",
       subject: @subject
     )
   end
