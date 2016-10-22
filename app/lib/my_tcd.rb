@@ -40,11 +40,11 @@ module MyTcd
       success = signed_in_page.link_with(text: "here").present?
       unless success
         if signed_in_page.at_css("td.pagetitle").try(:text).try(:include?, "Password Change")
-          raise MyTcdError, "MyTcd wants you to change your password. Login and do so before returning here"
+          raise MyTcdError, "MyTCD wants you to change your password. Login and do so before returning here"
         elsif signed_in_page.at_css("span.sitsmessagetitle").try(:text).try(:include?, "Username and Password invalid")
-          raise MyTcdError, "MyTcd says it doesn't recognise that username and password"
+          raise MyTcdError, "MyTCD says it doesn't recognise that username and password"
         else
-          raise MyTcdError, "Error logging into MyTcd..."
+          raise MyTcdError, "Error logging into MyTCD..."
         end
       end
 
@@ -218,7 +218,7 @@ module MyTcd
   end
 
   class MyTcdError < StandardError
-    def initialize(msg="Error communicating with MyTcd")
+    def initialize(msg="Error communicating with MyTCD")
       super(msg)
     end
   end

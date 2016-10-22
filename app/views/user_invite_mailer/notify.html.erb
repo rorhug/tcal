@@ -1,0 +1,29 @@
+<p><b><%= @inviter.email %> invited you to use Tcal</b></p>
+<%= link_to "Setup Tcal Now", setup_user_url(step: "google", inviter_email: @inviter.email), class: "btn btn-primary", target: "_blank" %>
+
+<hr>
+
+<h3><b>What is Tcal?</b></h3>
+<ul class="main-points">
+  <li>Tcal <b>is not</b> another phone app.</li>
+  <li>Tcal <b>is</b> a service which makes <b>your timetable</b> available in Google Calendar.</li>
+  <li>Tcal keeps time and module <b>changes in sync</b>.</li>
+</ul>
+
+<h3><b>What's the point?</b></h3>
+<ul class="main-points">
+  <li><b>iPhone</b> and <b>Android</b> come with a calendar app. Tcal makes use of it.</li>
+  <li>Know what you have now and where, <b>without even unlocking</b> your phone.</li>
+  <li>Manage the rest of your busy day/night schedule in your calendar alongside college</li>
+  <small><li>The MyDay app kinda sucks...</li></small>
+</ul>
+<img src="http://i.imgur.com/ZCkmctx.png" width="854">
+<p class="align-center">
+  <small>Yes, it also works on Android (or any device that connects to Google Calendar)</small></p>
+
+<hr>
+<%= link_to "Use Tcal Now", setup_user_url(step: "google", inviter_email: @inviter.email), class: "btn btn-primary", target: "_blank" %>
+<p class="align-center">
+  <br>
+  <em>It's a quick, two step process!</em>
+</p>

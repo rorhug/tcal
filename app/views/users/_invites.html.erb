@@ -1,0 +1,26 @@
+<div class="ui horizontal divider">
+  Invites
+</div>
+
+<% if current_user.has_spare_invites? %>
+  <p><em>Know another TCD student who'd like this?</em></p>
+<% end %>
+
+<% @invitees.each_with_index do |user, i| %>
+  <%= form_for user, html: { class: "ui form" }, url: invites_path do |f| %>
+    <div class="field">
+      <div class="ui fluid action input small">
+        <%= f.email_field :email, placeholder: (User::SAMPLE_EMAILS[i] || "person@tcd.ie"), disabled: user.email %>
+        <%= f.button class: "ui icon button #{user.joined_at? ? "green" : "left labeled"}", disabled: user.email do %>
+          <% if user.joined_at? %>
+            <i class="thumbs outline up icon"></i>
+          <% elsif user.email %>
+            Sent <i class="mail icon"></i>
+          <% else %>
+            Send <i class="send outline icon"></i>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+<% end %>

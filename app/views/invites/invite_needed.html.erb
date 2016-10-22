@@ -1,0 +1,23 @@
+<h2>You're nearly there...</h2>
+
+<div class="ui attached red message">
+  <div class="header">
+    <i class="frown icon"></i> Bad News
+  </div>
+  <ul>
+    <li>For the moment, you must <strong><u>receive an invite</u></strong> to use Tcal.</li>
+  </ul>
+</div>
+
+<div class="ui bottom attached green message">
+  <div class="header">
+    <i class="smile icon"></i> Good News
+  </div>
+  <ul>
+    <li>
+      <strong><u>You are on the list!</u></strong>
+      Keep an eye on your <em><%= current_user.email %></em> inbox. You should receive an email within the next day! (at most, if not much sooner)
+    </li>
+    <li>If you want to get in faster, you can also <strong><u>ask a friend</u></strong> to send you one of their <%= User::MAX_INVITES %> invites.</li>
+  </ul>
+</div>

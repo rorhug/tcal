@@ -138,7 +138,7 @@ ALTER SEQUENCE sync_attempts_id_seq OWNED BY sync_attempts.id;
 
 CREATE TABLE users (
     id integer NOT NULL,
-    google_uid text NOT NULL,
+    google_uid text,
     auth_hash jsonb DEFAULT '{}'::jsonb NOT NULL,
     oauth_refresh_token text,
     oauth_access_token text,
@@ -149,7 +149,12 @@ CREATE TABLE users (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     encrypted_my_tcd_password text,
-    encrypted_my_tcd_password_iv text
+    encrypted_my_tcd_password_iv text,
+    invited_by_user_id integer,
+    joined_at timestamp without time zone,
+    email text NOT NULL,
+    auto_sync_enabled boolean DEFAULT true NOT NULL,
+    is_admin boolean DEFAULT false NOT NULL
 );
 
 
@@ -248,11 +253,25 @@ CREATE INDEX index_sync_attempts_on_user_id ON sync_attempts USING btree (user_i
 
 
 --
+-- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_users_on_email ON users USING btree (email);
+
+
+--
+-- Name: index_users_on_google_uid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_users_on_google_uid ON users USING btree (google_uid);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
 SET search_path TO "$user", public;
 
-INSERT INTO schema_migrations (version) VALUES ('0'), ('20160927143053'), ('20161018113229'), ('20161018224616'), ('20161019214527');
+INSERT INTO schema_migrations (version) VALUES ('20160927143053'), ('20161018113229'), ('20161018224616'), ('20161019214527'), ('20161020230639');
 
 

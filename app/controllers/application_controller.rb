@@ -4,14 +4,16 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception unless Rails.env.development?
   helper_method :current_user, :user_setup_complete?
 
-  before_action :authenticate!
-  before_action :set_raven_context
+  before_action :authenticate!, :ensure_is_joined!, :ensure_is_tcd_email!
+
+  prepend_before_action :set_raven_context
 
   skip_after_action :intercom_rails_auto_include if Rails.env.development?
 
   def current_user
+    return @current_user if defined?(@current_user)
     return unless session[:user_id]
-    @current_user ||= User.find_by_id(session[:user_id])
+    @current_user = User.find_by_id(session[:user_id])
   end
 
   def user_setup_complete?
@@ -22,7 +24,22 @@ class ApplicationController < ActionController::Base
     def authenticate!
       unless session[:user_id] && current_user
         reset_session
-        redirect_to setup_user_path(step: "google")
+        return redirect_to setup_user_path(step: "google")
+      end
+    end
+
+    def ensure_is_tcd_email!
+      if current_user && !current_user.tcd_email?
+        flash[:error] = "This service is only available to tcd.ie Google Accounts"
+        unless params >= { "controller" => "users", "action" => "setup", "step" => "google" }
+          return redirect_to setup_user_path(step: "google")
+        end
+      end
+    end
+
+    def ensure_is_joined!
+      if current_user && !current_user.joined_at?
+        return redirect_to invite_needed_invites_path
       end
     end
 

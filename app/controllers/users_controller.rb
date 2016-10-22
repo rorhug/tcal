@@ -1,17 +1,30 @@
 class UsersController < ApplicationController
-  SETUP_STEPS = %w(my_tcd google)
+  # SETUP_STEPS = %w(my_tcd google)
 
-  before_action :ensure_setup, except: [:setup, :update]
+  before_action :ensure_setup, except: [:setup, :update, :tcd_only]
   skip_before_action :authenticate!, only: [:setup]
+  # skip_before_action :ensure_is_tcd_email!, only: [:setup, :tcd_only]
 
   def setup
     @step = params[:step]
 
-    raise ActionController::RoutingError.new('Not Found') if @step.present? && SETUP_STEPS.exclude?(@step)
-    return redirect_to setup_user_path(step: "google") unless @step == "google" || current_user
+    unless @step == "google"
+      return if authenticate! #authenticate returns a redirect if it fails, returning this method too
+    end
 
-    if @step == "my_tcd" && current_user.my_tcd_login_success == false
-      flash[:error] ||= "Your MyTcd details didn't work last time, try re-entering them to continue."
+    case @step
+    when "google"
+      if !current_user && params[:inviter_email] && User.find_by_email(params[:inviter_email])
+        flash[:success] = "#{params[:inviter_email]} invited you to use Tcal, login to get started!"
+      end
+    when "my_tcd"
+      if current_user.my_tcd_login_success == false
+        flash[:error] ||= "Your MyTCD details didn't work last time, try re-entering them to continue."
+      end
+    when nil
+      # setup home
+    else
+      raise ActionController::RoutingError.new('Not Found')
     end
   end
 
@@ -19,6 +32,12 @@ class UsersController < ApplicationController
     @que_job = current_user.ongoing_sync_job
     @attempts = current_user.sync_attempts.for_feed.to_a
     @sync_block_reason = current_user.sync_blocked_reason
+
+    @invitees = ([User.new] * current_user.invites_left) + current_user.invitees.first(10)
+  end
+
+  def tcd_only
+    redirect_to root_path if current_user.tcd_email?
   end
 
   def update
@@ -34,10 +53,13 @@ class UsersController < ApplicationController
     if is_updated
       begin
         MyTcd::TimetableScraper.new(current_user).test_login_success!
-        flash[:success] = "Connection to MyTcd successful!"
+
+        current_user.enqueue_sync unless current_user.sync_blocked_reason
+
+        flash[:success] = "Connection to MyTCD successful!"
         redirect_to root_path
       rescue MyTcd::MyTcdError => e
-        flash[:error] = e.message || "Unknown MyTcd login error :("
+        flash[:error] = e.message || "Unknown MyTCD login error :("
         render :setup
       end
     else

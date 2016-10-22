@@ -16,5 +16,10 @@ Rails.application.routes.draw do
 
     post :manual_sync
     get :sync_status
+    get :tcd_only
+  end
+
+  resource :invites, only: [:create] do
+    get :invite_needed
   end
 end

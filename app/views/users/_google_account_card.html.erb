@@ -1,8 +1,7 @@
 <% google_segment_color = current_user ? "green" : "yellow" %>
 
 <div class="ui tall raised segment <%= google_segment_color %>">
-  <span class="ui ribbon large label <%= google_segment_color %>">Your TCD Google Account</span>
-  <p></p>
+  <span class="ui ribbon label <%= google_segment_color %>">Your Google Account</span>
 
   <div class="ui items">
     <div class="item">
@@ -12,7 +11,14 @@
           <span><%= current_user.email %></span>
         </div>
         <div class="extra">
-          Joined: <%= current_user.created_at.strftime("%a, %Y-%b-%e") %>
+          <% if current_user.invited_by %>
+            Invited by: <%= current_user.invited_by.email %><br>
+          <% end %>
+          <% if current_user.joined_at %>
+            Joined: <%= current_user.joined_at.strftime("%a, %Y-%b-%e") %>
+          <% else %>
+            Account Created: <%= current_user.created_at.strftime("%a, %Y-%b-%e") %>
+          <% end %>
         </div>
       </div>
       <div class="ui tiny image right floated mobile hidden">

@@ -99,3 +99,21 @@ $text-colors: blue, green, orange, pink, purple, red, teal, yellow, black, grey,
 .message.thinner {
   padding: 0.7em 1em;
 }
+
+//message: bottom attached message colour fix
+.ui.bottom.attached.green.message {
+  background-color: #E5F9E7;
+  color: #1EBC30;
+  box-shadow: 0 0 0 1px #1EBC30 inset,0 0 0 0 transparent;
+}
+
+//form field padding even if last child
+.ui.form .field:last-child, .ui.form .fields:last-child .field {
+  margin-bottom: 1em;
+}
+
+
+// other custom stuff
+footer {
+  color: grey;
+}

@@ -48,12 +48,12 @@
 
       <p><br></p>
       <div class="ui divider"></div>
-      <div class="ui center aligned basic tiny segment disabled">
+      <footer class="ui center aligned basic small segment">
         <br>
-        <% if current_user %>
+        <% if current_user && current_user.joined_at? %>
           You are user #<%= current_user.id %>
         <% end %>
-      </div>
+      </footer>
     </div>
 
     <% if Rails.env == "production" %>

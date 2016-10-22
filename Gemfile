@@ -48,6 +48,10 @@ group :development do
   gem 'capistrano-passenger'
 end
 
+group :development, :test do
+  gem 'rspec-rails', '~> 3.5'
+end
+
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
@@ -60,3 +64,5 @@ gem "que"
 gem "attr_encrypted", "~> 3.0"
 gem "intercom-rails"
 gem "sentry-raven"
+gem "premailer-rails"
+gem "nokogiri"

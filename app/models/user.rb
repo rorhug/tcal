@@ -1,24 +1,34 @@
 class User < ApplicationRecord
   # user https://github.com/attr-encrypted/attr_encrypted for tcd details
 
-  EMAIL_DOMAINS = Rails.application.secrets.google_email_domain_csv.split(',')
   MY_TCD_LOGIN_COLUMNS = %w(
     my_tcd_username
     my_tcd_password
   )
+  MAX_INVITES = 2
+  SAMPLE_EMAILS = ["trumpd4@tcd.ie", "clintonh@tcd.ie"]
 
   attr_encrypted :my_tcd_password, key: Rails.application.secrets.encrypted_my_tcd_password_key
 
   before_save :ensure_no_my_tcd_changes!
+
   has_many :sync_attempts
+  has_many :invitees, class_name: "User", foreign_key: :invited_by_user_id
+  belongs_to :invited_by, class_name: "User", foreign_key: :invited_by_user_id
+
+  validates :email, format: /@/
 
   def ensure_no_my_tcd_changes!
     # if login details change, invalidate the success check
     self.my_tcd_login_success = nil if (changed & MY_TCD_LOGIN_COLUMNS).any?
   end
 
-  def email
-    auth_hash["info"]["email"]
+  def tcd_email?
+    email =~ /\A[^@]+@tcd\.ie\z/ && (auth_hash['extra'] ? auth_hash['extra']['raw_info']['hd'] : true)
+  end
+
+  def my_tcd_username_estimate
+    email.split("@").first
   end
 
   def image_url
@@ -29,6 +39,10 @@ class User < ApplicationRecord
     auth_hash["info"]["name"]
   end
 
+  def google_calendar_url
+    "https://calendar.google.com/calendar?authuser=#{email}"
+  end
+
   def for_raven
     %w(id email name my_tcd_username my_tcd_login_success).each_with_object({}) do |attr, hsh|
       hsh[attr] = send(attr)
@@ -36,9 +50,28 @@ class User < ApplicationRecord
   end
 
   def self.from_omniauth(auth_hash)
-    fail SecurityError unless EMAIL_DOMAINS.include?(auth_hash['extra']['raw_info']['hd'])
-    user = find_or_initialize_by(google_uid: auth_hash['uid'])
+    # fail SecurityError unless EMAIL_DOMAINS.include?(auth_hash['extra']['raw_info']['hd'])
 
+    # already has account
+    user = where(google_uid: auth_hash['uid']).first
+    # redeeming a pending invite
+    user ||= where(google_uid: nil, email: auth_hash["info"]["email"]).where.not(invited_by_user_id: nil).first
+
+    # create them new, uninvited. Won't be able to use as joined_at isn't set
+    # filters above will pass on return visit as 1. needs joined_at, 2. needs an invited_by_user_id
+    user ||= new
+
+    # add the google uid if not there (new account/invite redeem)
+    user.google_uid ||= auth_hash['uid']
+    # assign email
+    user.email = auth_hash["info"]["email"]
+
+    # add joined_at timestamp added if user is invited
+    if user.invited_by_user_id? && !user.joined_at?
+      enable_account
+    end
+
+    # oauth tokens
     user.auth_hash = auth_hash
     user.oauth_refresh_token = auth_hash["credentials"]["refresh_token"] if auth_hash["credentials"]["refresh_token"].present?
     user.oauth_access_token = auth_hash["credentials"]["token"] if auth_hash["credentials"]["token"].present?
@@ -49,7 +82,7 @@ class User < ApplicationRecord
   end
 
   def enqueue_sync
-    # raise if job currently in queue
+    raise "Sync job already queued for user" if ongoing_sync_job
     ActiveRecord::Base.transaction do
       SyncTimetable.enqueue(id)
     end
@@ -87,13 +120,15 @@ class User < ApplicationRecord
   end
 
   def ongoing_sync_job
-    return @ongoing_sync_job if defined?(@ongoing_sync_job)
-    @ongoing_sync_job = QueJob.where(job_class: "SyncTimetable").where("args->>0 = ?", id.to_s).first
+    # return @ongoing_sync_job if defined?(@ongoing_sync_job) needs to be up to date
+    QueJob.where(job_class: "SyncTimetable").where("args->>0 = ?", id.to_s).first
   end
 
   def sync_blocked_reason
     if ongoing_sync_job
       "There is already a sync in progress!"
+    elsif !my_tcd_login_success? # Never reaches here, controller blocks with user_setup_complete?
+      "Your MyTCD settings need to be updated."
     elsif Rails.env.development?
       nil
     elsif synced_lots_recently?
@@ -127,6 +162,29 @@ class User < ApplicationRecord
     else
       true
     end
-    # true
+  end
+
+  def invites_left
+    if is_admin?
+      1
+    else
+      left = User::MAX_INVITES - invitees.count
+      left > 0 ? left : 0
+    end
+  end
+
+  def has_spare_invites?
+    invites_left != 0
+  end
+
+  def enable_account
+    self.joined_at ||= Time.now
+    self
+  end
+
+  def enqueue_invite_email
+    ActiveRecord::Base.transaction do
+      UserInviteEmailJob.enqueue(id)
+    end
   end
 end

@@ -1,10 +1,32 @@
+<% if current_user && !current_user.oauth_refresh_token %>
+  <div class="ui negative message">
+    <i class="close icon"></i>
+    <div class="header">
+      <i class="icon frown"></i> Google Account Access Error
+    </div>
+    <p>Tcal is having trouble communicating with your Google Account</p>
+    <div>
+      <%= link_to "/auth/google_oauth2?prompt=consent", class: "ui primary button labeled icon" do %>
+        <i class="google icon"></i> Fix this now!
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
 <div class="ui grid stackable">
   <div class="eight wide column">
     <h3>Upcoming events</h3>
     <small><em>Coming soon...</em></small>
-    <div class="ui section divider"></div>
+    <br>
+    <br>
+    <div class="mobile hidden">
+      <%= link_to current_user.google_calendar_url, class: "ui small fluid basic button labeled icon", target: "_blank" do %>
+        <i class="calendar icon"></i> View Google Calendar
+      <% end %>
+    </div>
     <%= render partial: "google_account_card" %>
   </div>
+  <div class="eight wide column mobile only"><div class="ui divider"></div></div>
   <div class="eight wide column">
     <% unless current_user.ongoing_sync_job %>
       <%= link_to manual_sync_user_path,
@@ -24,5 +46,7 @@
     <%= link_to setup_root_user_path, class: "ui button fluid labeled icon basic" do %>
       <i class="edit icon"></i> Setup
     <% end %>
+
+    <%= render partial: "invites" if @invitees.any? %>
   </div>
 </div>

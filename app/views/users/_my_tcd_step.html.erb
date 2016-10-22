@@ -2,7 +2,7 @@
   <div class="fields">
     <div class="field">
       <label>my.tcd.ie username</label>
-      <%= f.text_field :my_tcd_username, placeholder: "Username" %>
+      <%= f.text_field :my_tcd_username, placeholder: "#{current_user.my_tcd_username_estimate} or student number..." %>
     </div>
     <div class="field">
       <label>my.tcd.ie password</label>
