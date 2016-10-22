@@ -1,22 +1,15 @@
 class UsersController < ApplicationController
   # SETUP_STEPS = %w(my_tcd google)
 
-  before_action :ensure_setup, except: [:setup, :update, :tcd_only]
-  skip_before_action :authenticate!, only: [:setup]
-  # skip_before_action :ensure_is_tcd_email!, only: [:setup, :tcd_only]
+  skip_before_action :ensure_my_tcd_login_success!, only: [:setup, :update, :tcd_only]
+  skip_before_action :ensure_is_tcd_email!, only: [:setup, :tcd_only]
 
   def setup
     @step = params[:step]
 
-    unless @step == "google"
-      return if authenticate! #authenticate returns a redirect if it fails, returning this method too
-    end
-
     case @step
     when "google"
-      if !current_user && params[:inviter_email] && User.find_by_email(params[:inviter_email])
-        flash[:success] = "#{params[:inviter_email]} invited you to use Tcal, login to get started!"
-      end
+      # google step
     when "my_tcd"
       if current_user.my_tcd_login_success == false
         flash[:error] ||= "Your MyTCD details didn't work last time, try re-entering them to continue."
@@ -26,14 +19,6 @@ class UsersController < ApplicationController
     else
       raise ActionController::RoutingError.new('Not Found')
     end
-  end
-
-  def index
-    @que_job = current_user.ongoing_sync_job
-    @attempts = current_user.sync_attempts.for_feed.to_a
-    @sync_block_reason = current_user.sync_blocked_reason
-
-    @invitees = ([User.new] * current_user.invites_left) + current_user.invitees.first(10)
   end
 
   def tcd_only
@@ -89,10 +74,4 @@ class UsersController < ApplicationController
     que_job = current_user.ongoing_sync_job
     render json: { run_at: que_job && view_context.time_ago_in_words(que_job.run_at) }
   end
-
-  private
-
-    def ensure_setup
-      redirect_to user_setup_step_path(step: "my_tcd") unless user_setup_complete?
-    end
 end

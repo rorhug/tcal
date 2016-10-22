@@ -24,7 +24,7 @@
         <i class="calendar icon"></i> View Google Calendar
       <% end %>
     </div>
-    <%= render partial: "google_account_card" %>
+    <%= render partial: "users/google_account_card" %>
   </div>
   <div class="eight wide column mobile only"><div class="ui divider"></div></div>
   <div class="eight wide column">
@@ -42,11 +42,11 @@
       <% end %>
     <% end %>
 
-    <%= render partial: "sync_attempts_feed" %>
+    <%= render partial: "users/sync_attempts_feed" %>
     <%= link_to user_setup_index_path, class: "ui button fluid labeled icon basic" do %>
       <i class="edit icon"></i> Setup
     <% end %>
 
-    <%= render partial: "invites" if @invitees.any? %>
+    <%= render partial: "users/invites" if @invitees.any? %>
   </div>
 </div>

@@ -1,5 +1,6 @@
 class InvitesController < ApplicationController
   skip_before_action :ensure_is_joined!, only: [:invite_needed]
+  skip_before_action :ensure_my_tcd_login_success!, only: [:invite_needed]
 
   def create
     # No more invites
@@ -33,7 +34,7 @@ class InvitesController < ApplicationController
 
     user_to_invite.save!
     user_to_invite.enqueue_invite_email
-    flash[:success] = "Get #{user_to_invite.email} to check their inbox!"
+    flash[:success] = "Tell #{user_to_invite.email} to check their inbox!"
     return redirect_to root_path
   end
 

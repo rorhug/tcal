@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
-  root "users#index"
+  root "home#index"
 
   scope "/auth" do
     get "/google_oauth2/callback", to: "sessions#create"
@@ -9,6 +9,8 @@ Rails.application.routes.draw do
   end
 
   resource :user, only: [] do
+    get "/" => redirect("/")
+
     nested do
       scope :setup, as: :setup do
         get "/", action: :setup, as: :index

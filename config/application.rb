@@ -19,5 +19,8 @@ module Tcal
     if $IS_QUE
       config.logger = Logger.new("#{Rails.root}/log/que.log")
     end
+
+    $MAIN_SHLOGAN = "Your TCD Timetable in Google Calendar".freeze
+    $MAIN_DESCRIPTION = "Tcal makes your timetable available in Google Calendar. Know what you have now and where, without even unlocking your Android or iPhone."
   end
 end

@@ -12,7 +12,7 @@ class SessionsController < ApplicationController
 
   def destroy
     reset_session
-    redirect_to user_setup_step_path(step: "google")
+    redirect_to root_path
   end
 
   def failure

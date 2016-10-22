@@ -20,7 +20,7 @@
         font-size: 14px;
         line-height: 1.4;
         margin: 0;
-        padding: 0; 
+        padding: 0;
         -ms-text-size-adjust: 100%;
         -webkit-text-size-adjust: 100%; }
 
@@ -269,7 +269,7 @@
 
     </style>
   </head>
-  <body class="">
+  <body>
     <table border="0" cellpadding="0" cellspacing="0" class="body">
       <tr>
         <td>&nbsp;</td>
@@ -290,7 +290,7 @@
                           <img src="http://i.imgur.com/A9Qs0bY.png" width="48" height="48">
                           <h1 id="main-header">Tcal</h1>
                         </div>
-                        <p><em>Sync your TCD timetable into Google Calendar</em></p>
+                        <p><em><%= $MAIN_SHLOGAN %></em></p>
                         <%= yield %>
                       </td>
                     </tr>
@@ -304,6 +304,7 @@
             <!-- START FOOTER -->
             <div class="footer">
               <table border="0" cellpadding="0" cellspacing="0">
+                <tr><td><%= link_to root_url, root_url %></td></tr>
                 <tr><td>Tcal is not an official Trinity College service.</td></tr>
                 <tr><td>tcdcreator@gmail.com</td></tr>
               </table>

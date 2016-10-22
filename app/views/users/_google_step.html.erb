@@ -1,12 +1,4 @@
-<% if current_user %>
-  <%= render partial: "google_account_card" %>
-  <%= button_to logout_user_path, method: :delete, class: "ui button labeled icon basic" do %>
-    <i class="delete icon"></i> Logout
-  <% end %>
-<% else %>
-  <div class="ui center aligned basic segment">
-    <%= link_to "/auth/google_oauth2", class: "ui primary button massive labeled icon" do %>
-      <i class="google icon"></i> Login
-    <% end %>
-  </div>
+<%= render partial: "google_account_card" %>
+<%= button_to logout_user_path, method: :delete, class: "ui button labeled icon basic" do %>
+  <i class="delete icon"></i> Logout
 <% end %>
