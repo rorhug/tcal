@@ -46,8 +46,6 @@ module MyTcd
           raise MyTcdError
         end
       end
-
-      signed_in_page
     rescue MyTcd::MyTcdError => e
       Rails.logger.info Raven.capture_exception(
         e,
@@ -60,6 +58,7 @@ module MyTcd
     else
       save_login_success!(true)
       log_line("submit_login done success=true")
+      signed_in_page
     end
 
     def fetch_events
