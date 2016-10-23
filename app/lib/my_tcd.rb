@@ -12,6 +12,8 @@ module MyTcd
       "Lecturer" => ""
     }.freeze
 
+    attr_reader :agent, :user
+
     def initialize(user)
       @user = user
       @agent = Mechanize.new do |agent|
@@ -26,50 +28,69 @@ module MyTcd
       @user.my_tcd_login_success
     end
 
-    # private
-
-    def submit_login
-      log_line("submit_login start")
-
+    def get_my_tcd_home
+      log_line("get_my_tcd_home")
       login_page = @agent.get("https://my.tcd.ie")
-      form = login_page.form_with(name: "f")
-      form.field_with!(name: "MUA_CODE.DUMMY.MENSYS.1").value = @user.my_tcd_username
-      form.field_with!(name: "PASSWORD.DUMMY.MENSYS.1").value = @user.my_tcd_password
-      signed_in_page = form.click_button
 
-      unless signed_in_page.link_with(text: "here").present?
-        if signed_in_page.at_css("td.pagetitle").try(:text).try(:include?, "Password Change")
-          raise MyTcdError, "MyTCD wants you to change your password. Login and do so before returning here"
+      (1..4).reduce(login_page) do |page, _| # try and get to the home page in 4 or less links
+
+        # Home Success :)
+        if page.link_with(text: "My Timetable").present?
+          save_login_success!(true)
+          return page
+
+        # Main Login Page
+        elsif login_form = page.form_with(action: "SIW_LGN")
+          login_form.field_with!(name: "MUA_CODE.DUMMY.MENSYS.1").value = @user.my_tcd_username
+          login_form.field_with!(name: "PASSWORD.DUMMY.MENSYS.1").value = @user.my_tcd_password
+          next login_form.click_button
+
+        # Multiple Course Selection
+        elsif multiple_course_form = page.form_with(action: "SIW_MCS")
+          multiple_course_form.field_with(name: "SCJ_LIST.DUMMY.MENSYS.1").options.last.click
+          next multiple_course_form.click_button
+
+        # JS Login Redirect, click here thingy
+        elsif page.title == "Log-in successful" && (here_link = page.link_with(text: "here").click)
+          here_link.click
+
+        # Password change
+        elsif signed_in_page.at_css("td.pagetitle").try(:text).try(:include?, "Password Change")
+          raise MyTcdError, "MyTCD wants you to change your password. Go forth and do so before returning here."
+
+        # Invalid user/pass combo
         elsif signed_in_page.at_css("span.sitsmessagetitle").try(:text).try(:include?, "Username and Password invalid")
-          raise MyTcdError, "MyTCD says it doesn't recognise that username and password"
+          raise MyTcdError, "MyTCD says it doesn't recognise that username/password."
+
+        # Unknown flow :/
         else
           raise MyTcdError
         end
       end
     rescue MyTcd::MyTcdError => e
-      Rails.logger.info Raven.capture_exception(
+      Raven.capture_exception(
         e,
         level: "warning",
         extra: {
-          signed_in_page_url: signed_in_page.uri.try(:to_s),
-          signed_in_page_html: signed_in_page.body
+          signed_in_page_url: @agent.current_page.uri.try(:to_s),
+          signed_in_page_html: @agent.current_page.body
         }
       ) if e.is_unknown_error # Only care if it's an unknown error
+
       save_login_success!(false)
-      log_line("submit_login done success=false")
-      raise e # raise it again up to the controller
-    else
-      save_login_success!(true)
-      log_line("submit_login done success=true")
-      signed_in_page
+
+      raise e # raise it again up to the controller or job runner
     end
 
     def fetch_events
-      page = get_term_event_list_page;
+      log_line("fetch_events")
+      page = get_term_event_list_page
+
+      log_line("begin_term_events_parsing")
       rows = page.css("table#ttb_timetableTable tbody tr");
 
       last_date = nil
-      rows.map do |row|
+      gcal_events = rows.map do |row|
         date_header = row.at_css(".sitsrowhead")
         if date_header
           date_string = date_header.try(:inner_html).gsub("<br/>", " ")
@@ -83,6 +104,8 @@ module MyTcd
         event_attributes = table_cell_to_event_attributes(event_cell)
         parse_to_gcal_event(event_attributes, last_date)
       end
+      log_line("finish_term_events_parsing")
+      gcal_events
     end
 
     def parse_to_gcal_event(attrs, base_date)
@@ -156,7 +179,9 @@ module MyTcd
     end
 
     def get_term_event_list_page
-      timetable_page = get_standard_timetable_page
+      log_line("get_default_timetable_page")
+      timetable_page = get_default_timetable_page
+      log_line("get_term_event_list_page")
       form = timetable_page.form_with(action: "SIW_XTTB_1")
 
       # zone is set to dublin in the application.rb
@@ -190,9 +215,8 @@ module MyTcd
       )
     end
 
-    def get_standard_timetable_page
-      submit_login
-        .link_with(text: "here").click
+    def get_default_timetable_page
+      get_my_tcd_home
         .link_with(text: "My Timetable").click
         .link_with(text: "View My Own Student Timetable").click
     end
@@ -205,6 +229,7 @@ module MyTcd
     end
 
     def save_login_success!(did_log_in)
+      log_line("save_login_success! did_log_in=true")
       @user.update_attributes!(
         my_tcd_last_attempt_at: Time.now,
         my_tcd_login_success: did_log_in
