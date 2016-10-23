@@ -119,6 +119,8 @@ class User < ApplicationRecord
       joined_at: nil
     ).where("MOD(id, ?) = ?", denominator, numerator).to_a
 
+    return if users.empty?
+
     # AnD there isn't a current sync job running...
     current_jobs = QueJob.for_job("SyncTimetable").for_users(users).to_a
 

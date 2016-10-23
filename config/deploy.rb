@@ -90,7 +90,7 @@ namespace :deploy do
   before "deploy:check", "deploy:upload_yml"
 
   desc "Uploads bash_profile for rbenv"
-  task :upload_yml do
+  task :upload_bash_profile do
     on roles(:all) do
       upload!("./config/server_bash_profile.bash", "/home/rh/.bash_profile")
     end
