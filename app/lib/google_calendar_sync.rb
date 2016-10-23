@@ -63,6 +63,7 @@ class GoogleCalendarSync
         single_events: true,
         order_by: 'startTime',
         time_min: Time.now.beginning_of_week.iso8601
+        # time_max needs to be set to end of semester
       )
       gcal_events += response.items
       next_page = response.next_page_token

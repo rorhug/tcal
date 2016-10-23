@@ -66,3 +66,4 @@ gem "intercom-rails"
 gem "sentry-raven"
 gem "premailer-rails"
 gem "nokogiri"
+gem 'whenever', require: false

@@ -50,7 +50,10 @@ module MyTcd
       Rails.logger.info Raven.capture_exception(
         e,
         level: "warning",
-        extra: { signed_in_page: signed_in_page.body }
+        extra: {
+          signed_in_page_url: signed_in_page.uri.try(:to_s),
+          signed_in_page_html: signed_in_page.body
+        }
       ) if e.is_unknown_error # Only care if it's an unknown error
       save_login_success!(false)
       log_line("submit_login done success=false")

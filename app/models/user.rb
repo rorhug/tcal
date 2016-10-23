@@ -4,9 +4,13 @@ class User < ApplicationRecord
   MY_TCD_LOGIN_COLUMNS = %w(
     my_tcd_username
     my_tcd_password
-  )
-  MAX_INVITES = 2
-  SAMPLE_EMAILS = ["trumpd4@tcd.ie", "clintonh@tcd.ie"]
+  ).freeze
+  MAX_INVITES = 2.freeze
+  SAMPLE_EMAILS = ["trumpd4@tcd.ie", "clintonh@tcd.ie"].freeze
+  AUTO_SYNC_SETTINGS = {
+    user_interval: 3.hours,
+    cron_interval: 5.minutes
+  }
 
   attr_encrypted :my_tcd_password, key: Rails.application.secrets.encrypted_my_tcd_password_key
 
@@ -86,6 +90,25 @@ class User < ApplicationRecord
     ActiveRecord::Base.transaction do
       SyncTimetable.enqueue(id, triggered_manually)
     end
+  end
+
+  def self.enqueue_auto_syncs
+    # (3*60*60)/(5*60)
+    user_interval = AUTO_SYNC_SETTINGS[:user_interval]
+    cron_interval = AUTO_SYNC_SETTINGS[:cron_interval]
+    denominator = user_interval / cron_interval
+    numerator = (Time.now.to_i % cron_interval) / user_interval
+
+    User.where(
+      auto_sync_enabled: true,
+      my_tcd_login_success: true,
+    ).not.where(
+      joined_at: nil
+    ).where("MOD(id, ?) = ?", denominator, numerator)
+
+    # AnD there isn't a current sync job running...
+
+    numerator
   end
 
   def do_the_feckin_thing!(triggered_manually: true)

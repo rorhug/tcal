@@ -268,11 +268,18 @@ CREATE UNIQUE INDEX index_users_on_google_uid ON users USING btree (google_uid);
 
 
 --
+-- Name: que_jobs_args_0; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX que_jobs_args_0 ON que_jobs USING btree (((args ->> 0)));
+
+
+--
 -- PostgreSQL database dump complete
 --
 
 SET search_path TO "$user", public;
 
-INSERT INTO schema_migrations (version) VALUES ('20160927143053'), ('20161018113229'), ('20161018224616'), ('20161019214527'), ('20161020230639'), ('20161022004528'), ('20161022005041');
+INSERT INTO schema_migrations (version) VALUES ('20160927143053'), ('20161018113229'), ('20161018224616'), ('20161019214527'), ('20161020230639'), ('20161022004528'), ('20161022005041'), ('20161023100135');
 
 
