@@ -1,6 +1,7 @@
 require 'google/apis/calendar_v3'
 
-Google::Apis.logger.level = ActiveSupport::Logger.new("#{Rails.root}/log/que.log")
+log_path = Rails.logger.instance_variable_get("@logdev").dev.path
+Google::Apis.logger = ActiveSupport::Logger.new(log_path)
 Google::Apis.logger.level = Logger::INFO
 
 class GoogleCalendarSync
