@@ -76,10 +76,17 @@ class User < ApplicationRecord
     end
 
     # oauth tokens
+    refresh_token = auth_hash["credentials"]["refresh_token"]
+    if refresh_token.is_a?(String) && refresh_token.length > 10
+      user.oauth_refresh_token = auth_hash["credentials"]["refresh_token"]
+    end
+
+    new_access_token, expires_at = auth_hash["credentials"]["token"], auth_hash["credentials"]["expires_at"]
+    if new_access_token.is_a?(String) && new_access_token.length > 10 && expires_at
+      user.oauth_access_token = new_access_token
+      user.oauth_access_token_expires_at = Time.at(expires_at)
+    end
     user.auth_hash = auth_hash
-    user.oauth_refresh_token = auth_hash["credentials"]["refresh_token"] if auth_hash["credentials"]["refresh_token"].present?
-    user.oauth_access_token = auth_hash["credentials"]["token"] if auth_hash["credentials"]["token"].present?
-    user.oauth_access_token_expires_at = Time.at(auth_hash["credentials"]["expires_at"])
 
     user.save!
     user
@@ -107,7 +114,7 @@ class User < ApplicationRecord
     ).where("MOD(id, ?) = ?", denominator, numerator)
 
     # AnD there isn't a current sync job running...
-
+ "SyncTimetable"
     numerator
   end
 
