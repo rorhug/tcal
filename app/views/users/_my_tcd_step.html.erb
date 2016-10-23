@@ -7,7 +7,7 @@
     <div class="field">
       <label>my.tcd.ie password</label>
       <%= f.password_field :my_tcd_password,
-        placeholder: "Password" %>
+        placeholder: "Password#{ " (enter to change)" if current_user.my_tcd_password && current_user.my_tcd_login_success? }" %>
     </div>
   </div>
   <%= button_tag type: "submit", class: "ui labeled icon button primary" do %>
@@ -15,10 +15,3 @@
     Login
   <% end %>
 <% end %>
-
-<div class="ui piled segment">
-  <h4 class="ui header">Disclaimer</h4>
-  For this to work, your tcd details will be stored in the tcal database so that timetable access
-  can be made ....
-  make this accordian too :)
-</div>

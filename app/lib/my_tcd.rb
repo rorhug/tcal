@@ -24,7 +24,7 @@ module MyTcd
 
     def test_login_success!
       log_line("test_login_success!")
-      submit_login
+      get_my_tcd_home
       @user.my_tcd_login_success
     end
 
@@ -51,15 +51,15 @@ module MyTcd
           next multiple_course_form.click_button
 
         # JS Login Redirect, click here thingy
-        elsif page.title == "Log-in successful" && (here_link = page.link_with(text: "here").click)
-          here_link.click
+        elsif page.title == "Log-in successful" && (here_link = page.link_with(text: "here"))
+          next here_link.click
 
         # Password change
-        elsif signed_in_page.at_css("td.pagetitle").try(:text).try(:include?, "Password Change")
+        elsif page.at_css("td.pagetitle").try(:text).try(:include?, "Password Change")
           raise MyTcdError, "MyTCD wants you to change your password. Go forth and do so before returning here."
 
         # Invalid user/pass combo
-        elsif signed_in_page.at_css("span.sitsmessagetitle").try(:text).try(:include?, "Username and Password invalid")
+        elsif page.at_css("span.sitsmessagetitle").try(:text).try(:include?, "Username and Password invalid")
           raise MyTcdError, "MyTCD says it doesn't recognise that username/password."
 
         # Unknown flow :/
@@ -72,8 +72,8 @@ module MyTcd
         e,
         level: "warning",
         extra: {
-          signed_in_page_url: @agent.current_page.uri.try(:to_s),
-          signed_in_page_html: @agent.current_page.body
+          agent_page_url: @agent.current_page.uri.try(:to_s),
+          agent_page_html: @agent.current_page.body
         }
       ) if e.is_unknown_error # Only care if it's an unknown error
 
@@ -179,7 +179,6 @@ module MyTcd
     end
 
     def get_term_event_list_page
-      log_line("get_default_timetable_page")
       timetable_page = get_default_timetable_page
       log_line("get_term_event_list_page")
       form = timetable_page.form_with(action: "SIW_XTTB_1")
