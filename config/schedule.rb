@@ -7,7 +7,7 @@
 #
 set :output, "/home/rh/whenever_cron.log"
 
-every 5.minutes, roles: [:app] do
+every 2.minutes, roles: [:app] do
   runner("User.enqueue_auto_syncs")
 end
 

@@ -8,8 +8,8 @@ class User < ApplicationRecord
   MAX_INVITES = 2.freeze
   SAMPLE_EMAILS = ["trumpd4@tcd.ie", "clintonh@tcd.ie"].freeze
   AUTO_SYNC_SETTINGS = {
-    user_interval: 3.hours,
-    cron_interval: 5.minutes
+    user_interval: 10.minutes,
+    cron_interval: 2.minutes
   }
 
   attr_encrypted :my_tcd_password, key: Rails.application.secrets.encrypted_my_tcd_password_key
