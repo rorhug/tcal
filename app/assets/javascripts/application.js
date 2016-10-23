@@ -89,8 +89,11 @@ initializeFacebookSDK = function() {
     }
   };
 
-  document.addEventListener("turbolinks:load", function() {
+  document.addEventListener("turbolinks:render", function() {
     refresh_intercom();
+  });
+
+  document.addEventListener("turbolinks:load", function() {
     init_sync_status_checker();
   });
 })();
