@@ -116,8 +116,6 @@ GEM
     httpclient (2.8.2.4)
     hurley (0.2)
     i18n (0.7.0)
-    intercom-rails (0.3.3)
-      activesupport (> 3.0)
     jbuilder (2.6.0)
       activesupport (>= 3.0.0, < 5.1)
       multi_json (~> 1.2)
@@ -318,7 +316,6 @@ DEPENDENCIES
   coffee-rails (~> 4.2)
   dotenv-rails
   google-api-client
-  intercom-rails
   jbuilder (~> 2.5)
   jquery-rails
   listen (~> 3.0.5)

@@ -48,9 +48,15 @@ class User < ApplicationRecord
   end
 
   def for_raven
-    %w(id email name my_tcd_username my_tcd_login_success).each_with_object({}) do |attr, hsh|
-      hsh[attr] = send(attr)
-    end
+    slice(*%w(id email name my_tcd_username my_tcd_login_success))
+  end
+
+  def intercom_settings
+    slice(*%w(email name my_tcd_username my_tcd_login_success)).merge({
+      user_id: id,
+      created_at: created_at.to_i,
+      app_id: Rails.application.secrets.intercom_app_id
+    })
   end
 
   def self.from_omniauth(auth_hash)

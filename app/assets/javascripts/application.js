@@ -63,8 +63,13 @@ initializeFacebookSDK = function() {
 };
 
 (function() {
+  var refresh_intercom = function() {
+    window.Intercom("shutdown");
+    window.Intercom("boot", window.intercomSettings);
+  }
+
   var sync_status_interval;
-  document.addEventListener("turbolinks:load", function() {
+  var init_sync_status_checker = function() {
     var sync_run_at = $("#sync-run-at")[0];
     if (sync_run_at) {
       sync_status_interval = setInterval(function() {
@@ -82,6 +87,11 @@ initializeFacebookSDK = function() {
     } else {
       clearInterval(sync_status_interval);
     }
+  };
+
+  document.addEventListener("turbolinks:load", function() {
+    refresh_intercom();
+    init_sync_status_checker();
   });
 })();
 

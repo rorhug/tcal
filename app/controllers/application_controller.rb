@@ -11,8 +11,6 @@ class ApplicationController < ActionController::Base
 
   prepend_before_action :set_raven_context
 
-  skip_after_action :intercom_rails_auto_include if Rails.env.development?
-
   def current_user
     return @current_user if defined?(@current_user)
     return unless session[:user_id]
