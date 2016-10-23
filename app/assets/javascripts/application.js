@@ -64,7 +64,9 @@ initializeFacebookSDK = function() {
 
 (function() {
   var refresh_intercom = function() {
-    Intercom('update');
+    if (window.Intercom) {
+      window.Intercom('update');
+    }
   }
 
   var sync_status_interval;
