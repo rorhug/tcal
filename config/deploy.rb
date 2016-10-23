@@ -46,6 +46,8 @@ append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'public/syst
 set :assets_roles, [:app]
 set :migration_role, :db
 
+set :whenever_roles, [:db, :app]
+
 set :rbenv_type, :user
 set :rbenv_ruby, File.read('.ruby-version').strip
 

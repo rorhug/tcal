@@ -107,20 +107,25 @@ class User < ApplicationRecord
 
   def self.enqueue_auto_syncs
     # (3*60*60)/(5*60)
-    user_interval = AUTO_SYNC_SETTINGS[:user_interval]
-    cron_interval = AUTO_SYNC_SETTINGS[:cron_interval]
+    user_interval = User::AUTO_SYNC_SETTINGS[:user_interval]
+    cron_interval = User::AUTO_SYNC_SETTINGS[:cron_interval]
     denominator = user_interval / cron_interval
-    numerator = (Time.now.to_i % cron_interval) / user_interval
+    numerator = (Time.now.to_i % user_interval) / cron_interval
 
-    User.where(
+    users = User.where(
       auto_sync_enabled: true,
       my_tcd_login_success: true,
-    ).not.where(
+    ).where.not(
       joined_at: nil
-    ).where("MOD(id, ?) = ?", denominator, numerator)
+    ).where("MOD(id, ?) = ?", denominator, numerator).to_a
 
     # AnD there isn't a current sync job running...
- "SyncTimetable"
+    current_jobs = QueJob.for_job("SyncTimetable").for_users(users).to_a
+
+    users.each do |user|
+      user.enqueue_sync(triggered_manually: false) unless current_jobs.find { |job| job.args[0] == id }
+    end
+
     numerator
   end
 
@@ -159,7 +164,7 @@ class User < ApplicationRecord
 
   def ongoing_sync_job
     # return @ongoing_sync_job if defined?(@ongoing_sync_job) needs to be up to date
-    QueJob.where(job_class: "SyncTimetable").where("args->>0 = ?", id.to_s).first
+    QueJob.for_job("SyncTimetable").for_user(self).first
   end
 
   def sync_blocked_reason
