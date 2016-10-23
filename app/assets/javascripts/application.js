@@ -25,7 +25,7 @@ $(function() {
 });
 
 bindFacebookEvents = function() {
-  $(document).on('page:fetch', saveFacebookRoot).on('page:change', restoreFacebookRoot).on('page:load', function() {
+  $(document).on('turbolinks:request-start', saveFacebookRoot).on('turbolinks:load', restoreFacebookRoot).on('turbolinks:load', function() {
     return typeof FB !== "undefined" && FB !== null ? FB.XFBML.parse() : void 0;
   });
   return this.fbEventsBound = true;
