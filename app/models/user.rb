@@ -98,8 +98,8 @@ class User < ApplicationRecord
     user
   end
 
-  def enqueue_sync(triggered_manually: true)
-    raise "Sync job already queued for user" if ongoing_sync_job
+  def enqueue_sync(triggered_manually: true, force: false)
+    raise "Sync job already queued for user" if !force && ongoing_sync_job
     ActiveRecord::Base.transaction do
       SyncTimetable.enqueue(id, triggered_manually)
     end
@@ -125,7 +125,10 @@ class User < ApplicationRecord
     current_jobs = QueJob.for_job("SyncTimetable").for_users(users).to_a
 
     users.each do |user|
-      user.enqueue_sync(triggered_manually: false) unless current_jobs.find { |job| job.args[0] == id }
+      user.enqueue_sync(
+        triggered_manually: false,
+        force: true # i.e. don't bother checking if a job isn't running (we check using current_jobs)
+      ) unless current_jobs.find { |job| job.args[0] == id }
     end
 
     numerator
