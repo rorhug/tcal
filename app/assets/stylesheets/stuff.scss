@@ -112,6 +112,10 @@ $text-colors: blue, green, orange, pink, purple, red, teal, yellow, black, grey,
   margin-bottom: 1em;
 }
 
+// button bottom attached same border as segment
+.ui.attached.basic.button {
+  box-shadow: 0 0 0 1px #D4D4D5!important;
+}
 
 // other custom stuff
 footer {
