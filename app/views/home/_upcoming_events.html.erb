@@ -2,7 +2,7 @@
   Upcoming Events
 </div>
 
-<% unless @events_by_date.any? %>
+<% if @events_by_date.any? %>
   <% @events_by_date.each do |date, events| %>
     <%= date.to_date.strftime("%A, #{date.day.ordinalize} of %B") %>
 
