@@ -30,21 +30,23 @@
   <div class="eight wide column mobile only"><div class="ui divider"></div></div>
   <div class="eight wide column">
     <% unless current_user.ongoing_sync_job %>
+      <% if @sync_block_reason %>
+        <em><%= @sync_block_reason %></em>
+      <% end %>
+
       <%= link_to manual_sync_user_path,
         method: :post,
-        class: "ui large button blue fluid labeled icon spinner-on-click #{"disabled" if @sync_block_reason}",
+        class: "ui large top attached labeled icon button spinner-on-click #{"disabled" if @sync_block_reason}",
         data: { no_turbolink: true },
         disabled: @sync_block_reason do %>
         <i class="refresh icon"></i> Sync now
       <% end %>
-
-      <% if @sync_block_reason %>
-        <em><%= @sync_block_reason %></em>
-      <% end %>
     <% end %>
 
-    <%= render partial: "users/sync_attempts_feed" %>
-    <%= link_to user_setup_index_path, class: "ui button fluid labeled icon basic" do %>
+    <div class="ui segment <%= "top " if current_user.ongoing_sync_job %>attached">
+      <%= render partial: "users/sync_attempts_feed" %>
+    </div>
+    <%= link_to user_setup_index_path, class: "ui bottom attached button labeled icon basic", tabindex: 0 do %>
       <i class="edit icon"></i> Setup
     <% end %>
 
