@@ -14,6 +14,7 @@
           placeholder: (User::SAMPLE_EMAILS[i] || "person@tcd.ie"),
           disabled: user.email
         %>
+        <%# PUT #{"primary" unless user.email} in the class string when email delivers to notspam %>
         <%= f.button class: "ui icon button #{user.joined_at? ? "green" : "left labeled"} #{"mini" if user.email}", disabled: user.email do %>
           <% if user.joined_at? %>
             <i class="thumbs outline up icon"></i>

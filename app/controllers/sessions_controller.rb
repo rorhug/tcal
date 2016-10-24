@@ -3,6 +3,10 @@ class SessionsController < ApplicationController
 
   def create
     user = User.from_omniauth(auth_hash)
+    # MAYBE get refresh on login if not there, probably unecessary
+    # if user.oauth_refresh_token.blank?
+    #   return redirect_to("/auth/google_oauth2?prompt=consent")
+    # end
     session[:user_id] = user.id
     redirect_to user_setup_complete? ? root_path : user_setup_step_path(step: "my_tcd")
   rescue SecurityError
