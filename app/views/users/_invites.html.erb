@@ -9,9 +9,12 @@
 <% @invitees.each_with_index do |user, i| %>
   <%= form_for user, html: { class: "ui form" }, url: invites_path do |f| %>
     <div class="field">
-      <div class="ui fluid action input small">
-        <%= f.email_field :email, placeholder: (User::SAMPLE_EMAILS[i] || "person@tcd.ie"), disabled: user.email %>
-        <%= f.button class: "ui icon button #{user.joined_at? ? "green" : "left labeled"}", disabled: user.email do %>
+      <div class="ui fluid action input <%= "mini" if user.email %>">
+        <%= f.email_field :email,
+          placeholder: (User::SAMPLE_EMAILS[i] || "person@tcd.ie"),
+          disabled: user.email
+        %>
+        <%= f.button class: "ui icon button #{user.joined_at? ? "green" : "left labeled"} #{"mini" if user.email}", disabled: user.email do %>
           <% if user.joined_at? %>
             <i class="thumbs outline up icon"></i>
           <% elsif user.email %>
