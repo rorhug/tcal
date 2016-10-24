@@ -15,6 +15,7 @@ class GoogleCalendarSync
 
   def initialize(user)
     @user = user
+    user.ensure_valid_access_token!
   end
 
   def cal_service
@@ -25,7 +26,13 @@ class GoogleCalendarSync
   end
 
   def print_some_upcoming_events
-    response = cal_service.list_events('primary', max_results: 10, single_events: true, order_by: 'startTime', time_min: Time.now.iso8601)
+    response = cal_service.list_events(
+      calendar_id,
+      max_results: 10,
+      single_events: true,
+      order_by: 'startTime',
+      time_min: Time.now.iso8601
+    )
 
     puts "Upcoming events:"
     puts "No upcoming events found" if response.items.empty?
@@ -55,7 +62,7 @@ class GoogleCalendarSync
     return @calendar_id = calendar.id
   end
 
-  def fetch_gcal_events
+  def fetch_all_gcal_events
     gcal_events = []
     next_page = nil
     begin
@@ -73,9 +80,28 @@ class GoogleCalendarSync
     gcal_events
   end
 
+  def fetch_upcoming_events_for_feed
+    events = cal_service.list_events(
+      calendar_id,
+      max_results: 10,
+      single_events: true,
+      order_by: 'startTime',
+      time_min: (Time.now - 55.minutes).iso8601,
+      time_max: 3.weeks.from_now.iso8601
+    ).items
+
+    events_by_date = events.each_with_object({}) do |event, dates|
+      date = event.start.date_time.to_date
+      dates[date] ||= []
+      dates[date].push(event)
+    end
+    events_by_date.delete(events_by_date.keys.last)
+    events_by_date
+  end
+
   def sync_events!(source_event_list)
     # all events already on gcal
-    all_gcal_events = fetch_gcal_events
+    all_gcal_events = fetch_all_gcal_events
 
     # remove tcal events...
     events_to_create = source_event_list.reject do |source_event|

@@ -22,17 +22,8 @@
       data-show-faces="true">
     </div>
 
-    <div class="ui horizontal divider">
-      Upcoming Events
-    </div>
-    <small><em>Coming soon...</em></small>
-    <br>
-    <br>
-    <div class="mobile hidden">
-      <%= link_to current_user.google_calendar_url, class: "ui small fluid basic button labeled icon", target: "_blank" do %>
-        <i class="calendar icon"></i> View Google Calendar
-      <% end %>
-    </div>
+    <%= render partial: "upcoming_events" %>
+    <div class="ui divider"></div>
     <%= render partial: "users/google_account_card" %>
   </div>
   <div class="eight wide column mobile only"><div class="ui divider"></div></div>

@@ -139,11 +139,9 @@ class User < ApplicationRecord
     counts = {}
     sync_exception = nil
     begin
-      ensure_valid_access_token!
-
       scraper = MyTcd::TimetableScraper.new(self)
-      # events_from_tcd = scraper.fetch_events
-      events_from_tcd = Rails.env.development? ? [] : scraper.fetch_events
+      events_from_tcd = scraper.fetch_events
+      # events_from_tcd = Rails.env.development? ? [] : scraper.fetch_events
 
       gcal = GoogleCalendarSync.new(self)
       counts = gcal.sync_events!(events_from_tcd)
@@ -154,7 +152,7 @@ class User < ApplicationRecord
       sync_attempts.create!({
         started_at: started_at,
         finished_at: Time.now,
-        error_message: sync_exception && "Error syncing calendar",
+        error_message: sync_exception && (e.message || "Error syncing calendar"),
         triggered_manually: triggered_manually
       }.merge(counts))
     end

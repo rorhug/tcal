@@ -1,0 +1,31 @@
+<div class="ui horizontal divider">
+  Upcoming Events
+</div>
+
+<% unless @events_by_date.any? %>
+  <% @events_by_date.each do |date, events| %>
+    <%= date.to_date.strftime("%A, #{date.day.ordinalize} of %B") %>
+
+    <div class="ui divided list">
+      <% events.each do |event| %>
+        <div class="item">
+          <div class="content">
+            <div class="header"><%= event.summary %></div>
+            <div class="description">
+              <%= event.start.date_time.strftime("%H:%M") %>
+              <div><small><%= event.location %></small></div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="mobile hidden">
+    <%= link_to current_user.google_calendar_url, class: "ui small fluid basic button labeled icon", target: "_blank" do %>
+      <i class="calendar icon"></i> View all on Google Calendar
+    <% end %>
+  </div>
+<% else %>
+  <p class="text grey"><em>No events anytime soon...</em></p>
+<% end %>

@@ -22,6 +22,7 @@ Rails.application.routes.draw do
     post :manual_sync
     match :update_sync_settings, via: [:put, :patch]
     get :sync_status
+    get :upcoming_events
   end
 
   resource :invites, only: [:create] do
