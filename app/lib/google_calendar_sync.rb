@@ -83,7 +83,7 @@ class GoogleCalendarSync
   def fetch_upcoming_events_for_feed
     events = cal_service.list_events(
       calendar_id,
-      max_results: 10,
+      max_results: 9,
       single_events: true,
       order_by: 'startTime',
       time_min: (Time.now - 55.minutes).iso8601,

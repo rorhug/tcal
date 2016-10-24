@@ -73,9 +73,4 @@ class UsersController < ApplicationController
     que_job = current_user.ongoing_sync_job
     render json: { run_at: que_job && view_context.time_ago_in_words(que_job.run_at) }
   end
-
-  def upcoming_events
-    response = GoogleCalendarSync.new(current_user).fetch_upcoming_events_for_feed
-    render json: response.items
-  end
 end

@@ -1,8 +1,5 @@
-<div class="ui horizontal divider">
-  Upcoming Events
-</div>
-
 <% if @events_by_date.any? %>
+  <div class="ui divided list"></div>
   <% @events_by_date.each do |date, events| %>
     <%= date.to_date.strftime("%A, #{date.day.ordinalize} of %B") %>
 

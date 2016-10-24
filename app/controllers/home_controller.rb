@@ -5,12 +5,16 @@ class HomeController < ApplicationController
     current_user ? user_index : landing_index
   end
 
+  def upcoming_events
+    @events_by_date = GoogleCalendarSync.new(current_user).fetch_upcoming_events_for_feed
+    render partial: "upcoming_events"
+  end
+
   private
     def user_index
       @que_job = current_user.ongoing_sync_job
       @attempts = current_user.sync_attempts.for_feed.to_a
       @sync_block_reason = current_user.sync_blocked_reason
-      @events_by_date = GoogleCalendarSync.new(current_user).fetch_upcoming_events_for_feed
 
       @invitees = ([User.new] * current_user.invites_left) + current_user.invitees.first(10)
       render "user_index"

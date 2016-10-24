@@ -90,12 +90,23 @@ initializeFacebookSDK = function() {
     }
   };
 
+  var load_upcoming_events = function() {
+    var events_div = $(".upcoming_events");
+    if (events_div) {
+      events_div.html("<br><div class=\"ui active inverted dimmer\"><div class=\"ui small text loader\">Loading</div></div><br>")
+      $.get("/home/upcoming_events").done(function(response) {
+        events_div.html(response);
+      });
+    }
+  };
+
   document.addEventListener("turbolinks:render", function() {
     refresh_intercom();
   });
 
   document.addEventListener("turbolinks:load", function() {
     init_sync_status_checker();
+    load_upcoming_events();
   });
 })();
 
