@@ -71,18 +71,18 @@ initializeFacebookSDK = function() {
 
   var sync_status_interval;
   var init_sync_status_checker = function() {
-    var sync_run_at = $("#sync-run-at")[0];
-    if (sync_run_at) {
+    var sync_run_at = $("#sync-run-at");
+    if (sync_run_at[0]) {
       sync_status_interval = setInterval(function() {
         $.getJSON("/user/sync_status").done(function(response) {
           if (response.run_at) {
-            $(sync_run_at).html(response.run_at);
+            sync_run_at.html(response.run_at);
           } else {
             clearInterval(sync_status_interval);
             Turbolinks.visit("/", { action: "replace" })
           }
         }).fail(function() {
-          $(sync_run_at).html("<span class=\"label tiny red\">Error getting status</span>");
+          sync_run_at.html("<span class=\"label tiny red\">Error getting status</span>");
         });
       }, 5000);
     } else {
@@ -92,7 +92,7 @@ initializeFacebookSDK = function() {
 
   var load_upcoming_events = function() {
     var events_div = $(".upcoming_events");
-    if (events_div) {
+    if (events_div[0]) {
       events_div.html("<br><div class=\"ui active inverted dimmer\"><div class=\"ui small text loader\">Loading</div></div><br>")
       $.get("/home/upcoming_events").done(function(response) {
         events_div.html(response);

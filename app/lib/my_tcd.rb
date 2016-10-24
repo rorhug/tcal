@@ -29,6 +29,7 @@ module MyTcd
     end
 
     def get_my_tcd_home
+      send_to_sentry = false
       log_line("get_my_tcd_home")
       login_page = @agent.get("https://my.tcd.ie")
 
@@ -39,22 +40,7 @@ module MyTcd
           save_login_success!(true)
           return page
 
-        # Main Login Page
-        elsif login_form = page.form_with(action: "SIW_LGN")
-          login_form.field_with!(name: "MUA_CODE.DUMMY.MENSYS.1").value = @user.my_tcd_username
-          login_form.field_with!(name: "PASSWORD.DUMMY.MENSYS.1").value = @user.my_tcd_password
-          next login_form.click_button
-
-        # Multiple Course Selection
-        elsif multiple_course_form = page.form_with(action: "SIW_MCS")
-          multiple_course_form.field_with(name: "SCJ_LIST.DUMMY.MENSYS.1").options.last.click
-          next multiple_course_form.click_button
-
-        # JS Login Redirect, click here thingy
-        elsif page.title == "Log-in successful" && (here_link = page.link_with(text: "here"))
-          next here_link.click
-
-        # Password change
+        #Password change
         elsif page.at_css("td.pagetitle").try(:text).try(:include?, "Password Change")
           raise MyTcdError, "MyTCD wants you to change your password. Go forth and do so before returning here."
 
@@ -62,12 +48,35 @@ module MyTcd
         elsif page.at_css("span.sitsmessagetitle").try(:text).try(:include?, "Username and Password invalid")
           raise MyTcdError, "MyTCD says it doesn't recognise that username/password."
 
+        # Multiple Course Selection
+        elsif multiple_course_form = page.form_with(action: "SIW_MCS")
+          multiple_course_form.field_with(name: "SCJ_LIST.DUMMY.MENSYS.1").options.last.click
+          next multiple_course_form.click_button
+
+        # Main Login Page (has to below password fail, it on after password fail!)
+        elsif login_form = page.form_with(action: "SIW_LGN")
+          login_form.field_with!(name: "MUA_CODE.DUMMY.MENSYS.1").value = @user.my_tcd_username
+          login_form.field_with!(name: "PASSWORD.DUMMY.MENSYS.1").value = @user.my_tcd_password
+          next login_form.click_button
+
+        # JS Login Redirect, click here thingy
+        elsif page.title == "Log-in successful" && (here_link = page.link_with(text: "here"))
+          next here_link.click
+
         # Unknown flow :/
         else
-          raise MyTcdError
+          send_to_sentry = true
+          raise MyTcdError, "Error logging into MyTCD (unknown flow)"
         end
       end
+
+      # it could repeat 4 times without raising...
+      send_to_sentry = true
+      raise MyTcdError, "Error logging into MyTCD (4)"
+
     rescue MyTcd::MyTcdError => e
+      save_login_success!(false)
+
       Raven.capture_exception(
         e,
         level: "warning",
@@ -75,9 +84,7 @@ module MyTcd
           agent_page_url: @agent.current_page.uri.try(:to_s),
           agent_page_html: @agent.current_page.body
         }
-      ) if e.is_unknown_error # Only care if it's an unknown error
-
-      save_login_success!(false)
+      ) if send_to_sentry # Only care if it's an unknown error
 
       raise e # raise it again up to the controller or job runner
     end
@@ -252,10 +259,8 @@ module MyTcd
   end
 
   class MyTcdError < StandardError
-    attr_reader :is_unknown_error
-    def initialize(msg=nil)
-      @is_unknown_error = !msg
-      super(msg || "Error logging into MyTCD...")
+    def initialize(msg="Error logging into MyTCD...")
+      super(msg)
     end
   end
 end
