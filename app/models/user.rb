@@ -8,7 +8,7 @@ class User < ApplicationRecord
   MAX_INVITES = 2.freeze
   SAMPLE_EMAILS = ["trumpd4@tcd.ie", "clintonh@tcd.ie"].freeze
   AUTO_SYNC_SETTINGS = {
-    user_interval: 10.minutes,
+    user_interval: 2.hours,
     cron_interval: 2.minutes
   }
 
