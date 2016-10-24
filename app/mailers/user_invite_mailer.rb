@@ -4,7 +4,7 @@ class UserInviteMailer < ApplicationMailer
     @user = user
     return if Rails.env.development? && user.email.exclude?("r8@tcd.ie")
     @inviter = user.invited_by
-    @subject = "Invite to Tcal#{ " from #{@inviter.email}" if @inviter }"
+    @subject = "Invite to Tcal#{ " from #{@inviter.my_tcd_username_estimate}" if @inviter }"
     mail(
       to: @user.email,
       subject: @subject
