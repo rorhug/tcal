@@ -16,7 +16,7 @@ class HomeController < ApplicationController
       @attempts = current_user.sync_attempts.for_feed.to_a
       @sync_block_reason = current_user.sync_blocked_reason
 
-      @invitees = ([User.new] * current_user.invites_left) + current_user.invitees.first(10)
+      @invitees = ([User.new] * current_user.invites_left) + current_user.invitees.order(id: :desc).limit(10)
       render "user_index"
     end
 
