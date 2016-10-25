@@ -47,7 +47,7 @@ class InvitesController < ApplicationController
   end
 
   def invite_needed
-    redirect_to root_path if current_user.joined_at?
+    redirect_to root_path if current_user.joined_at? && !current_user.is_admin?
   end
 
   private
