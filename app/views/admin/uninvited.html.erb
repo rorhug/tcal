@@ -20,7 +20,7 @@
     </tr>
   </thead>
   <tbody>
-    <% @users.each do |user| %>
+    <% @users.order(:id).each do |user| %>
       <tr>
         <td>
           <h4 class="ui image header">
