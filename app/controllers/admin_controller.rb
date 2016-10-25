@@ -3,7 +3,8 @@ class AdminController < ApplicationController
 
   def uninvited
     @cols = %w(name)
-    @users = User.uninvited.order(id: :asc)
+    @users = User.uninvited
+    @user_count = @users.count
   end
 
   private
