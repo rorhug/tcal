@@ -51,7 +51,11 @@
       <%= render partial: "users/sync_attempts_feed" %>
     </div>
     <%= link_to user_setup_step_path(step: "customise"), class: "ui bottom attached button labeled icon basic", tabindex: 0 do %>
-      <i class="edit icon"></i> Setup
+      <i class="edit icon"></i>
+      Setup
+      <% unless current_user.auto_sync_enabled %>
+        <small class="text red">(Auto Sync disabled!)</small>
+      <% end %>
     <% end %>
 
     <%= render partial: "users/invites" if @invitees.any? %>
