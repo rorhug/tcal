@@ -118,4 +118,9 @@ $(document).ready(function() {
   $(document.body).on("click", ".spinner-on-click", function(e) {
     $(e.target).addClass("loading");
   });
+
+  // $(document.body).on("click", ".spinner-on-click", function(e) {
+  //   var spinner_element = $(e.target).closest("button") || $(e.target).closest("a");
+  //   spinner_element.addClass("loading");
+  // });
 })

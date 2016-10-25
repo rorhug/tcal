@@ -1,0 +1,32 @@
+<h3 class="ui dividing header">Auto Sync</h3>
+
+<%= form_for user, html: { class: "" }, url: update_sync_settings_user_path do |f| %>
+  <%= f.hidden_field :auto_sync_enabled, value: !user.auto_sync_enabled %>
+  <div class="ui labeled massive fluid button">
+    <% if user.auto_sync_enabled? %>
+      <%= f.button class: "ui green basic fluid massive button spinner-on-click" do %>
+        <i class="refresh icon"></i> Auto Sync On
+      <% end %>
+      <div class="ui left pointing green label massive">
+        <i class="play icon"></i>
+      </div>
+    <% else %>
+      <%= f.button class: "ui basic fluid massive button spinner-on-click" do %>
+        <i class="refresh icon"></i> Enable Auto Sync
+      <% end %>
+      <div class="ui left pointing label massive">
+        <i class="pause icon"></i>
+      </div>
+    <% end %>
+  </div>
+  <div class="ui warning message">
+    Leave Auto Sync enabled to make sure changes in your MyTCD account are reflected in
+    Google Calendar<br>e.g. lecture time change, module change and next semester/years's events.
+  </div>
+<% end %>
+
+<h3 class="ui dividing header">Calendar Notifications</h3>
+
+<div class="ui message">
+  Coming Soon!
+</div>

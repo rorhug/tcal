@@ -14,6 +14,8 @@ class UsersController < ApplicationController
       if current_user.my_tcd_login_success == false # Only if SET to false
         flash[:error] ||= "Your MyTCD details didn't work last time, try re-entering them to continue."
       end
+    when "customise"
+      # customise
     when nil
       # setup home
     else
@@ -27,7 +29,7 @@ class UsersController < ApplicationController
 
   def update_sync_settings
     current_user.update_attributes!(params.require(:user).permit(:auto_sync_enabled))
-    redirect_to root_path
+    redirect_to user_setup_step_path(step: "customise")
   end
 
   def update_my_tcd_details

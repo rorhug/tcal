@@ -4,7 +4,7 @@
   <% end %>
 <% end %>
 
-<div class="ui two ordered steps">
+<div class="ui three ordered steps">
   <%= link_to user_setup_step_path(step: "google"),
     class: "#{"completed" if current_user} #{"active" if @step == "google"} step" do %>
     <div class="content">
@@ -12,6 +12,7 @@
       <div class="description">Connect your Google Calendar</div>
     </div>
   <% end %>
+
   <%= link_to user_setup_step_path(step: "my_tcd"),
     class: "#{"completed" if user_setup_complete?} #{"active" if @step == "my_tcd"} #{"disabled" unless current_user} step" do %>
     <div class="content">
@@ -19,10 +20,20 @@
       <div class="description">Connect my.tcd.ie</div>
     </div>
   <% end %>
+
+  <% if user_setup_complete? %>
+    <%= link_to user_setup_step_path(step: "customise"),
+      class: "#{"active" if @step == "customise"} step" do %>
+      <div class="content">
+        <div class="title">Customise</div>
+        <div class="description">Notifications and Auto Sync</div>
+      </div>
+    <% end %>
+  <% end %>
 </div>
 
 <% if @step.present? %>
-  <%= render partial: "#{@step}_step"  %>
+  <%= render partial: "#{@step}_step", locals: { user: current_user }  %>
 <% else %>
   <em class="text grey">Select a setup step...</em>
 <% end %>
