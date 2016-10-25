@@ -12,7 +12,8 @@
       <div class="ui fluid action input <%= "mini" if user.email %>">
         <%= f.email_field :email,
           placeholder: (User::SAMPLE_EMAILS[i] || "person@tcd.ie"),
-          disabled: user.email
+          disabled: user.email,
+          autocapitalize: "off"
         %>
         <%= f.button class: "ui icon button #{user.joined_at? ? "green" : "left labeled"} #{"primary" unless user.email} #{"mini" if user.email}", disabled: user.email do %>
           <% if user.joined_at? %>
