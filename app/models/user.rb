@@ -8,7 +8,7 @@ class User < ApplicationRecord
   MAX_INVITES = 3.freeze
   SAMPLE_EMAILS = ["trumpd4@tcd.ie", "clintonh@tcd.ie"].freeze
   AUTO_SYNC_SETTINGS = {
-    user_interval: 2.hours,
+    user_interval: 2.minutes,
     cron_interval: 2.minutes
   }
 
@@ -124,14 +124,18 @@ class User < ApplicationRecord
     # AnD there isn't a current sync job running...
     current_jobs = QueJob.for_job("SyncTimetable").for_users(users).to_a
 
+    count_queued = 0
     users.each do |user|
-      user.enqueue_sync(
-        triggered_manually: false,
-        force: true # i.e. don't bother checking if a job isn't running (we check using current_jobs)
-      ) unless current_jobs.find { |job| job.args[0] == id }
+      unless current_jobs.find { |job| job.args[0] == user.id }
+        user.enqueue_sync(
+          triggered_manually: false,
+          force: true # i.e. don't bother checking if a job isn't running (we check using current_jobs)
+        )
+        count_queued += 1
+      end
     end
 
-    numerator
+    count_queued
   end
 
   def do_the_feckin_thing!(triggered_manually: true)
