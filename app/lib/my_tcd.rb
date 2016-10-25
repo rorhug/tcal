@@ -136,11 +136,14 @@ module MyTcd
         "Class Size"  => attrs["Size"].first,
         "Group"       => attrs["Group"].first,
         "Location"    => event_location,
-        "Module Name" => module_name,
+        # "Module Name" => module_name, # so you can see fb link on ios cal
         "Activity"    => activity
       }.reduce("") do |desciption, (attr_name, val)|
         val.present? ? desciption + "#{attr_name}: #{val}\n" : desciption
-      end
+      end + %Q{
+Like our page https://www.facebook.com/TcalDotMe
+Timetable kept in sync using https://www.tcal.me
+}
 
       event = Google::Apis::CalendarV3::Event.new({
         summary: event_summary,
