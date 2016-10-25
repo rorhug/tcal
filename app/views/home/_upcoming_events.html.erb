@@ -1,7 +1,11 @@
 <% if @events_by_date.any? %>
   <div class="ui divided list"></div>
   <% @events_by_date.each do |date, events| %>
-    <%= date.to_date.strftime("%A, #{date.day.ordinalize} of %B") %>
+    <h2 class="ui dividing sub header">
+      <%= "Today - " if date.today? %>
+      <%= "Tomorrow - " if Date.tomorrow == date %>
+      <%= date.strftime("%A, #{date.day.ordinalize} of %B") %>
+    </h2>
 
     <div class="ui divided list">
       <% events.each do |event| %>

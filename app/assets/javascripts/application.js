@@ -18,6 +18,7 @@
 var bindFacebookEvents, initializeFacebookSDK, loadFacebookSDK, restoreFacebookRoot, saveFacebookRoot;
 
 $(function() {
+  if ($(".dev-label")) { return; }
   loadFacebookSDK();
   if (!window.fbEventsBound) {
     return bindFacebookEvents();
