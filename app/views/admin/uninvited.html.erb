@@ -16,6 +16,7 @@
       <% @cols.each do |col| %>
         <th><%= col %></th>
       <% end %>
+      <th>Search FB</th>
       <th>Actions</th>
     </tr>
   </thead>
@@ -26,12 +27,17 @@
           <h4 class="ui image header">
             <%= image_tag user.image_url, class: "ui mini rounded image" if user.image_url %>
             <div class="content">
-              <%= user.my_tcd_username_estimate %>
+              <%= user.email %>
               <div class="sub header"><%= user.created_at %></div>
             </div>
           </h4>
         </td>
         <% @cols.each do |col| %><td><%= user.send(col) %></td><% end %>
+        <td>
+          <% [:name, :name_backwards].map { |meth| user.send(meth) }.each do |name| %>
+            <%= link_to "#{name[0..2]}...", "https://www.facebook.com/search/top/?q=#{name}", target: "_blank", class: "ui button" %>
+          <% end %>
+        </td>
         <td>
           <%= form_for user, html: { class: "ui form" }, url: invites_path do |f| %>
             <%= f.hidden_field :email %>

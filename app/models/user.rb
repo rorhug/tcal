@@ -47,6 +47,10 @@ class User < ApplicationRecord
     auth_hash["info"]["name"] if auth_hash.any?
   end
 
+  def name_backwards
+    "#{auth_hash["info"]["last_name"]} #{auth_hash["info"]["first_name"]}" if auth_hash.any?
+  end
+
   def google_calendar_url
     "https://calendar.google.com/calendar?authuser=#{email}"
   end
