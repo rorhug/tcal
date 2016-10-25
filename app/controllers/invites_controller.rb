@@ -10,7 +10,8 @@ class InvitesController < ApplicationController
     end
 
     # Only tcd.ie emails
-    user_to_invite = current_user.invitees.new(email: user_params[:email].strip)
+    invite_email_to_use = user_params[:email].strip.downcase
+    user_to_invite = current_user.invitees.new(email: invite_email_to_use)
     unless user_to_invite.tcd_email?
       flash[:error] = "You may only invite tcd.ie emails!"
       return redirect_to root_path
