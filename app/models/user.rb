@@ -40,11 +40,11 @@ class User < ApplicationRecord
   end
 
   def image_url
-    auth_hash["info"]["image"] if auth_hash
+    auth_hash["info"]["image"] if auth_hash.any?
   end
 
   def name
-    auth_hash["info"]["name"] if auth_hash
+    auth_hash["info"]["name"] if auth_hash.any?
   end
 
   def google_calendar_url
@@ -237,8 +237,10 @@ class User < ApplicationRecord
   end
 
   def enqueue_invite_email
-    ActiveRecord::Base.transaction do
-      UserInviteEmailJob.enqueue(id)
+    unless Rails.env.development?
+      ActiveRecord::Base.transaction do
+        UserInviteEmailJob.enqueue(id)
+      end
     end
   end
 

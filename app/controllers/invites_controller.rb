@@ -3,10 +3,16 @@ class InvitesController < ApplicationController
   skip_before_action :ensure_my_tcd_login_success!, only: [:invite_needed]
 
   def create
+    path_for_redirect = if current_user.is_admin? && params[:admin_redirect_path]
+      params[:admin_redirect_path]
+    else
+      root_path
+    end
+
     # No more invites
     unless current_user.has_spare_invites?
       flash[:error] = "You've already used up your #{User::MAX_INVITES} invites"
-      return redirect_to root_path
+      return redirect_to path_for_redirect
     end
 
     # Only tcd.ie emails
@@ -14,7 +20,7 @@ class InvitesController < ApplicationController
     user_to_invite = current_user.invitees.new(email: invite_email_to_use)
     unless user_to_invite.tcd_email?
       flash[:error] = "You may only invite tcd.ie emails!"
-      return redirect_to root_path
+      return redirect_to path_for_redirect
     end
 
     # User exists
@@ -30,13 +36,14 @@ class InvitesController < ApplicationController
         existing_user.enqueue_invite_email
         flash[:success] = "#{existing_user.email} can now sign in!"
       end
-      return redirect_to root_path # for if and else ^
+      return redirect_to path_for_redirect # for if and else ^
     end
 
     user_to_invite.save!
     user_to_invite.enqueue_invite_email
     flash[:success] = "Tell #{user_to_invite.email} to check their inbox!"
-    return redirect_to (current_user.is_admin? && params[:admin_redirect_path]) || root_path
+
+    return redirect_to path_for_redirect
   end
 
   def invite_needed
