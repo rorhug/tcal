@@ -5,7 +5,7 @@ class User < ApplicationRecord
     my_tcd_username
     my_tcd_password
   ).freeze
-  MAX_INVITES = 0.freeze
+  MAX_INVITES = 2.freeze
   SAMPLE_EMAILS = ["trumpd4@tcd.ie", "clintonh@tcd.ie"].freeze
   AUTO_SYNC_SETTINGS = {
     user_interval: 2.hours,
