@@ -27,6 +27,10 @@ class User < ApplicationRecord
     self.my_tcd_login_success = nil if (changed & MY_TCD_LOGIN_COLUMNS).any?
   end
 
+  def set_joined_at_if_invited!
+    enable_account.save! if !joined_at? && invited_by_user_id && invited_by
+  end
+
   def tcd_email?
     email =~ /\A[^@]+@tcd\.ie\z/ && (auth_hash['extra'] ? auth_hash['extra']['raw_info']['hd'] : true)
   end
