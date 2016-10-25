@@ -237,4 +237,8 @@ class User < ApplicationRecord
       UserInviteEmailJob.enqueue(id)
     end
   end
+
+  def self.uninvited
+    where(google_uid: nil).where.not(invited_by_user_id: nil)
+  end
 end
