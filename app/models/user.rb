@@ -36,11 +36,11 @@ class User < ApplicationRecord
   end
 
   def image_url
-    auth_hash["info"]["image"]
+    auth_hash["info"]["image"] if auth_hash
   end
 
   def name
-    auth_hash["info"]["name"]
+    auth_hash["info"]["name"] if auth_hash
   end
 
   def google_calendar_url
@@ -239,6 +239,6 @@ class User < ApplicationRecord
   end
 
   def self.uninvited
-    where(google_uid: nil).where.not(invited_by_user_id: nil)
+    where(invited_by_user_id: nil, joined_at: nil).where.not(google_uid: nil)
   end
 end

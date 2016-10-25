@@ -15,6 +15,22 @@
 
 <div class="ui grid stackable">
   <div class="eight wide column">
+    <% if current_user.is_admin? %>
+      <% uninvited_count = User.uninvited.count %>
+      <div class="ui segment">
+        <div class="header"><h2 class="ui dividing sub header">Admin</h2></div>
+        <br>
+        <%= link_to uninvited_admin_path, class: "ui labeled button" do %>
+          <div class="ui <%= "basic" if uninvited_count == 0 %> blue button">
+            <i class="send outline icon"></i> Uninvited
+          </div>
+          <div class="ui basic left pointing blue label">
+            <%= uninvited_count %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
     <div class="fb-like"
       data-href="https://www.facebook.com/tcaldotme"
       data-width="330"

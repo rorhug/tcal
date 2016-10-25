@@ -1,0 +1,36 @@
+<table class="ui very basic striped collapsing celled table">
+  <thead>
+    <tr>
+      <th></th>
+      <% @cols.each do |col| %>
+        <th><%= col %></th>
+      <% end %>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @users.each do |user| %>
+      <tr>
+        <td>
+          <h4 class="ui image header">
+            <%= image_tag user.image_url, class: "ui mini rounded image" if user.image_url %>
+            <div class="content">
+              <%= user.my_tcd_username_estimate %>
+              <div class="sub header"><%= user.created_at %></div>
+            </div>
+          </h4>
+        </td>
+        <% @cols.each do |col| %><td><%= user.send(col) %></td><% end %>
+        <td>
+          <%= form_for user, html: { class: "ui form" }, url: invites_path do |f| %>
+            <%= f.hidden_field :email %>
+            <%= hidden_field_tag :admin_redirect_path, request.original_fullpath %>
+            <%= f.button class: "ui icon button blue left labled" do %>
+              <i class="send outline icon"></i> Accept
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

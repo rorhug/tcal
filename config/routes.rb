@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
   root "home#index"
 
-  resource :home, controller: :home do
+  resource :home, controller: :home, only: [:index] do
     get :upcoming_events
   end
 
@@ -30,5 +30,10 @@ Rails.application.routes.draw do
 
   resource :invites, only: [:create] do
     get :invite_needed
+    match "/", action: :create, via: [:put, :patch]
+  end
+
+  resource :admin, controller: :admin, only: [] do
+    get :uninvited
   end
 end

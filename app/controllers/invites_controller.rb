@@ -36,7 +36,7 @@ class InvitesController < ApplicationController
     user_to_invite.save!
     user_to_invite.enqueue_invite_email
     flash[:success] = "Tell #{user_to_invite.email} to check their inbox!"
-    return redirect_to root_path
+    return redirect_to (current_user.is_admin? && params[:admin_redirect_path]) || root_path
   end
 
   def invite_needed
