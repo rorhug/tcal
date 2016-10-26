@@ -62,9 +62,6 @@
           </div>
         <% end %>
         <div class="header-labels">
-          <% if current_user && current_user.joined_at? %>
-            <%= link_to "About", about_path, class: "ui blue basic small label dev-label" %>
-          <% end %>
           <span class="ui green basic small label">Beta</span>
           <% if Rails.env.development? %><span class="ui blue basic small label dev-label">Development</span><% end %>
         </div>
