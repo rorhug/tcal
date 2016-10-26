@@ -31,7 +31,7 @@ It's f**king sweet
       name: "Fiona Hughes",
       course: "1st year BESS",
       message: %Q{
-just syncing it now 👍 thanks... so handy!
+Just syncing it now 👍 thanks... so handy!
       }
     },
     {
@@ -39,7 +39,7 @@ just syncing it now 👍 thanks... so handy!
       name: "Patrick Maher",
       course: "2nd year Sociology and Social Policy",
       message: %Q{
-unbelievably handy
+Unbelievably handy
       }
     },
     {
@@ -47,7 +47,7 @@ unbelievably handy
       name: "Cian Flynn",
       course: "2nd year Engineering",
       message: %Q{
-TCal is dead handy
+Tcal is dead handy
       }
     },
     {
