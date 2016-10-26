@@ -65,7 +65,7 @@ class User < ApplicationRecord
       user_id: id,
       created_at: created_at.to_i,
       app_id: Rails.application.secrets.intercom_app_id,
-      custom_launcher_selector: "intercom_help"
+      custom_launcher_selector: "#intercom_help"
     })
   end
 
