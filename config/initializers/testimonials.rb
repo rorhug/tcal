@@ -74,6 +74,14 @@ Mind=Blown.
 An absolute godsend
       }
     },
+    {
+      enabled: true,
+      name: "Cian",
+      course: "2nd year Medicine",
+      message: %Q{
+How has trinity not had this before?
+      }
+    },
   ]
 
   STANDARD_LIST = LIST.select { |t| t[:enabled] == true }.freeze
