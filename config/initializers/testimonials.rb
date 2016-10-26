@@ -45,7 +45,7 @@ Unbelievably handy
     {
       enabled: true,
       name: "Cian",
-      course: "2nd year Engineering",
+      course: "4th year Engineering",
       message: %Q{
 Tcal is dead handy
       }
