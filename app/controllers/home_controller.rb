@@ -1,9 +1,14 @@
 class HomeController < ApplicationController
-  skip_before_action :authenticate!, only: :index
-  skip_before_action :ensure_my_tcd_login_success!, only: :about
+  skip_before_action :authenticate!, only: [:index, :about]
+  skip_before_action :ensure_my_tcd_login_success!, only: [:about]
 
   def index
-    current_user ? user_index : landing_index
+    if current_user
+      return if authenticate!
+      user_index
+    else
+      landing_index
+    end
   end
 
   def upcoming_events

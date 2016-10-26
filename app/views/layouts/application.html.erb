@@ -92,6 +92,14 @@
 
       <p><br></p>
       <div class="ui divider"></div>
+      <% if !current_user || current_user.joined_at %>
+        <div class="ui horizontal bulleted link list">
+          <% if current_user %>
+            <a id="intercom_help" href="mailto:xmlniwi7@incoming.intercom.io" class="item">Need help?</a>
+          <% end %>
+          <%= link_to "About Tcal", about_path, class: "item" %>
+        </div>
+      <% end %>
       <footer class="ui center aligned basic small segment">
         <br>
         <% if current_user && current_user.joined_at? %>

@@ -24,7 +24,9 @@ class ApplicationController < ActionController::Base
   private
     def authenticate!
       current_user.set_joined_at_if_invited! if current_user
-      unless session[:user_id] && current_user
+      if session[:user_id] && current_user
+        nil
+      else
         reset_session
         redirect_to root_path
       end
