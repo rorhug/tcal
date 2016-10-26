@@ -52,6 +52,11 @@ class User < ApplicationRecord
     "#{auth_hash["info"]["last_name"]} #{auth_hash["info"]["first_name"]}" if auth_hash.any?
   end
 
+  def should_show_invite_prompt?
+    last_sync_success = sync_attempts.last && !sync_attempts.last.error_message?
+    joined_at? && my_tcd_login_success? && (invites_left == User::MAX_INVITES) && last_sync_success
+  end
+
   def google_calendar_url
     "https://calendar.google.com/calendar?authuser=#{email}"
   end

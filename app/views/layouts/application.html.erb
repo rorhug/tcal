@@ -85,6 +85,31 @@
         </div>
       <% end %>
 
+      <% if !flash[:success] && !flash[:error] && params[:controller] != "users" && current_user && current_user.should_show_invite_prompt? %>
+        <div class="ui top attached fluid info message">
+          <div class="header">
+            Get a friend on board!
+          </div>
+          <p>
+            You've used <strong>none</strong> of your <%= User::MAX_INVITES %> invites!<br>
+            Give your friends instant access to Tcal by <strong>entering their email</strong> below...
+          </p>
+        </div>
+        <%= form_for User.new, html: { class: "ui form bottom attached fluid segment" }, url: invites_path do |f| %>
+          <div class="field">
+            <div class="ui fluid action huge input">
+              <%= f.email_field :email,
+                placeholder: User::SAMPLE_EMAILS.sample,
+                autocapitalize: "off"
+              %>
+              <%= f.button class: "ui icon primary huge button" do %>
+                Send <i class="send outline icon"></i>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+
       <%= yield %>
 
       <p><br></p>
