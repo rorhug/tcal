@@ -23,7 +23,7 @@
     Leave Auto Sync on to make sure changes in your MyTCD account are reflected in
     Google Calendar<br>e.g. lecture time change, module change and next semester/years's events.
     <br>
-    <small>runs every <%= distance_of_time_in_words(User::AUTO_SYNC_SETTINGS[:user_interval]).gsub("about", "") %></small>
+    <small>runs every <%= User::AUTO_SYNC_IN_WORDS %></small>
   </div>
 <% end %>
 

@@ -1,5 +1,6 @@
 class HomeController < ApplicationController
   skip_before_action :authenticate!, only: :index
+  skip_before_action :ensure_my_tcd_login_success, only: :about
 
   def index
     current_user ? user_index : landing_index
@@ -8,6 +9,9 @@ class HomeController < ApplicationController
   def upcoming_events
     @events_by_date = GoogleCalendarSync.new(current_user).fetch_upcoming_events_for_feed
     render partial: "upcoming_events"
+  end
+
+  def about
   end
 
   private

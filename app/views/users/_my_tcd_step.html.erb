@@ -1,4 +1,13 @@
-<%= form_for current_user, html: { class: "ui equal width form" }, url: user_setup_step_path(step: "my_tcd"), method: :patch do |f| %>
+<div class="ui top attached message">
+  <div class="header">
+    Connect to MyTCD
+  </div>
+  <p>
+    Required to get timetable events.<br>
+    Read <a href="/about#how-does-tcal-get-my-timetable" target="_blank">"How does Tcal get my timetable"</a> for more information
+  </p>
+</div>
+<%= form_for current_user, html: { class: "ui equal width bottom attached segment form" }, url: user_setup_step_path(step: "my_tcd"), method: :patch do |f| %>
   <div class="fields">
     <div class="field">
       <label>my.tcd.ie username</label>
