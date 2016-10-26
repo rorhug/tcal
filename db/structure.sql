@@ -155,7 +155,8 @@ CREATE TABLE users (
     joined_at timestamp without time zone,
     email text NOT NULL,
     auto_sync_enabled boolean DEFAULT true NOT NULL,
-    is_admin boolean DEFAULT false NOT NULL
+    is_admin boolean DEFAULT false NOT NULL,
+    invite_email_at timestamp without time zone
 );
 
 
@@ -280,6 +281,6 @@ CREATE INDEX que_jobs_args_0 ON que_jobs USING btree (((args ->> 0)));
 
 SET search_path TO "$user", public;
 
-INSERT INTO schema_migrations (version) VALUES ('20160927143053'), ('20161018113229'), ('20161018224616'), ('20161019214527'), ('20161020230639'), ('20161022004528'), ('20161022005041'), ('20161023100135');
+INSERT INTO schema_migrations (version) VALUES ('20160927143053'), ('20161018113229'), ('20161018224616'), ('20161019214527'), ('20161020230639'), ('20161022004528'), ('20161022005041'), ('20161023100135'), ('20161026073219');
 
 

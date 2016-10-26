@@ -241,8 +241,8 @@ class User < ApplicationRecord
     self
   end
 
-  def enqueue_invite_email
-    unless Rails.env.development?
+  def enqueue_invite_email(force_dev: false)
+    if Rails.env.production? || force_dev
       ActiveRecord::Base.transaction do
         UserInviteEmailJob.enqueue(id)
       end
