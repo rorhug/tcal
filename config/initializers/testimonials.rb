@@ -2,7 +2,7 @@ class Testimonial
   LIST = [
 #     {
 #       enabled: :admin_only,
-#       name: "Owen Shepherd",
+#       name: "Owen",
 #       course: "Computer Science, 2nd Year",
 #       message: %Q{
 # Tcal is the sexiest tool to replace TCD's pathetic attempt at getting a useful calendar, MyDay.
@@ -12,7 +12,7 @@ class Testimonial
 #     },
     {
       enabled: true,
-      name: "Sam Daly",
+      name: "Sam",
       course: "2nd year BESS",
       message: %Q{
 It's beautiful
@@ -20,7 +20,7 @@ It's beautiful
     },
     {
       enabled: true,
-      name: "Eoin McMahon",
+      name: "Eoin",
       course: "3rd year Science",
       message: %Q{
 It's f**king sweet
@@ -28,7 +28,7 @@ It's f**king sweet
     },
     {
       enabled: true,
-      name: "Fiona Hughes",
+      name: "Fiona",
       course: "1st year BESS",
       message: %Q{
 Just syncing it now 👍  thanks... so handy!
@@ -36,7 +36,7 @@ Just syncing it now 👍  thanks... so handy!
     },
     {
       enabled: true,
-      name: "Patrick Maher",
+      name: "Patrick",
       course: "2nd year Sociology and Social Policy",
       message: %Q{
 Unbelievably handy
@@ -44,7 +44,7 @@ Unbelievably handy
     },
     {
       enabled: true,
-      name: "Cian Flynn",
+      name: "Cian",
       course: "2nd year Engineering",
       message: %Q{
 Tcal is dead handy
@@ -52,7 +52,7 @@ Tcal is dead handy
     },
     {
       enabled: true,
-      name: "Aaron McDermott",
+      name: "Aaron",
       course: "2nd year Business and German",
       message: %Q{
 I actually turn up to lectures on time
@@ -60,7 +60,7 @@ I actually turn up to lectures on time
     },
     {
       enabled: true,
-      name: "Conor Totterdell",
+      name: "Conor",
       course: "2nd year BESS",
       message: %Q{
 Mind=Blown.
@@ -68,7 +68,7 @@ Mind=Blown.
     },
     {
       enabled: true,
-      name: "Conor Totterdell",
+      name: "Conor",
       course: "1st year Maths and Economics",
       message: %Q{
 An absolute godsend
