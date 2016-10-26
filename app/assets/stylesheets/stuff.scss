@@ -117,6 +117,12 @@ $text-colors: blue, green, orange, pink, purple, red, teal, yellow, black, grey,
   box-shadow: 0 0 0 1px #D4D4D5!important;
 }
 
+// https://github.com/Semantic-Org/Semantic-UI/issues/4342
+.divider-column {
+  position: relative;
+  padding: 0 !important;
+}
+
 // other custom stuff
 footer {
   color: grey;

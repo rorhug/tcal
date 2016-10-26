@@ -10,6 +10,6 @@ class UserInviteMailer < ApplicationMailer
       to: @user.email,
       subject: @subject
     )
-    user.update_attributes(invite_email_at: Time.now) if user.tcd_email?
+    user.update_attributes(invite_email_at: Time.now) if user.id?
   end
 end

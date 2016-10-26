@@ -31,7 +31,7 @@ module MyTcd
     def get_my_tcd_home
       send_to_sentry = false
       log_line("get_my_tcd_home")
-      login_page = @agent.get("https://my.tcd.ie")
+      login_page = @agent.get("https://my.tcd.ie/urd/sits.urd/run/siw_lgn")
 
       (1..4).reduce(login_page) do |page, _| # try and get to the home page in 4 or less links
 
@@ -80,6 +80,7 @@ module MyTcd
       Raven.capture_exception(
         e,
         level: "warning",
+        user: @user.for_raven,
         extra: {
           agent_page_url: @agent.current_page.uri.try(:to_s),
           agent_page_html: @agent.current_page.body

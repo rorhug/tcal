@@ -8,7 +8,7 @@
 # server 'db.example.com', user: 'deploy', roles: %w{db}
 
 role :app, %w{rh@app.tcal.me} # app1 is OFF
-role :db,  %w{rh@db.tcal.me}
+role :db,  %w{rh@52.169.154.115}
 
 # role-based syntax
 # ==================
