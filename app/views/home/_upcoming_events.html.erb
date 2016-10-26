@@ -7,7 +7,7 @@
       <%= date.strftime("%A, #{date.day.ordinalize} of %B") %>
     </h2>
 
-    <div class="ui divided list">
+    <div class="ui list">
       <% events.each do |event| %>
         <div class="item">
           <div class="content">
@@ -23,6 +23,11 @@
   <% end %>
 
   <div class="mobile hidden">
+    <div class="ui tiny info message">
+      To make sure timetable events actually appear on your Android/iPhone, open settings and make
+      sure you've added your <code><%= current_user.email %></code> Google Calendar account.
+    </div>
+
     <%= link_to current_user.google_calendar_url, class: "ui small fluid basic button labeled icon", target: "_blank" do %>
       <i class="calendar icon"></i> View all on Google Calendar
     <% end %>
