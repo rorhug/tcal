@@ -6,7 +6,7 @@
   <% end %>
 </b></p>
 
-<% button_link = root_url(step: "google", invitee_email: @user.email) %>
+<% button_link = root_url(invitee_email: @user.email) %>
 
 <%= link_to "Setup Tcal Now", button_link, class: "btn btn-primary", target: "_blank" %>
 
