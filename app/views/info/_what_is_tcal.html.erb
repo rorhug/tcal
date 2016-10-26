@@ -18,6 +18,24 @@
 </div>
 
 <div class="eight wide column">
+  <% unless @is_mail %>
+    <div class="ui comments">
+      <% Testimonial.sample(2, defined?(current_user) && current_user).each do |testimonial| %>
+
+        <div class="ui comment">
+          <div class="content">
+            <div class="text">
+              <strong>&ldquo;<%= testimonial[:message] %>&rdquo;</strong>
+            </div>
+            <div class="metadata">
+              – <%= testimonial[:name] %>,
+              <%= testimonial[:course] %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
   <img class="ui fluid image" src="https://i.imgur.com/UdHwJt1.png" width="854">
   <p class="align-center">
     <small><br>...yes, it also works on Android (or any device that can connect to Google Calendar)</small>

@@ -23,8 +23,8 @@
       </div>
       <% uninvited_count = User.uninvited.count %>
       <div class="ui segment bottom attached">
-        <%= link_to uninvited_admin_path, class: "ui labeled button" do %>
-          <div class="ui <%= "basic" if uninvited_count == 0 %> blue button">
+        <%= link_to uninvited_admin_path, class: "ui fluid labeled button" do %>
+          <div class="ui <%= "basic" if uninvited_count == 0 %> fluid blue button">
             <i class="send outline icon"></i> Uninvited
           </div>
           <div class="ui basic left pointing blue label">
