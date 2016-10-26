@@ -1,0 +1,61 @@
+<%= link_to root_path, class: "ui button labeled icon basic" do %>
+  <i class="icon chevron left"></i> Back
+<% end %>
+
+<h2 class="ui dividing header" id="about"><a href="#about">About</a></h2>
+<div class="ui grid stackable">
+  <%= render partial: "info/what_is_tcal" %>
+</div>
+
+
+<h2 class="ui dividing header" id="faq"><a href="#faq">Frequently Asked Questions</a></h2>
+
+<h4 class="ui top attached header" id="how-does-tcal-work"><a href="#how-does-tcal-work">How does Tcal work?</a></h4>
+<div class="ui attached segment">
+  <p>
+    Tcal works by periodically connecting to MyTCD to get Student Timetable information.
+    After scanning the list of events, it then connects to your TCD Google Account getting a list
+    of all the events currently in your Google Calendar. Once Tcal has both of these, it creates all
+    your class events in your Calendar.
+  </p>
+  <p>
+    Each subsequent sync ensures that any new events in MyTCD are added and old/non-existent events are removed.
+    Auto Sync (enabled by default) means that your these checks are performed every <%= User::AUTO_SYNC_IN_WORDS %>
+    in the background meaning you can be sure your calendar is up to date. When times change, modules are
+    added/removed and the next semester arrives, you can be sure Tcal will have your Google Calendar up to date.
+  </p>
+</div>
+<h4 class="ui attached header" id="how-does-tcal-get-my-timetable"><a href="#how-does-tcal-get-my-timetable">How does Tcal get my timetable?</a></h4>
+<div class="ui attached segment">
+  <p>
+    The "source of truth" of class times for most TCD students is the timetable on MyTCD. Tcal avails of this
+    resource to fill your Google Calendar with the same information. Each time Tcal runs an Auto Sync, it sends
+    a request to MyTCD on your behalf to access your list of lectures and tutorials, when they start/finish,
+    what room/building they're in etc.
+  </p>
+  <img class="ui left floated image" src="https://i.imgur.com/PAmC59d.png">
+  <p>
+    During the setup process, you're asked to enter your MyTCD details so the above process can happen successfully.
+    On entry of your login details, they are securely transmitted via an industry standard
+    <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security">TLS/HTTPS connection</a> (same as that used by
+    banks and secure online payment). On arrival, Tcal further encrypts these details using
+    <a href="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard">AES-256</a>
+    (the underlying algorithm often used by TLS) before storing them behind a Microsoft Azure firewall
+    not accessible to the outside internet and only by the Tcal calendar syncing server within the private network.
+  </p>
+  <p>
+    Each time the worker is asked to perform a sync, it accesses the encrypted information within the same data-centre.
+    A request is then sent to MyTCD to login with these details (also accessed via TLS) before downloading the current
+    set of timetable events.
+  </p>
+</div>
+<h4 class="ui attached header" id="how-does-tcal-put-events-into-google-calendar">
+  <a href="#how-does-tcal-put-events-into-google-calendar">How does Tcal put events into Google Calendar?</a>
+</h4>
+<div class="ui bottom attached segment">
+  <p>
+    When you create a Tcal account, you sign up using your TCD issued Google Account. Tcal makes use of
+    <a href="https://oauth.net/">OAuth</a> to authenticate/authorize you on the site, but also
+    uses it to securely access Google Calendar (via the API) to add your timetable events.
+  </p>
+</div>
