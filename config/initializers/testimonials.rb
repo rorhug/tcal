@@ -31,7 +31,7 @@ It's f**king sweet
       name: "Fiona Hughes",
       course: "1st year BESS",
       message: %Q{
-Just syncing it now 👍 thanks... so handy!
+Just syncing it now 👍  thanks... so handy!
       }
     },
     {
