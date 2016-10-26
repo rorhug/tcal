@@ -65,10 +65,10 @@ class GoogleCalendarSync
   def fetch_all_gcal_events
     gcal_events = []
     next_page = nil
-    begin
+    5.times do
       response = cal_service.list_events(
         calendar_id,
-        max_results: 200,
+        max_results: 250,
         single_events: true,
         order_by: 'startTime',
         time_min: Time.now.beginning_of_week.iso8601
@@ -76,7 +76,8 @@ class GoogleCalendarSync
       )
       gcal_events += response.items
       next_page = response.next_page_token
-    end while next_page
+      break if !next_page || response.items.length < 1
+    end
     gcal_events
   end
 
@@ -109,7 +110,8 @@ class GoogleCalendarSync
 
       all_gcal_events.delete_if do |gcal_event| # ...and gcal events
         event_matched = gcal_event.start.date_time.iso8601 == source_event.start[:date_time] &&
-          gcal_event.description == source_event.description
+                        gcal_event.description == source_event.description &&
+                        gcal_event.try(:sequence).to_i == 0
         event_exists = true if event_matched # ... if they match each other
         event_matched
       end
@@ -117,7 +119,7 @@ class GoogleCalendarSync
       event_exists
     end
 
-    ids_to_delete = all_gcal_events.map(&:id)
+    ids_to_delete = all_gcal_events.uniq(&:id).map(&:id)
     delete_remote_event_ids(ids_to_delete) if ids_to_delete.any?
 
     create_events(events_to_create) if events_to_create.any?
