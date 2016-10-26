@@ -64,7 +64,8 @@ class User < ApplicationRecord
     slice(*%w(email name my_tcd_username my_tcd_login_success)).merge({
       user_id: id,
       created_at: created_at.to_i,
-      app_id: Rails.application.secrets.intercom_app_id
+      app_id: Rails.application.secrets.intercom_app_id,
+      custom_launcher_selector: "intercom_help"
     })
   end
 
