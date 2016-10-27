@@ -8,7 +8,7 @@
   <%= link_to user_setup_step_path(step: "google"),
     class: "#{"completed" if current_user} #{"active" if @step == "google"} step" do %>
     <div class="content">
-      <div class="title"><%= current_user ? ": #{current_user.display_name}" : "Google" %></div>
+      <div class="title"><%= current_user ? current_user.display_name : "Google" %></div>
       <div class="description">Connect your Google Calendar</div>
     </div>
   <% end %>
