@@ -85,7 +85,7 @@
         </div>
       <% end %>
 
-      <% if !flash[:success] && !flash[:error] && params[:controller] != "users" && current_user && current_user.should_show_invite_prompt? %>
+      <% if !flash[:success] && (!flash[:error] || flash[:invites_error]) && params[:controller] != "users" && current_user && current_user.should_show_invite_prompt? %>
         <div class="ui top attached fluid info message">
           <div class="header">
             Get a friend on board!

@@ -12,6 +12,7 @@ class InvitesController < ApplicationController
     # No more invites
     unless current_user.has_spare_invites?
       flash[:error] = "You've already used up your #{User::MAX_INVITES} invites"
+      flash[:invites_error] = true
       return redirect_to path_for_redirect
     end
 
@@ -20,6 +21,7 @@ class InvitesController < ApplicationController
     user_to_invite = current_user.invitees.new(email: invite_email_to_use)
     unless user_to_invite.tcd_email?
       flash[:error] = "You may only invite tcd.ie emails!"
+      flash[:invites_error] = true
       return redirect_to path_for_redirect
     end
 
@@ -36,6 +38,7 @@ class InvitesController < ApplicationController
         existing_user.enqueue_invite_email
         flash[:success] = "#{existing_user.email} can now sign in!"
       end
+      flash[:invites_error] = true if flash[:error]
       return redirect_to path_for_redirect # for if and else ^
     end
 
