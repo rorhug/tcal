@@ -1,5 +1,9 @@
 class SessionsController < ApplicationController
-  skip_before_action :authenticate!, only: [:new, :create]
+  skip_before_action :authenticate!, only: [:new, :create, :destroy]
+  skip_before_action :ensure_is_tcd_email!,
+                     :ensure_is_joined!,
+                     :ensure_my_tcd_login_success!,
+                     only: [:destroy, :failure]
 
   def create
     user = User.from_omniauth(auth_hash)
@@ -20,8 +24,8 @@ class SessionsController < ApplicationController
   end
 
   def failure
-    flash[:error] = "Auth fail!"
-    redirect_to :new
+    flash[:error] = "Authorization failure!"
+    redirect_to root_path
   end
 
   protected
