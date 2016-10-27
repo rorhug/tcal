@@ -23,8 +23,14 @@ class ApplicationController < ActionController::Base
 
   private
     def authenticate!
-      current_user.set_joined_at_if_invited! if current_user
       if session[:user_id] && current_user
+        if current_user.set_joined_at_if_invited!
+          flash[:success] = if !current_user.invited_by || current_user.invited_by.is_admin
+            "You got invited to use Tcal, Welcome!"
+          else
+            "#{current_user.invited_by.name} invited you to Tcal, Welcome!"
+          end
+        end
         nil
       else
         reset_session

@@ -70,6 +70,13 @@ initializeFacebookSDK = function() {
     }
   }
 
+  setInterval(function() {
+    var invite_needed_el = $(document.body).find("#invite-needed");
+    if (invite_needed_el[0]) {
+      Turbolinks.visit("/invites/invite_needed", { action: "replace" });
+    }
+  }, 30000);
+
   var sync_status_interval;
   var init_sync_status_checker = function() {
     var sync_run_at = $("#sync-run-at");
