@@ -55,7 +55,7 @@ Tcal is dead handy
       name: "Aaron",
       course: "2nd year Business and German",
       message: %Q{
-I actually turn up to lectures on time
+I actually turn up to lectures on time...
       }
     },
     {
@@ -80,6 +80,22 @@ An absolute godsend
       course: "2nd year Medicine",
       message: %Q{
 How has trinity not had this before?
+      }
+    },
+    {
+      enabled: true,
+      name: "Jack",
+      course: "2nd year BESS",
+      message: %Q{
+...much quicker, concise, better layout...
+      }
+    },
+    {
+      enabled: true,
+      name: "Ciaran",
+      course: "4th year Computer Science and Business",
+      message: %Q{
+This finally happened.
       }
     },
   ]
