@@ -1,9 +1,5 @@
 <p><b>
-  <% if @inviter %>
-    <%= @inviter.email %> invited you to use Tcal!
-  <% else %>
-    You've been invited to use Tcal!
-  <% end %>
+  You've been invited to use Tcal!
 </b></p>
 
 <% button_link = root_url(invitee_email: @user.email) %>
