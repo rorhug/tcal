@@ -37,7 +37,7 @@ class HomeController < ApplicationController
             flash[:success] = "Your account is already setup, login to continue."
             flash[:error] = nil
           elsif @invitee.invited_by
-            flash[:success] = "#{@invitee.invited_by.email} invited you to use Tcal. Press Login to get started!"
+            flash[:success] = "#{@invitee.you_were_invited_message}. Press Login to get started!"
             flash[:error] = nil
           else
             flash[:error] = "Haha, nice try :)"

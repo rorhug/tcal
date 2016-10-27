@@ -70,17 +70,20 @@ initializeFacebookSDK = function() {
     }
   }
 
-  setInterval(function() {
+  var auto_refresh_interval;
+  clearInterval(auto_refresh_interval);
+  auto_refresh_interval = setInterval(function() {
     var invite_needed_el = $(document.body).find("#invite-needed");
     if (invite_needed_el[0]) {
       Turbolinks.visit("/invites/invite_needed", { action: "replace" });
     }
-  }, 30000);
+  }, 45000);
 
   var sync_status_interval;
   var init_sync_status_checker = function() {
     var sync_run_at = $("#sync-run-at");
     if (sync_run_at[0]) {
+      clearInterval(sync_status_interval);
       sync_status_interval = setInterval(function() {
         $.getJSON("/user/sync_status").done(function(response) {
           if (response.run_at) {

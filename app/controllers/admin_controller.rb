@@ -2,7 +2,7 @@ class AdminController < ApplicationController
   before_action :must_be_admin!
 
   def uninvited
-    @cols = %w(name)
+    @cols = %w(google_name)
     @users = User.uninvited
     @user_count = @users.count
   end

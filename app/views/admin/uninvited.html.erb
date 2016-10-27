@@ -34,7 +34,7 @@
         </td>
         <% @cols.each do |col| %><td><%= user.send(col) %></td><% end %>
         <td>
-          <% [:name, :name_backwards].map { |meth| user.send(meth) }.each do |name| %>
+          <% [:google_name, :name_backwards].map { |meth| user.send(meth) }.each do |name| %>
             <%= link_to "#{name[0..2]}...", "https://www.facebook.com/search/top/?q=#{name}", target: "_blank", class: "ui tiny compact button" %>
           <% end %>
         </td>

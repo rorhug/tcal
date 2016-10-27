@@ -44,12 +44,29 @@ class User < ApplicationRecord
     auth_hash["info"]["image"] if auth_hash.any?
   end
 
-  def name
+  def google_name
     auth_hash["info"]["name"] if auth_hash.any?
   end
 
   def name_backwards
     "#{auth_hash["info"]["last_name"]} #{auth_hash["info"]["first_name"]}" if auth_hash.any?
+  end
+
+  def you_were_invited_message
+    return @you_were_invited_message if defined?(@you_were_invited_message)
+    if invited_by && !invited_by.is_admin?
+      "#{invited_by.display_name} invited you to Tcal"
+    else
+      "You've been invited to Tcal"
+    end
+  end
+
+  def display_name
+    if google_name.is_a?(String) && google_name.size > 3
+      google_name
+    else
+      my_tcd_username_estimate
+    end
   end
 
   def should_show_invite_prompt?
@@ -62,12 +79,13 @@ class User < ApplicationRecord
   end
 
   def for_raven
-    slice(*%w(id email name my_tcd_username my_tcd_login_success))
+    slice(*%w(id email google_name my_tcd_username my_tcd_login_success))
   end
 
   def intercom_settings
-    slice(*%w(email name my_tcd_username my_tcd_login_success)).merge({
+    slice(*%w(email my_tcd_username my_tcd_login_success)).merge({
       user_id: id,
+      name: google_name,
       created_at: created_at.to_i,
       app_id: Rails.application.secrets.intercom_app_id,
       custom_launcher_selector: "#intercom_help"
