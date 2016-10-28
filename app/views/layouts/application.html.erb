@@ -51,8 +51,7 @@
     <% end %>
   </head>
   <body>
-    <div class="ui text container">
-      <br>
+    <div class="ui text container main-container">
       <h1 class="ui dividing header site-header">
         <%= link_to root_path, class: "no-style-link" do %>
           <i class="calendar icon"></i>
@@ -117,16 +116,20 @@
       <% if !current_user || current_user.joined_at %>
         <div class="ui horizontal bulleted link list">
           <% if current_user %>
-            <a id="intercom_help" href="mailto:xmlniwi7@incoming.intercom.io" class="item">Need help?</a>
+            <a id="intercom_help" href="mailto:info@tcal.me" class="item">Need help?</a>
           <% end %>
           <%= link_to "About Tcal", about_path, class: "item" %>
+          <a href="https://www.facebook.com/tcaldotme" target="_blank" class="item">
+            <i class="facebook icon"></i>Page
+          </a>
+          <a href="mailto:info@tcal.me" class="item">
+            <i class="mail icon"></i> info@tcal.me
+          </a>
         </div>
       <% end %>
       <footer class="ui center aligned basic small segment">
-        <br>
         <% if current_user && current_user.joined_at? %>
-          You are user #<%= current_user.id %>
-          <br>
+          <p>You are user #<%= current_user.id %></p>
         <% end %>
         <a href="https://www.facebook.com/tcaldotme" target="_blank">
           <img style="opacity: 0.1;" src="https://i.imgur.com/A9Qs0bY.png">
