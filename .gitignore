@@ -25,5 +25,6 @@
 
 config/prod_database.yml
 config/prod_secrets.yml
+config/datadog_postgres.yml
 
 cert/*

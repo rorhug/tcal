@@ -86,6 +86,11 @@ namespace :deploy do
       upload!("./config/prod_database.yml", "#{shared_path}/config/database.yml")
       upload!("./config/prod_secrets.yml", "#{shared_path}/config/secrets.yml")
     end
+    on roles(:db) do
+      execute("mkdir -p /home/rh/tmp")
+      upload!("./config/datadog_postgres.yml", "/home/rh/tmp/postgres.yml")
+      execute "sudo mv /home/rh/tmp/postgres.yml /etc/dd-agent/conf.d/postgres.yaml"
+    end
   end
   before "deploy:check", "deploy:upload_yml"
 
