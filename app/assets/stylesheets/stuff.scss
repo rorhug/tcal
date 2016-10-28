@@ -85,12 +85,6 @@ $text-colors: blue, green, orange, pink, purple, red, teal, yellow, black, grey,
   position: relative;
 }
 
-.header-labels {
-  position: absolute;
-  top: -2px;
-  right: 0;
-}
-
 //custom .container.text
 .ui.container.text {
   font-size: 1em;
@@ -138,5 +132,12 @@ footer {
 
 .main-container {
   position: relative;
-  margin-top: 1em;
+  margin-top: 0 !important;
+  padding-top: 1em;
+}
+
+.ui.attached.label.beta-label {
+  position: absolute;
+  border-top: none;
+  border-right: none;
 }

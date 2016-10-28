@@ -1,7 +1,7 @@
 class UserInviteEmailJob < Que::Job
   # Default settings for this job. These are optional - without them, jobs
   # will default to priority 100 and run immediately.
-  # @priority = 10
+  @priority = 10 # send mail before syncs
   # @run_at = proc { 1.minute.from_now }
 
   def run(user_id)

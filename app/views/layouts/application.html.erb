@@ -51,19 +51,17 @@
     <% end %>
   </head>
   <body>
-    <div class="ui text container main-container">
+    <div class="ui top right attached green basic small label beta-label">Beta</div>
+    <div class="ui text container main-container attached">
       <h1 class="ui dividing header site-header">
         <%= link_to root_path, class: "no-style-link" do %>
           <i class="calendar icon"></i>
           <div class="content">
             Tcal
+            <% if Rails.env.development? %><span class="ui violet mini label dev-label">DEV</span><% end %>
             <div class="sub header"><%= $MAIN_SHLOGAN %></div>
           </div>
         <% end %>
-        <div class="header-labels">
-          <span class="ui green basic small label">Beta</span>
-          <% if Rails.env.development? %><span class="ui blue basic small label dev-label">Development</span><% end %>
-        </div>
       </h1>
 
       <% if flash[:error] %>
