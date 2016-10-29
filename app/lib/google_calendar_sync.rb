@@ -25,9 +25,9 @@ class GoogleCalendarSync
     @cal_service
   end
 
-  def print_some_upcoming_events
+  def print_some_upcoming_events(cal_id=nil)
     response = cal_service.list_events(
-      calendar_id,
+      cal_id || calendar_id,
       max_results: 10,
       single_events: true,
       order_by: 'startTime',
@@ -108,8 +108,12 @@ class GoogleCalendarSync
     events_to_create = source_event_list.reject do |source_event|
       event_exists = false
 
+      source_event_start = source_event.start[:date_time]
+
       all_gcal_events.delete_if do |gcal_event| # ...and gcal events
-        event_matched = gcal_event.start.date_time.iso8601 == source_event.start[:date_time] &&
+        gcal_event_start = gcal_event.start.date_time.try(:iso8601)
+        event_matched = gcal_event_start &&
+                        gcal_event_start == source_event_start &&
                         gcal_event.description == source_event.description &&
                         gcal_event.try(:sequence).to_i == 0
         event_exists = true if event_matched # ... if they match each other
