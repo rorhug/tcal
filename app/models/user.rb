@@ -92,6 +92,11 @@ class User < ApplicationRecord
     })
   end
 
+  def gcs
+    return @gcs if defined?(@gcs)
+    @gcs = GoogleCalendarSync.new(self)
+  end
+
   def self.from_omniauth(auth_hash)
     # fail SecurityError unless EMAIL_DOMAINS.include?(auth_hash['extra']['raw_info']['hd'])
 
@@ -180,8 +185,7 @@ class User < ApplicationRecord
       # events_from_tcd = scraper.fetch_events
       events_from_tcd = Rails.env.development? ? [] : scraper.fetch_events
 
-      gcal = GoogleCalendarSync.new(self)
-      counts = gcal.sync_events!(events_from_tcd)
+      counts = gcs.sync_events!(events_from_tcd)
     rescue Exception => e
       sync_exception = e
       Raven.capture_exception(e, user: for_raven)

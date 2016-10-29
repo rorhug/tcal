@@ -12,7 +12,7 @@ class HomeController < ApplicationController
   end
 
   def upcoming_events
-    @events_by_date = GoogleCalendarSync.new(current_user).fetch_upcoming_events_for_feed
+    @events_by_date = current_user.gcs.fetch_upcoming_events_for_feed
     render partial: "upcoming_events"
   end
 
