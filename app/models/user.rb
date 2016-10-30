@@ -9,7 +9,7 @@ class User < ApplicationRecord
   SAMPLE_EMAILS = ["trumpd4@tcd.ie", "clintonh@tcd.ie"].freeze
   AUTO_SYNC_SETTINGS = {
     user_interval: 6.hours,
-    cron_interval: 2.minutes
+    cron_interval: 1.minutes
   }.freeze
   AUTO_SYNC_IN_WORDS = "6 hours".freeze
 
@@ -95,6 +95,11 @@ class User < ApplicationRecord
   def gcs
     return @gcs if defined?(@gcs)
     @gcs = GoogleCalendarSync.new(self)
+  end
+
+  def ts
+    return @ts if defined?(@ts)
+    @ts = MyTcd::TimetableScraper.new(self)
   end
 
   def self.from_omniauth(auth_hash)
