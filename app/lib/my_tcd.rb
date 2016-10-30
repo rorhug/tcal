@@ -113,7 +113,7 @@ module MyTcd
         parse_to_gcal_event(event_attributes, last_date)
       end
       log_line("finish_term_events_parsing")
-      gcal_events
+      gcal_events #.compact TODO blank event page at 1:30 in morning leaves this as [nil], crashes google cal sync not changing gcal events (rather than deleting them all)
     end
 
     def parse_to_gcal_event(attrs, base_date)
