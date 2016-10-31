@@ -98,6 +98,14 @@ How has trinity not had this before?
 This finally happened.
       }
     },
+    {
+      enabled: true,
+      name: "Niamh",
+      course: "4th year Business and Spanish",
+      message: %Q{
+Wish I had this back in first year!
+      }
+    },
   ]
 
   STANDARD_LIST = LIST.select { |t| t[:enabled] == true }.freeze
