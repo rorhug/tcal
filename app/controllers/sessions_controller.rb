@@ -1,5 +1,5 @@
 class SessionsController < ApplicationController
-  skip_before_action :authenticate!, only: [:new, :create, :destroy]
+  skip_before_action :authenticate!, only: [:new, :create, :destroy, :failure]
   skip_before_action :ensure_is_tcd_email!,
                      :ensure_is_joined!,
                      :ensure_my_tcd_login_success!,
@@ -24,7 +24,7 @@ class SessionsController < ApplicationController
   end
 
   def failure
-    flash[:error] = "Authorization failure!"
+    flash[:error] = "Authorization failure! Only @tcd.ie Google accounts may be used to login."
     redirect_to root_path
   end
 
