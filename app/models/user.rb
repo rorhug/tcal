@@ -181,26 +181,32 @@ class User < ApplicationRecord
     count_queued
   end
 
-  def do_the_feckin_thing!(triggered_manually: true)
+  def do_the_feckin_thing!(triggered_manually: true, force_dev: false)
     started_at = Time.now
     counts = {}
     sync_exception = nil
     begin
-      events_from_tcd = ts.fetch_events
+      counts = if Rails.env.production? || force_dev
+        scraper = MyTcd::TimetableScraper.new(self, silence_my_tcd_fail_email: triggered_manually)
+        scrape_result = scraper.fetch_events
 
-      counts = if events_from_tcd[:status] == :success
-        gcs.sync_events!(events_from_tcd[:events])
+        if scrape_result[:status] == :success && scrape_result[:events].size > 0
+          gcs.sync_events!(scrape_result[:events])
+        else
+          { events_created: 0, events_deleted: 0 }
+        end
       else
-        { events_created: 0, events_deleted: 0 }
+        { status: :success, events: [] }
       end
-    rescue Exception => e
-      sync_exception = e
-      Raven.capture_exception(e, user: for_raven)
+    rescue Exception => sync_exception
+      unless sync_exception.is_a?(MyTcd::MyTcdError) # already captured to sentry by my_tcd.rb
+        Raven.capture_exception(e, user: for_raven)
+      end
     ensure
       sync_attempts.create!({
         started_at: started_at,
         finished_at: Time.now,
-        error_message: sync_exception && (e.message || "Error syncing calendar"),
+        error_message: sync_exception && (sync_exception.message || "Error syncing calendar"),
         triggered_manually: triggered_manually
       }.merge(counts))
     end
@@ -280,6 +286,14 @@ class User < ApplicationRecord
     if Rails.env.production? || force_dev
       ActiveRecord::Base.transaction do
         UserInviteEmailJob.enqueue(id)
+      end
+    end
+  end
+
+  def que_mail(mailer_class, options={})
+    if Rails.env.production? || options[:force_dev]
+      ActiveRecord::Base.transaction do
+        EmailUserJob.enqueue(id, mailer_class.to_s, options)
       end
     end
   end

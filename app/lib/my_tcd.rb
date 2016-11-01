@@ -12,10 +12,11 @@ module MyTcd
       "Lecturer" => ""
     }.freeze
 
-    attr_reader :agent, :user
+    attr_reader :agent, :user, :for_auto_sync
 
-    def initialize(user)
+    def initialize(user, silence_my_tcd_fail_email: true)
       @user = user
+      @silence_my_tcd_fail_email = silence_my_tcd_fail_email
       @agent = Mechanize.new do |agent|
         agent.user_agent_alias = "Mac Safari"
         agent.follow_meta_refresh = true
@@ -26,6 +27,14 @@ module MyTcd
       log_line("test_login_success!")
       get_my_tcd_home
       @user.my_tcd_login_success
+    end
+
+    def notify_user_of_my_tcd_fail!(password_change: false)
+      return if @silence_my_tcd_fail_email
+      @user.que_mail(
+        UserMyTcdFailMailer,
+        requires_password_change: password_change,
+      )
     end
 
     def get_my_tcd_home
@@ -42,10 +51,12 @@ module MyTcd
 
         #Password change
         elsif page.at_css("td.pagetitle").try(:text).try(:include?, "Password Change")
+          notify_user_of_my_tcd_fail!(password_change: true)
           raise MyTcdError, "MyTCD wants you to change your password. Go forth and do so before returning here."
 
         # Invalid user/pass combo
         elsif page.at_css("span.sitsmessagetitle").try(:text).try(:include?, "Username and Password invalid")
+          notify_user_of_my_tcd_fail!
           raise MyTcdError, "MyTCD says it doesn't recognise that username/password."
 
         # Multiple Course Selection
@@ -90,10 +101,8 @@ module MyTcd
       raise e # raise it again up to the controller or job runner
     end
 
-    def fetch_events(force_dev: false) # returns { events: [GoogleCalEvent], status: :success, :no_records }
+    def fetch_events # returns { events: [GoogleCalEvent, ...], status: (:success, :no_records) }
       log_line("fetch_events")
-
-      return { status: :success, events: [] } if Rails.env.development? && !force_dev
 
       page = get_term_event_list_page
 

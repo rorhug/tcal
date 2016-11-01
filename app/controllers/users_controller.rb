@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   # SETUP_STEPS = %w(my_tcd google)
 
-  skip_before_action :ensure_my_tcd_login_success!, only: [:setup, :update_my_tcd_details, :tcd_only]
+  skip_before_action :ensure_my_tcd_login_success!, only: [:setup, :update_my_tcd_details, :tcd_only, :sync_status]
   skip_before_action :ensure_is_tcd_email!, only: [:setup, :tcd_only]
 
   def setup
@@ -11,9 +11,9 @@ class UsersController < ApplicationController
     when "google"
       # google step
     when "my_tcd"
-      if current_user.my_tcd_login_success == false # Only if SET to false
-        flash[:error] ||= "Your MyTCD details didn't work last time, try re-entering them to continue."
-      end
+      # if current_user.my_tcd_login_success == false # Only if SET to false
+      #   flash[:error] ||= "Your MyTCD details didn't work last time, try re-entering them to continue."
+      # end
     when "customise"
       # customise
     when nil
@@ -72,6 +72,9 @@ class UsersController < ApplicationController
   end
 
   def sync_status
+    unless current_user.my_tcd_login_success?
+      return render json: {}
+    end
     que_job = current_user.ongoing_sync_job
     render json: { run_at: que_job && view_context.time_ago_in_words(que_job.run_at) }
   end

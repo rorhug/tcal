@@ -1,0 +1,35 @@
+<hr>
+<small>Bad news :(</small>
+<h3 class="text-red">Tcal is having a small <b>problem syncing</b> your calendar...</h3>
+
+<small>Good news :)</small>
+<h3 class="text-green"><b>You can quickly correct it!</b></h3>
+<hr>
+
+<% if @requires_password_change %>
+  <h2><b>Step 1</b></h2>
+  <p>
+    <b>MyTCD</b> wants you to <b>change your password</b>.
+    <a href="https://my.tcd.ie/urd/sits.urd/run/siw_lgn" target="_blank">Go there (my.tcd.ie)</a>, login, and change it.
+  </p>
+  <p>If you've <b>already done this recently</b>, skip to step 2.</p>
+  <h2><b>Step 2</b></h2>
+  <p>
+    All you need to do now is <b>login to Tcal</b> and <b>connect your MyTCD</b> account again.
+  </p>
+<% else %>
+  <p>
+    All you need to do is <b>login to Tcal</b> and <b>connect your MyTCD</b> account again.
+  </p>
+<% end %>
+
+<%= link_to "Login to Tcal Now", root_url(invitee_email: @user.email, utm_source: "email", utm_campaign: "mytcdfail"), class: "btn btn-primary", target: "_blank" %>
+<p class="align-center"><small>It'll only take a second!</small></p>
+<hr>
+
+<h3 class="small-caps">Why do I need to do this?</h3>
+<ul>
+  <li>Tcal gets timetable information from MyTCD.</li>
+  <li>When your MyTCD password changes, until you re-connect, Tcal can't sync your timetable.</li>
+  <li>Re-Connecting your MyTCD account means changes in modules times etc. will be reflected in Google Calendar, and hence your iPhone or Android calendar app.</li>
+</ul>

@@ -87,6 +87,7 @@ initializeFacebookSDK = function() {
       sync_status_interval = setInterval(function() {
         $.getJSON("/user/sync_status").done(function(response) {
           if (response.run_at) {
+            debugger;
             sync_run_at.html(response.run_at);
           } else {
             clearInterval(sync_status_interval);
