@@ -90,9 +90,16 @@ module MyTcd
       raise e # raise it again up to the controller or job runner
     end
 
-    def fetch_events
+    def fetch_events(force_dev: false) # returns { events: [GoogleCalEvent], status: :success, :no_records }
       log_line("fetch_events")
+
+      return { status: :success, events: [] } if Rails.env.development? && !force_dev
+
       page = get_term_event_list_page
+
+      if page.at_css("td").inner_html == "No records to show"
+        return { events: [], status: :no_records }
+      end
 
       log_line("begin_term_events_parsing")
       rows = page.css("table#ttb_timetableTable tbody tr");
@@ -113,7 +120,7 @@ module MyTcd
         parse_to_gcal_event(event_attributes, last_date)
       end
       log_line("finish_term_events_parsing")
-      gcal_events #.compact TODO blank event page at 1:30 in morning leaves this as [nil], crashes google cal sync not changing gcal events (rather than deleting them all)
+      { events: gcal_events, status: :success }
     end
 
     def parse_to_gcal_event(attrs, base_date)

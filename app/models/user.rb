@@ -186,11 +186,13 @@ class User < ApplicationRecord
     counts = {}
     sync_exception = nil
     begin
-      scraper = MyTcd::TimetableScraper.new(self)
-      # events_from_tcd = scraper.fetch_events
-      events_from_tcd = Rails.env.development? ? [] : scraper.fetch_events
+      events_from_tcd = u.ts.fetch_events
 
-      counts = gcs.sync_events!(events_from_tcd)
+      counts = if events_from_tcd[:status] == :success
+        gcs.sync_events!(events_from_tcd[:events])
+      else
+        { events_created: 0, events_deleted: 0 }
+      end
     rescue Exception => e
       sync_exception = e
       Raven.capture_exception(e, user: for_raven)
