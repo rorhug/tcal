@@ -106,6 +106,14 @@ This finally happened.
 Wish I had this back in first year!
       }
     },
+    {
+      enabled: true,
+      name: "Bill",
+      course: "1st year MSISS",
+      message: %Q{
+No more bloody screenshots...
+      }
+    },
   ]
 
   STANDARD_LIST = LIST.select { |t| t[:enabled] == true }.freeze
