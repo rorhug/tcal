@@ -186,7 +186,7 @@ class User < ApplicationRecord
     counts = {}
     sync_exception = nil
     begin
-      events_from_tcd = u.ts.fetch_events
+      events_from_tcd = ts.fetch_events
 
       counts = if events_from_tcd[:status] == :success
         gcs.sync_events!(events_from_tcd[:events])
