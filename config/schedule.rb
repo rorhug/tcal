@@ -7,8 +7,8 @@
 #
 set :output, "/home/rh/whenever_cron.log"
 
-# every 1.minutes, roles: [:app] do
-#   runner("User.enqueue_auto_syncs")
-# end
+every 1.minutes, roles: [:app] do
+  runner("User.enqueue_auto_syncs")
+end
 
 # Learn more: http://github.com/javan/whenever
