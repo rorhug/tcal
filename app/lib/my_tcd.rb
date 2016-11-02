@@ -140,31 +140,37 @@ module MyTcd
       event_summary = [module_name, activity, module_code].select(&:present?).join(" | ")
       event_description = {
         "Lecturer"    => lecturer,
-        "Module Code" => module_code,
         "Class Size"  => attrs["Size"].first,
         "Group"       => attrs["Group"].first,
         "Location"    => event_location,
-        # "Module Name" => module_name, # so you can see fb link on ios cal
-        "Activity"    => activity
       }.reduce("") do |desciption, (attr_name, val)|
         val.present? ? desciption + "#{attr_name}: #{val}\n" : desciption
       end + %Q{
 Like our page https://www.facebook.com/TcalDotMe
 Timetable kept in sync using https://www.tcal.me
-}
+
+} +   {
+        "Module Code" => module_code,
+        "Module Name" => module_name, # so you can see fb link on ios cal
+        "Activity"    => activity
+      }.reduce("") do |desciption, (attr_name, val)|
+        val.present? ? desciption + "#{attr_name}: #{val}\n" : desciption
+      end
 
       event = Google::Apis::CalendarV3::Event.new({
         summary: event_summary,
         location: event_location,
         description: event_description,
-        start: {
-          date_time: start_time.iso8601,
-          time_zone: GoogleCalendarSync::TIMEZONE_STRING
-        },
-        end: {
-          date_time: end_time.iso8601,
-          time_zone: GoogleCalendarSync::TIMEZONE_STRING
-        },
+        start: Google::Apis::CalendarV3::EventDateTime.new(date_time: start_time.to_datetime, time_zone: "Europe/Dublin"),
+        end:   Google::Apis::CalendarV3::EventDateTime.new(date_time: end_time.to_datetime,   time_zone: "Europe/Dublin"),
+        # start: {
+        #   date_time: start_time.iso8601,
+        #   time_zone: GoogleCalendarSync::TIMEZONE_STRING
+        # },
+        # end: {
+        #   date_time: end_time.iso8601,
+        #   time_zone: GoogleCalendarSync::TIMEZONE_STRING
+        # },
         reminders: {
           use_default: false
         }
