@@ -114,6 +114,14 @@ Wish I had this back in first year!
 No more bloody screenshots...
       }
     },
+    {
+      enabled: true,
+      name: "Ally",
+      course: "2nd year Law",
+      message: %Q{
+It's my saviour
+      }
+    },
   ]
 
   STANDARD_LIST = LIST.select { |t| t[:enabled] == true }.freeze
