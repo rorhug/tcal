@@ -63,7 +63,7 @@ class GoogleCalendarSync
   end
 
   def fetch_all_gcal_events
-    gcal_events = []
+    gcal_events = [] # TODO confirm this stays the same throughout scope of .times loop
     next_page = nil
     5.times do
       response = cal_service.list_events(
