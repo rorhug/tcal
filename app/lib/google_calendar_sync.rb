@@ -103,9 +103,9 @@ class GoogleCalendarSync
 
   def events_match?(e1, e2)
     e1.start.date_time.present? && e1.start.date_time == e2.start.date_time &&
-    e2.start.date_time.present? && e1.end.date_time   == e2.end.date_time   &&
+    e1.end.date_time.present?   && e1.end.date_time   == e2.end.date_time   &&
     e1.description == e2.description &&
-    !e1.recurrence.try(:any?)
+    !e1.recurring_event_id
   end
 
   def unique_events_array(events)
@@ -120,28 +120,30 @@ class GoogleCalendarSync
     end
 
     all_gcal_events = fetch_all_gcal_events
-    ids_to_delete = []
+    events_to_delete = []
 
     all_gcal_events.each do |gcal_event|
       mapping = event_mappings.find { |mapping| events_match?(mapping[:source_event], gcal_event) }
       if mapping
         if mapping[:gcal_event] # if there's already gcal event added for that source_event
-          ids_to_delete.push(gcal_event.id)
+          events_to_delete.push(gcal_event)
         else
           mapping[:gcal_event] = gcal_event # the source event is found, no gcal event yet though
         end
       else
-        ids_to_delete.push(gcal_event.id) # that source event doesn't exist at all
+        events_to_delete.push(gcal_event) # that source event doesn't exist at all
       end
     end
 
-    delete_remote_event_ids(ids_to_delete.uniq) if ids_to_delete.any?
+    event_ids_to_delete = events_to_delete.compact.map { |e| e.recurring_event_id || e.id }.uniq
+    delete_remote_event_ids(event_ids_to_delete) if event_ids_to_delete.any?
+
     events_to_create = event_mappings.reject { |mapping| mapping[:gcal_event] }.map { |mapping| mapping[:source_event] }
     create_events(events_to_create) if events_to_create.any?
 
     {
       events_created: events_to_create.size,
-      events_deleted: ids_to_delete.size
+      events_deleted: event_ids_to_delete.size
     }
   end
 
