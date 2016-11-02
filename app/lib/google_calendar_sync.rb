@@ -69,9 +69,8 @@ class GoogleCalendarSync
       response = cal_service.list_events(
         calendar_id,
         max_results: 250,
-        # single_events: true,
-        single_events: false,
-        # order_by: 'startTime',
+        single_events: true,
+        order_by: 'startTime',
         time_min: Time.now.beginning_of_week.iso8601
         # time_max needs to be set to end of semester
       )
