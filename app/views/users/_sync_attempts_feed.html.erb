@@ -20,7 +20,7 @@
 <% end %>
 
 <% if @attempts.any? %>
-  <h2 class="ui sub header">Recent Attempts</h2>
+  <h2 class="ui sub header"><%= @que_job ? "Past Attempts" : "Recent Attempts" %></h2>
   <div class="ui divided list">
     <% @attempts.each do |attempt| %>
       <div class="item">
