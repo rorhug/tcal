@@ -78,7 +78,7 @@ $text-colors: blue, green, orange, pink, purple, red, teal, yellow, black, grey,
 }
 
 .label .icon:last-child, .icon.no-right-margin {
-  margin-right: 0;
+  margin-right: 0 !important;
 }
 
 .site-header {
