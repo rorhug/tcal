@@ -9,8 +9,8 @@
 </div>
 <% if current_user.my_tcd_login_success == false && !flash[:error] %>
   <div class="ui attached error message">
-    <div class="header">Error</div>
-    Your MyTCD details didn't work last time, try re-entering them to continue.
+    <div class="header">Hmmm...</div>
+    Your MyTCD login didn't work last time. Re-connect now to get your timetable in sync:
   </div>
 <% end %>
 <%= form_for current_user, html: { class: "ui equal width bottom attached segment form" }, url: user_setup_step_path(step: "my_tcd"), method: :patch do |f| %>
