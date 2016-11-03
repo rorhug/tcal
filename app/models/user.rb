@@ -186,21 +186,21 @@ class User < ApplicationRecord
     counts = {}
     sync_exception = nil
     begin
-      counts = if Rails.env.production? || force_dev
+      scrape_result = if Rails.env.production? || force_dev
         scraper = MyTcd::TimetableScraper.new(self, silence_my_tcd_fail_email: triggered_manually)
-        scrape_result = scraper.fetch_events
+        scraper.fetch_events
+      else
+        { events: [], status: :success }
+      end
 
-        if scrape_result[:status] == :success && scrape_result[:events].size > 0
-          gcs.sync_events!(scrape_result[:events])
-        else
-          { events_created: 0, events_deleted: 0 }
-        end
+      counts = if scrape_result[:status] == :success
+        gcs.sync_events!(scrape_result[:events])
       else
         { events_created: 0, events_deleted: 0 }
       end
     rescue Exception => sync_exception
       unless sync_exception.is_a?(MyTcd::MyTcdError) # already captured to sentry by my_tcd.rb
-        Raven.capture_exception(e, user: for_raven)
+        Raven.capture_exception(sync_exception, user: for_raven)
       end
     ensure
       sync_attempts.create!({
