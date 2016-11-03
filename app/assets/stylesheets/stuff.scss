@@ -77,7 +77,7 @@ $text-colors: blue, green, orange, pink, purple, red, teal, yellow, black, grey,
   vertical-align: top;
 }
 
-.label .icon:last-child {
+.label .icon:last-child, .icon.no-right-margin {
   margin-right: 0;
 }
 
