@@ -196,7 +196,7 @@ class User < ApplicationRecord
           { events_created: 0, events_deleted: 0 }
         end
       else
-        { status: :success, events: [] }
+        { events_created: 0, events_deleted: 0 }
       end
     rescue Exception => sync_exception
       unless sync_exception.is_a?(MyTcd::MyTcdError) # already captured to sentry by my_tcd.rb
