@@ -1,8 +1,8 @@
 class UsersController < ApplicationController
   # SETUP_STEPS = %w(my_tcd google)
 
-  skip_before_action :ensure_my_tcd_login_success!, only: [:setup, :update_my_tcd_details, :tcd_only, :sync_status]
-  skip_before_action :ensure_is_tcd_email!, only: [:setup, :tcd_only]
+  skip_before_action :ensure_my_tcd_login_success!, only: [:setup, :update_my_tcd_details, :sync_status]
+  skip_before_action :ensure_is_tcd_email!, only: [:setup]
 
   def setup
     @step = params[:step]
@@ -21,10 +21,6 @@ class UsersController < ApplicationController
     else
       raise ActionController::RoutingError.new('Not Found')
     end
-  end
-
-  def tcd_only
-    redirect_to root_path if current_user.tcd_email?
   end
 
   def update_sync_settings

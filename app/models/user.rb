@@ -15,7 +15,7 @@ class User < ApplicationRecord
 
   attr_encrypted :my_tcd_password, key: Rails.application.secrets.encrypted_my_tcd_password_key
 
-  before_save :ensure_no_my_tcd_changes!
+  before_save :tcd_login_details_changed!
 
   has_many :sync_attempts
   has_many :invitees, class_name: "User", foreign_key: :invited_by_user_id
@@ -23,9 +23,16 @@ class User < ApplicationRecord
 
   validates :email, format: /@/
 
-  def ensure_no_my_tcd_changes!
-    # if login details change, invalidate the success check
-    self.my_tcd_login_success = nil if (changed & MY_TCD_LOGIN_COLUMNS).any?
+  def tcd_login_details_changed!
+    if (changed & MY_TCD_LOGIN_COLUMNS).any?
+      # if login details change, invalidate the success check
+      self.my_tcd_login_success = nil
+
+      # strip the username and remove 
+      if my_tcd_username.is_a?(String)
+        self.my_tcd_username = my_tcd_username.strip.gsub(/@tcd\.ie\z/, "")
+      end
+    end
   end
 
   def set_joined_at_if_invited!
