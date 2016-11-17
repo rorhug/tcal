@@ -28,7 +28,7 @@ class User < ApplicationRecord
       # if login details change, invalidate the success check
       self.my_tcd_login_success = nil
 
-      # strip the username and remove 
+      # strip the username and remove
       if my_tcd_username.is_a?(String)
         self.my_tcd_username = my_tcd_username.strip.gsub(/@tcd\.ie\z/, "")
       end

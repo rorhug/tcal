@@ -2,13 +2,13 @@
   You've been invited to use Tcal!
 </b></p>
 
-<%= link_to "Setup Tcal Now", root_url(invitee_email: @user.email, utm_source: "email", utm_campaign: "invite1", utm_content: "top1"), class: "btn btn-primary", target: "_blank" %>
+<%= link_to "Setup Tcal Now", @call_to_action[:url], class: "btn btn-primary", target: "_blank" %>
 
 <hr>
 <%= render partial: "info/what_is_tcal" %>
 
 <hr>
-<%= link_to "Use Tcal Now", root_url(invitee_email: @user.email, utm_source: "email", utm_campaign: "invite1", utm_content: "bottom1"), class: "btn btn-primary", target: "_blank" %>
+<%= link_to "Use Tcal Now", @call_to_action[:url], class: "btn btn-primary", target: "_blank" %>
 <p class="align-center">
   <br>
   <em>It's a quick, two step setup!</em>

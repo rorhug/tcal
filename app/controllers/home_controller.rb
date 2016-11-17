@@ -40,7 +40,7 @@ class HomeController < ApplicationController
             flash[:success] = "#{@invitee.you_were_invited_message}. Press Login to get started!"
             flash[:error] = nil
           else
-            flash[:error] = "Haha, nice try :)"
+            flash[:error] = "Haha, nice try :) Please wait until you receive an invite email!"
             flash[:success] = nil
           end
         else
