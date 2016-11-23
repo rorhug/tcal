@@ -1,3 +1,5 @@
+require Rails.root.join("config/tcal_constants.rb")
+
 class User < ApplicationRecord
   # user https://github.com/attr-encrypted/attr_encrypted for tcd details
 
@@ -7,11 +9,7 @@ class User < ApplicationRecord
   ).freeze
   MAX_INVITES = 3.freeze
   SAMPLE_EMAILS = ["trumpd4@tcd.ie", "clintonh@tcd.ie"].freeze
-  AUTO_SYNC_SETTINGS = {
-    user_interval: 12.hours, ### vv change AUTO_SYNC_IN_WORDS too!
-    cron_interval: 1.minutes
-  }.freeze
-  AUTO_SYNC_IN_WORDS = "12 hours".freeze
+  AUTO_SYNC_IN_WORDS = "#{ AUTO_SYNC_SETTINGS[:user_interval] / 1.hour } hours".freeze
 
   attr_encrypted :my_tcd_password, key: Rails.application.secrets.encrypted_my_tcd_password_key
 
