@@ -87,27 +87,30 @@ class User < ApplicationRecord
     slice(*%w(id email google_name my_tcd_username my_tcd_login_success))
   end
 
-  def intercom_attributes
-    {
+  def intercom_attributes(for_js: false)
+    attrs = {
       email: email,
       user_id: id,
       name: google_name,
-      created_at: created_at.to_i,
-      custom_attributes: {
-        my_tcd_username: my_tcd_username,
-        my_tcd_login_success: my_tcd_login_success,
-        joined_at: joined_at.to_i,
-        google_uid: google_uid,
-        invited_by_user_id: invited_by_user_id,
-        auto_sync_enabled: auto_sync_enabled,
-        is_admin: is_admin,
-        invite_email_at: invite_email_at
-      }
+      created_at: created_at.to_i
     }
+
+    attrs[for_js ? :custom_data : :custom_attributes] = {
+      my_tcd_username: my_tcd_username,
+      my_tcd_login_success: my_tcd_login_success,
+      joined_at: joined_at.to_i,
+      google_uid: google_uid,
+      invited_by_user_id: invited_by_user_id,
+      auto_sync_enabled: auto_sync_enabled,
+      is_admin: is_admin,
+      invite_email_at: invite_email_at
+    }
+
+    attrs
   end
 
   def intercom_settings
-    intercom_attributes.merge({
+    intercom_attributes(for_js: true).merge({
       app_id: Rails.application.secrets.intercom_app_id,
       custom_launcher_selector: "#intercom_help"
     })
