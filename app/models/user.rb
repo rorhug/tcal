@@ -87,11 +87,22 @@ class User < ApplicationRecord
     slice(*%w(id email google_name my_tcd_username my_tcd_login_success))
   end
 
-  def intercom_settings
-    slice(*%w(email my_tcd_username my_tcd_login_success)).merge({
+  def intercom_attributes
+    {
+      email: email,
       user_id: id,
       name: google_name,
       created_at: created_at.to_i,
+      custom_attributes: {
+        my_tcd_username: my_tcd_username,
+        my_tcd_login_success: my_tcd_login_success,
+        joined_at: joined_at.to_i
+      }
+    }
+  end
+
+  def intercom_settings
+    intercom_attributes.merge({
       app_id: Rails.application.secrets.intercom_app_id,
       custom_launcher_selector: "#intercom_help"
     })
