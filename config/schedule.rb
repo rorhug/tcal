@@ -7,7 +7,7 @@
 #
 set :output, "/home/rh/whenever_cron.log"
 
-require "./config/tcal_constants.rb"
+require "./config/initializers/tcal_constants.rb"
 
 every AUTO_SYNC_SETTINGS[:cron_interval], roles: [:app] do
   runner("User.enqueue_auto_syncs")

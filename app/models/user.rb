@@ -1,5 +1,3 @@
-require Rails.root.join("config/tcal_constants.rb")
-
 class User < ApplicationRecord
   # user https://github.com/attr-encrypted/attr_encrypted for tcd details
 

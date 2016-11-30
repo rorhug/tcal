@@ -1,5 +1,3 @@
-require Rails.root.join("config/tcal_constants.rb")
-
 class IntercomSync
   def initialize
     @client = Intercom::Client.new(token: Rails.application.secrets.intercom_pat)
