@@ -3,4 +3,4 @@ AUTO_SYNC_SETTINGS = {
   cron_interval: 1.minutes
 }.freeze
 
-INTERCOM_SYNC_INTERVAL = 10.minutes
+INTERCOM_SYNC_INTERVAL = 5.minutes

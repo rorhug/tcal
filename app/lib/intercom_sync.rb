@@ -6,9 +6,14 @@ class IntercomSync
   end
 
   def sync_users(user_q)
-    user_q.in_groups_of(100, false) do |user_batch|
-      @client.users.submit_bulk_job(create_items: user_batch.to_a.map(&:intercom_attributes))
+    count_synced = 0
+    user_q.in_groups_of(100, false) do |user_batch_q|
+      user_array = user_batch_q.to_a
+      @client.users.submit_bulk_job(create_items: user_array.map(&:intercom_attributes))
+      count_synced += user_array.size
     end
+    Rails.logger.info("intercom_sync_log users_sycned=#{count_synced}")
+    count_synced
   end
 
   def sync_recently_changed_users
