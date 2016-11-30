@@ -172,8 +172,8 @@ class User < ApplicationRecord
 
   def self.enqueue_auto_syncs
     # (3*60*60)/(5*60)
-    user_interval = User::AUTO_SYNC_SETTINGS[:user_interval]
-    cron_interval = User::AUTO_SYNC_SETTINGS[:cron_interval]
+    user_interval = AUTO_SYNC_SETTINGS[:user_interval]
+    cron_interval = AUTO_SYNC_SETTINGS[:cron_interval]
     denominator = user_interval / cron_interval
     numerator = (Time.now.to_i % user_interval) / cron_interval
 
