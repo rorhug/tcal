@@ -1,6 +1,8 @@
 require 'google/apis/calendar_v3'
 
 module MyTcd
+  LOGIN_PAGE_URL = "https://my.tcd.ie/urd/sits.urd/run/siw_lgn"
+
   class TimetableScraper
     HTML_EVENT_ATTRIBUTES = {
       "Date" => "",
@@ -40,9 +42,9 @@ module MyTcd
     def get_my_tcd_home
       send_to_sentry = false
       log_line("get_my_tcd_home")
-      login_page = @agent.get("https://my.tcd.ie/urd/sits.urd/run/siw_lgn")
+      login_page = @agent.get(LOGIN_PAGE_URL)
 
-      (1..4).reduce(login_page) do |page, _| # try and get to the home page in 4 or less links
+      (1..6).reduce(login_page) do |page, _| # try and get to the home page in 4 or less links
 
         # Home Success :)
         if page.link_with(text: "My Timetable").present?
@@ -74,6 +76,11 @@ module MyTcd
         elsif page.title == "Log-in successful" && (here_link = page.link_with(text: "here"))
           next here_link.click
 
+        # Automatic Logout as was logged in on another session
+        elsif page.at_css("span.sitsmessagetitle").try(:text).try(:include?, "Automatic Logout")
+          # There's a 'here' link on this page which goes to login page anyway... (random/u565.html)
+          next @agent.get(LOGIN_PAGE_URL)
+
         # Unknown flow :/
         else
           send_to_sentry = true
@@ -101,17 +108,17 @@ module MyTcd
       raise e # raise it again up to the controller or job runner
     end
 
-    def fetch_events # returns { events: [GoogleCalEvent, ...], status: (:success, :no_records) }
+    def fetch_events(event_list_page: get_term_event_list_page) # returns { events: [GoogleCalEvent, ...], status: (:success, :no_records) }
       log_line("fetch_events")
 
-      page = get_term_event_list_page
+      # page = get_term_event_list_page
 
-      if page.at_css("td").inner_html == "No records to show"
+      if event_list_page.at_css("td").inner_html == "No records to show"
         return { events: [], status: :no_records }
       end
 
       log_line("begin_term_events_parsing")
-      rows = page.css("table#ttb_timetableTable tbody tr");
+      rows = event_list_page.css("table#ttb_timetableTable tbody tr");
 
       last_date = nil
       gcal_events = rows.map do |row|
@@ -211,7 +218,7 @@ Timetable kept in sync using https://www.tcal.me
       )
     end
 
-    def get_term_event_list_page
+    def get_term_event_list_page(t: Time.zone.now.freeze)
       timetable_page = get_default_timetable_page
       log_line("get_term_event_list_page")
       form = timetable_page.form_with(action: "SIW_XTTB_1")
@@ -219,7 +226,7 @@ Timetable kept in sync using https://www.tcal.me
       # zone is set to dublin in the application.rb
       # lets hope that daylight saving switches on my.tcd.ie server
       # at the same time on this
-      t = Time.zone.now.freeze
+      # t = Time.zone.now.freeze now in argument
 
       is_michaelmas = (1..8).exclude?(t.month)
       academic_year = is_michaelmas ? t.year : t.year - 1
