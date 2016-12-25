@@ -1,7 +1,7 @@
 require 'google/apis/calendar_v3'
 
 module MyTcd
-  WEEKS_TO_SYNC = 50
+  # WEEKS_TO_SYNC = 50
   LOGIN_PAGE_URL = "https://my.tcd.ie/urd/sits.urd/run/siw_lgn"
 
   class TimetableScraper
@@ -236,8 +236,8 @@ Timetable kept in sync using https://www.tcal.me
         "P01" => "", #from_date.strftime("%d/%b/%Y"),
         "P02" => "", #to_date.strftime("%d/%b/%Y"),
         "P03" => "#{academic_year}/#{(academic_year + 1).to_s[2..3]}",
-        "P04" => "1",
-        "P05" => WEEKS_TO_SYNC,
+        "P04" => "15",
+        "P05" => "40",
         "P06" => "T",
         "P07" => "TOP",
         "P08" => form.field_with(name: "INSTANCE_NUMBER.DUMMY.MENSYS.1").value,
