@@ -215,7 +215,7 @@ class User < ApplicationRecord
         { events: [], status: :success }
       end
 
-      counts = if scrape_result[:status] == :success
+      counts = if scrape_result[:status] == :success && scrape_result[:events].any?
         gcs.sync_events!(scrape_result[:events])
       else
         { events_created: 0, events_deleted: 0 }

@@ -4,4 +4,8 @@ class SyncAttempt < ApplicationRecord
   def successful?
     !error_message?
   end
+
+  def duration
+    finished_at - started_at
+  end
 end

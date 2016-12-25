@@ -62,7 +62,7 @@ class GoogleCalendarSync
     return @calendar_id = calendar.id
   end
 
-  def fetch_all_gcal_events
+  def fetch_all_gcal_events(time_min, time_max)
     gcal_events = [] # TODO confirm this stays the same throughout scope of .times loop
     next_page = nil
     5.times do
@@ -71,7 +71,8 @@ class GoogleCalendarSync
         max_results: 250,
         single_events: true,
         order_by: 'startTime',
-        time_min: Time.now.beginning_of_week.iso8601
+        time_min: time_min.iso8601,
+        time_max: time_max.iso8601
         # time_max needs to be set to end of semester
       )
       gcal_events += response.items
@@ -118,7 +119,10 @@ class GoogleCalendarSync
       { source_event: source_event, gcal_event: nil }
     end
 
-    all_gcal_events = fetch_all_gcal_events
+    all_gcal_events = fetch_all_gcal_events(
+      source_event_list.first.start.date_time.yesterday,
+      source_event_list.last.start.date_time.tomorrow
+    )
     events_to_delete = []
 
     all_gcal_events.each do |gcal_event|

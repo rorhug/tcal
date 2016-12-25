@@ -1,6 +1,7 @@
 require 'google/apis/calendar_v3'
 
 module MyTcd
+  WEEKS_TO_SYNC = 50
   LOGIN_PAGE_URL = "https://my.tcd.ie/urd/sits.urd/run/siw_lgn"
 
   class TimetableScraper
@@ -218,29 +219,25 @@ Timetable kept in sync using https://www.tcal.me
       )
     end
 
-    def get_term_event_list_page(t: Time.zone.now.freeze)
+    def get_term_event_list_page
       timetable_page = get_default_timetable_page
       log_line("get_term_event_list_page")
       form = timetable_page.form_with(action: "SIW_XTTB_1")
 
+      t = Time.zone.now.freeze
       # zone is set to dublin in the application.rb
       # lets hope that daylight saving switches on my.tcd.ie server
       # at the same time on this
-      # t = Time.zone.now.freeze now in argument
 
       is_michaelmas = (1..8).exclude?(t.month)
       academic_year = is_michaelmas ? t.year : t.year - 1
 
-      # only get events from start of current week
-      from_date = t.beginning_of_week.strftime("%d/%b/%Y")
-      to_date = is_michaelmas ? "31/Dec/#{t.year}" : "31/Aug/#{t.year}"
-
       update_timetable_form = {
-        "P01" => from_date,
-        "P02" => to_date,
+        "P01" => "", #from_date.strftime("%d/%b/%Y"),
+        "P02" => "", #to_date.strftime("%d/%b/%Y"),
         "P03" => "#{academic_year}/#{(academic_year + 1).to_s[2..3]}",
-        "P04" => "",
-        "P05" => "",
+        "P04" => "1",
+        "P05" => WEEKS_TO_SYNC,
         "P06" => "T",
         "P07" => "TOP",
         "P08" => form.field_with(name: "INSTANCE_NUMBER.DUMMY.MENSYS.1").value,
