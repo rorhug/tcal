@@ -170,6 +170,15 @@ class User < ApplicationRecord
     end
   end
 
+  def self.ready_for_sync
+    where(
+      auto_sync_enabled: true,
+      my_tcd_login_success: true,
+    ).where.not(
+      joined_at: nil
+    )
+  end
+
   def self.enqueue_auto_syncs
     # (3*60*60)/(5*60)
     user_interval = AUTO_SYNC_SETTINGS[:user_interval]
@@ -177,12 +186,7 @@ class User < ApplicationRecord
     denominator = user_interval / cron_interval
     numerator = (Time.now.to_i % user_interval) / cron_interval
 
-    users = User.where(
-      auto_sync_enabled: true,
-      my_tcd_login_success: true,
-    ).where.not(
-      joined_at: nil
-    ).where("MOD(id, ?) = ?", denominator, numerator).to_a
+    users = ready_for_sync.where("MOD(id, ?) = ?", denominator, numerator).to_a
 
     return if users.empty?
 
