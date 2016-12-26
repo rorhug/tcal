@@ -47,7 +47,7 @@ class GoogleCalendarSync
   end
 
   def calendar_id
-    return @calendar_id if @calendar_id
+    return @calendar_id if defined?(@calendar_id)
 
     # find it in the users list of calendars
     calendar = cal_service.list_calendar_lists.items.find { |cal| cal.summary == CALENDAR_SUMMARY }
@@ -60,6 +60,12 @@ class GoogleCalendarSync
     )
     calendar = cal_service.insert_calendar(calendar)
     return @calendar_id = calendar.id
+  end
+
+  def delete_calendar
+    if calendar_id
+      cal_service.delete_calendar(calendar_id)
+    end
   end
 
   def fetch_all_gcal_events(time_min, time_max)
