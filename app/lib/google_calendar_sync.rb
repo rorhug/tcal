@@ -121,13 +121,15 @@ class GoogleCalendarSync
   end
 
   def sync_events!(source_event_list)
-    event_mappings = unique_events_array(source_event_list).map do |source_event|
+    event_mappings = unique_events_array(source_event_list).sort do |a, b|
+      a.start.date_time <=> b.start.date_time # ...sorting by start time
+    end.map do |source_event|
       { source_event: source_event, gcal_event: nil }
     end
 
-    all_gcal_events = fetch_all_gcal_events(
-      source_event_list.first.start.date_time.yesterday,
-      source_event_list.last.start.date_time.tomorrow
+    all_gcal_events = fetch_all_gcal_events( # sort required for correct first and last
+      event_mappings.first[:source_event].start.date_time.yesterday,
+      event_mappings.last[:source_event].start.date_time.tomorrow
     )
     events_to_delete = []
 
