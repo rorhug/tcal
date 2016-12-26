@@ -95,7 +95,7 @@ class GoogleCalendarSync
       single_events: true,
       order_by: 'startTime',
       time_min: (Time.now - 55.minutes).iso8601,
-      time_max: 3.weeks.from_now.iso8601
+      time_max: 1.month.from_now.iso8601
     ).items
 
     events_by_date = events.each_with_object({}) do |event, dates|
