@@ -118,6 +118,19 @@ initializeFacebookSDK = function() {
   document.addEventListener("turbolinks:load", function() {
     init_sync_status_checker();
     load_upcoming_events();
+
+    $('.ui.search')
+      .search({
+        apiSettings: {
+          url: '/admin/search_users?q={query}'
+        },
+        fields: {
+          results : 'users',
+          title   : 'email',
+          url     : 'email'
+        },
+        minCharacters : 1
+      });
   });
 })();
 

@@ -22,7 +22,7 @@
         Careful now.
       </div>
       <% uninvited_count = User.uninvited.count %>
-      <div class="ui segment bottom attached">
+      <div class="ui segment attached">
         <%= link_to uninvited_admin_path, class: "ui fluid labeled button" do %>
           <div class="ui <%= "basic" if uninvited_count == 0 %> fluid blue button">
             <i class="send outline icon"></i> Uninvited
@@ -31,6 +31,14 @@
             <%= uninvited_count %>
           </div>
         <% end %>
+      </div>
+      <div class="ui segment bottom attached">
+        <div class="ui search">
+          <div class="ui left icon input">
+            <input class="prompt" type="text" placeholder="Search GitHub">
+            <i class="github icon"></i>
+          </div>
+        </div>
       </div>
     <% end %>
 

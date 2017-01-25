@@ -37,5 +37,6 @@ Rails.application.routes.draw do
 
   resource :admin, controller: :admin, only: [] do
     get :uninvited
+    get :search_users
   end
 end
