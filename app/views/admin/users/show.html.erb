@@ -6,13 +6,13 @@
   <div class="eight wide column mobile only"><div class="ui divider"></div></div>
   <div class="eight wide column">
     <%= render partial: "users/google_account_card" %>
+    <%= link_to "JSON", admin_user_path(@user, format: :json) %>
     <% if @user.joined_at? %>
       <div class="ui horizontal divider">Upcoming Events</div>
       <div class="upcoming_events" data-partial-path="<%= upcoming_events_user_path(id: @user_id_to_link) %>">
         <%# LOADED ASYNC render partial: "upcoming_events" %>
       </div>
       <pre><%= @user.gcs.calendar_id %></pre>
-      <div class="ui divider"></div>
     <% end %>
   </div>
 </div>
