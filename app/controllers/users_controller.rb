@@ -16,7 +16,7 @@ class UsersController < ApplicationController
     else
       @user.enqueue_sync
     end
-    redirect_to root_path
+    redirect_to @user == current_user ? root_path : admin_user_path(@user)
   end
 
   def sync_status

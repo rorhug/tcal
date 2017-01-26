@@ -15,6 +15,7 @@
 <div class="ui segment <%= "top " if @user.ongoing_sync_job %>attached">
   <%= render partial: "users/sync_attempts_feed" %>
 </div>
+
 <%= link_to setup_step_path(step: "customise"), class: "ui bottom attached button labeled icon basic", tabindex: 0 do %>
   <i class="edit icon"></i>
   Setup
