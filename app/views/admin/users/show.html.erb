@@ -2,11 +2,14 @@
   <div class="eight wide column">
     <%= render partial: "admin/admin_panel" if current_user.is_admin? %>
 
-    <div class="ui horizontal divider">Upcoming Events</div>
-    <div class="upcoming_events" data-partial-path="<%= upcoming_events_user_path(id: @user_id_to_link) %>">
-      <%# LOADED ASYNC render partial: "upcoming_events" %>
-    </div>
-    <div class="ui divider"></div>
+    <% if @user.joined_at? %>
+      <div class="ui horizontal divider">Upcoming Events</div>
+      <div class="upcoming_events" data-partial-path="<%= upcoming_events_user_path(id: @user_id_to_link) %>">
+        <%# LOADED ASYNC render partial: "upcoming_events" %>
+      </div>
+      <pre><%= @user.gcs.calendar_id %></pre>
+      <div class="ui divider"></div>
+    <% end %>
     <%= render partial: "users/google_account_card" %>
   </div>
   <div class="eight wide column mobile only"><div class="ui divider"></div></div>
