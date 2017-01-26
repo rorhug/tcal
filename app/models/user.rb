@@ -44,7 +44,11 @@ class User < ApplicationRecord
   end
 
   def image_url
-    auth_hash["info"]["image"] if auth_hash.any?
+    if auth_hash.any?
+      auth_hash["info"]["image"]
+    else
+      "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg"
+    end
   end
 
   def google_name
@@ -111,6 +115,12 @@ class User < ApplicationRecord
     intercom_attributes(for_js: true).merge({
       app_id: Rails.application.secrets.intercom_app_id,
       custom_launcher_selector: "#intercom_help"
+    })
+  end
+
+  def for_front_end
+    slice(*%w(id email google_name image_url)).merge({
+      admin_path: "/admin/users/#{id}"
     })
   end
 

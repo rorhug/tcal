@@ -1,6 +1,6 @@
 <h3 class="ui dividing header">Auto Sync</h3>
 
-<%= form_for user, html: { class: "" }, url: update_sync_settings_user_path do |f| %>
+<%= form_for user, html: { class: "" }, url: update_sync_settings_user_path(id: @user_id_to_link) do |f| %>
   <%= f.hidden_field :auto_sync_enabled, value: !user.auto_sync_enabled %>
   <div class="ui labeled massive fluid button">
     <% if user.auto_sync_enabled? %>

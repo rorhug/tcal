@@ -1,0 +1,24 @@
+<% unless @user.ongoing_sync_job %>
+  <% if @sync_block_reason %>
+    <em><%= @sync_block_reason %></em>
+  <% end %>
+
+  <%= link_to manual_sync_user_path(id: @user_id_to_link),
+    method: :post,
+    class: "ui large top attached labeled icon button spinner-on-click #{"disabled" if @sync_block_reason}",
+    data: { no_turbolink: true },
+    disabled: @sync_block_reason do %>
+    <i class="refresh icon"></i> Sync now
+  <% end %>
+<% end %>
+
+<div class="ui segment <%= "top " if @user.ongoing_sync_job %>attached">
+  <%= render partial: "users/sync_attempts_feed" %>
+</div>
+<%= link_to setup_step_path(step: "customise"), class: "ui bottom attached button labeled icon basic", tabindex: 0 do %>
+  <i class="edit icon"></i>
+  Setup
+  <% unless @user.auto_sync_enabled %>
+    <small class="text red">(Auto Sync disabled!)</small>
+  <% end %>
+<% end %>

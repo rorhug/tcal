@@ -5,7 +5,7 @@
 <% end %>
 
 <div class="ui three ordered steps">
-  <%= link_to user_setup_step_path(step: "google"),
+  <%= link_to setup_step_path(step: "google"),
     class: "#{"completed" if current_user} #{"active" if @step == "google"} step" do %>
     <div class="content">
       <div class="title"><%= current_user ? current_user.display_name : "Google" %></div>
@@ -13,7 +13,7 @@
     </div>
   <% end %>
 
-  <%= link_to user_setup_step_path(step: "my_tcd"),
+  <%= link_to setup_step_path(step: "my_tcd"),
     class: "#{"completed" if user_setup_complete?} #{"active" if @step == "my_tcd"} #{"disabled" unless current_user} step" do %>
     <div class="content">
       <div class="title">My TCD</div>
@@ -22,7 +22,7 @@
   <% end %>
 
   <% if user_setup_complete? %>
-    <%= link_to user_setup_step_path(step: "customise"),
+    <%= link_to setup_step_path(step: "customise"),
       class: "#{"active" if @step == "customise"} step" do %>
       <div class="content">
         <div class="title">Customise</div>
@@ -33,7 +33,7 @@
 </div>
 
 <% if @step.present? %>
-  <%= render partial: "#{@step}_step", locals: { user: current_user }  %>
+  <%= render partial: "setup/#{@step}_step", locals: { user: current_user }  %>
 <% else %>
   <em class="text grey">Select a setup step...</em>
 <% end %>

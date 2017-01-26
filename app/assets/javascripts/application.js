@@ -85,7 +85,7 @@ initializeFacebookSDK = function() {
     if (sync_run_at[0]) {
       clearInterval(sync_status_interval);
       sync_status_interval = setInterval(function() {
-        $.getJSON("/user/sync_status").done(function(response) {
+        $.getJSON("/users/me/sync_status").done(function(response) {
           if (response.run_at) {
             sync_run_at.html(response.run_at);
           } else {
@@ -103,9 +103,10 @@ initializeFacebookSDK = function() {
 
   var load_upcoming_events = function() {
     var events_div = $(".upcoming_events");
-    if (events_div[0]) {
+    var partial_path = events_div.data("partial-path");
+    if (events_div[0] && partial_path) {
       events_div.html("<br><div class=\"ui active inverted dimmer\"><div class=\"ui small text loader\">Loading</div></div><br>")
-      $.get("/home/upcoming_events").done(function(response) {
+      $.get(partial_path).done(function(response) {
         events_div.html(response);
       });
     }
@@ -119,18 +120,22 @@ initializeFacebookSDK = function() {
     init_sync_status_checker();
     load_upcoming_events();
 
-    $('.ui.search')
-      .search({
-        apiSettings: {
-          url: '/admin/search_users?q={query}'
-        },
-        fields: {
-          results : 'users',
-          title   : 'email',
-          url     : 'email'
-        },
-        minCharacters : 1
-      });
+    $('.admin-user-search').search({
+      apiSettings: {
+        url: '/admin/users/search?q={query}',
+        method: 'POST'
+      },
+      fields: {
+        results:     'users',
+        description: 'email',
+        image:       'image_url',
+        price:       'id',
+        title:       'google_name',
+        url:         'admin_path'
+      },
+      minCharacters: 1,
+      selectFirstResult: true
+    });
   });
 })();
 

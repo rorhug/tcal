@@ -15,32 +15,7 @@
 
 <div class="ui grid stackable">
   <div class="eight wide column">
-    <% if current_user.is_admin? %>
-      <h5 class="ui top attached segment header">Admin Tools</h5>
-      <div class="ui attached warning message">
-        <i class="warning icon"></i>
-        Careful now.
-      </div>
-      <% uninvited_count = User.uninvited.count %>
-      <div class="ui segment attached">
-        <%= link_to uninvited_admin_path, class: "ui fluid labeled button" do %>
-          <div class="ui <%= "basic" if uninvited_count == 0 %> fluid blue button">
-            <i class="send outline icon"></i> Uninvited
-          </div>
-          <div class="ui basic left pointing blue label">
-            <%= uninvited_count %>
-          </div>
-        <% end %>
-      </div>
-      <div class="ui segment bottom attached">
-        <div class="ui search">
-          <div class="ui fluid icon input">
-            <input class="prompt" type="text" placeholder="John, smithj@tcd.ie, 42...">
-            <i class="search icon"></i>
-          </div>
-        </div>
-      </div>
-    <% end %>
+    <%= render partial: "admin_panel" if current_user.is_admin? %>
 
     <div class="fb-like"
       data-href="https://www.facebook.com/tcaldotme"
@@ -54,37 +29,15 @@
     <small>'gwan sure, <a href="https://www.facebook.com/tcaldotme" target="_blank">give us a like :)</a></small>
 
     <div class="ui horizontal divider">Upcoming Events</div>
-    <div class="upcoming_events"><%# LOADED ASYNC render partial: "upcoming_events" %></div>
+    <div class="upcoming_events" data-partial-path="<%= upcoming_events_user_path(id: @user_id_to_link) %>">
+      <%# LOADED ASYNC render partial: "upcoming_events" %>
+    </div>
     <div class="ui divider"></div>
     <%= render partial: "users/google_account_card" %>
   </div>
   <div class="eight wide column mobile only"><div class="ui divider"></div></div>
   <div class="eight wide column">
-    <% unless current_user.ongoing_sync_job %>
-      <% if @sync_block_reason %>
-        <em><%= @sync_block_reason %></em>
-      <% end %>
-
-      <%= link_to manual_sync_user_path,
-        method: :post,
-        class: "ui large top attached labeled icon button spinner-on-click #{"disabled" if @sync_block_reason}",
-        data: { no_turbolink: true },
-        disabled: @sync_block_reason do %>
-        <i class="refresh icon"></i> Sync now
-      <% end %>
-    <% end %>
-
-    <div class="ui segment <%= "top " if current_user.ongoing_sync_job %>attached">
-      <%= render partial: "users/sync_attempts_feed" %>
-    </div>
-    <%= link_to user_setup_step_path(step: "customise"), class: "ui bottom attached button labeled icon basic", tabindex: 0 do %>
-      <i class="edit icon"></i>
-      Setup
-      <% unless current_user.auto_sync_enabled %>
-        <small class="text red">(Auto Sync disabled!)</small>
-      <% end %>
-    <% end %>
-
+    <%= render partial: "users/sync_panel" %>
     <%= render partial: "users/invites" if @invitees.any? %>
   </div>
 </div>

@@ -12,7 +12,7 @@ class SessionsController < ApplicationController
     #   return redirect_to("/auth/google_oauth2?prompt=consent")
     # end
     session[:user_id] = user.id
-    redirect_to user_setup_complete? ? root_path : user_setup_step_path(step: "my_tcd")
+    redirect_to user_setup_complete? ? root_path : setup_step_path(step: "my_tcd")
   rescue SecurityError
     reset_session
     render :text => '401 Unauthorized', :status => 401

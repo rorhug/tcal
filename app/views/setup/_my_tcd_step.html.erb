@@ -15,7 +15,7 @@
     <b>Re-connect now</b> to get your timetable in sync!
   </div>
 <% end %>
-<%= form_for current_user, html: { class: "ui equal width bottom attached segment form" }, url: user_setup_step_path(step: "my_tcd"), method: :patch do |f| %>
+<%= form_for current_user, html: { class: "ui equal width bottom attached segment form" }, url: setup_step_path(step: "my_tcd"), method: :patch do |f| %>
   <div class="fields">
     <div class="field">
       <label>my.tcd.ie username</label>

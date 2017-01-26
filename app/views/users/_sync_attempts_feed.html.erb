@@ -11,7 +11,9 @@
         <div class="description">
           Doing the magic...
           <div><small>
-            Started <span id="sync-run-at"><%= time_ago_in_words(@que_job.run_at) %></span> ago
+            Started <span id="sync-run-at" data-json-url="<%= sync_status_user_path(id: @user_id_to_link) %>">
+              <%= time_ago_in_words(@que_job.run_at) %>
+            </span> ago
           </small></div>
         </div>
       </div>

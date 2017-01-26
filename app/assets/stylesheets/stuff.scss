@@ -141,3 +141,23 @@ footer {
   border-top: none;
   border-right: none;
 }
+
+// fix search result margins
+.ui.search.admin-user-search {
+  .results {
+    width: 100%;
+    .result {
+     .image {
+        width: initial;
+      }
+     .image+.content {
+        margin: 0 4em 0 0;
+      }
+
+      .price {
+        // color: initial;
+            color: rgba(0,0,0,.4);
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+<h5 class="ui top attached segment header">Admin Tools</h5>
+<div class="ui attached warning message">
+  <i class="warning icon"></i>
+  Careful now.
+</div>
+
+<div class="ui segment attached">
+  <div class="ui search admin-user-search">
+    <div class="ui fluid icon input">
+      <input class="prompt" type="text" placeholder="John, smithj@tcd.ie, 42...">
+      <i class="search icon"></i>
+    </div>
+  </div>
+</div>
+
+<% uninvited_count = User.uninvited.count %>
+<div class="ui segment bottom attached">
+  <%= link_to admin_users_path, class: "ui fluid labeled button" do %>
+    <div class="ui <%= "basic" if uninvited_count == 0 %> fluid blue button">
+      <i class="send outline icon"></i> Uninvited
+    </div>
+    <div class="ui basic left pointing blue label">
+      <%= uninvited_count %>
+    </div>
+  <% end %>
+</div>

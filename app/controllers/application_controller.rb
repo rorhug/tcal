@@ -21,6 +21,10 @@ class ApplicationController < ActionController::Base
     current_user && current_user.my_tcd_login_success?
   end
 
+  def raise_not_found
+    raise ActionController::RoutingError.new('Not Found')
+  end
+
   private
     def authenticate!
       if session[:user_id] && current_user
@@ -38,7 +42,7 @@ class ApplicationController < ActionController::Base
       if current_user && !current_user.tcd_email?
         flash[:error] = "This service is only available to tcd.ie Google Accounts"
         unless params >= { "controller" => "users", "action" => "setup", "step" => "google" }
-          redirect_to user_setup_step_path(step: "google")
+          redirect_to setup_step_path(step: "google")
         end
       end
     end
@@ -51,7 +55,7 @@ class ApplicationController < ActionController::Base
 
     def ensure_my_tcd_login_success!
       if current_user && !current_user.my_tcd_login_success?
-        redirect_to user_setup_step_path(step: "my_tcd")
+        redirect_to setup_step_path(step: "my_tcd")
       end
     end
 

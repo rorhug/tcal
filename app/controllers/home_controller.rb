@@ -1,22 +1,68 @@
 class HomeController < ApplicationController
   skip_before_action :authenticate!, only: [:index, :about]
-  skip_before_action :ensure_my_tcd_login_success!, only: [:about]
+  skip_before_action :ensure_my_tcd_login_success!, only: [:setup, :update_my_tcd_details, :about]
+  skip_before_action :ensure_is_tcd_email!, only: [:setup]
+  before_action :load_user, only: [:setup]
 
   def index
     if current_user
       return if authenticate!
+      load_user
       user_index
     else
       landing_index
     end
   end
 
-  def upcoming_events
-    @events_by_date = current_user.gcs.fetch_upcoming_events_for_feed
-    render partial: "upcoming_events"
+  def about
   end
 
-  def about
+  def setup
+    @step = params[:step]
+
+    case @step
+    when "google"
+      # google step
+    when "my_tcd"
+      # if @user.my_tcd_login_success == false # Only if SET to false
+      #   flash[:error] ||= "Your MyTCD details didn't work last time, try re-entering them to continue."
+      # end
+    when "customise"
+      # customise
+    when nil
+      # setup home
+    else
+      raise ActionController::RoutingError.new('Not Found')
+    end
+  end
+
+  def update_my_tcd_details
+    @step = "my_tcd"
+
+    is_updated = current_user.update_attributes(
+      params.require(:user).permit(:my_tcd_username, :my_tcd_password)
+    )
+
+    if User::MY_TCD_LOGIN_COLUMNS.select { |attr| current_user.send(attr).blank? }.any?
+      flash[:error] = "Please provide a username and password"
+      return render :setup
+    end
+
+    if is_updated
+      begin
+        MyTcd::TimetableScraper.new(current_user).test_login_success!
+
+        current_user.enqueue_sync unless current_user.sync_blocked_reason
+        flash[:success] = "Connection to MyTCD successful!"
+        redirect_to root_path
+      rescue MyTcd::MyTcdError => e
+        flash[:error] = e.message
+        render :setup
+      end
+    else
+      flash[:error] = "Error saving user details!"
+      render :setup
+    end
   end
 
   private
@@ -49,5 +95,10 @@ class HomeController < ApplicationController
         end
       end
       render "landing_index"
+    end
+
+    def load_user
+      @user = current_user
+      @user_id_to_link = "me"
     end
 end
