@@ -82,10 +82,11 @@ initializeFacebookSDK = function() {
   var sync_status_interval;
   var init_sync_status_checker = function() {
     var sync_run_at = $("#sync-run-at");
+    var json_path = sync_run_at.data("json-path");
     if (sync_run_at[0]) {
       clearInterval(sync_status_interval);
       sync_status_interval = setInterval(function() {
-        $.getJSON("/users/me/sync_status").done(function(response) {
+        $.getJSON(json_path).done(function(response) {
           if (response.run_at) {
             sync_run_at.html(response.run_at);
           } else {
