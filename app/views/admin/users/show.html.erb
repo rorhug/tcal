@@ -1,7 +1,11 @@
 <div class="ui grid stackable">
   <div class="eight wide column">
     <%= render partial: "admin/admin_panel" if current_user.is_admin? %>
-
+    <%= render partial: "users/sync_panel" %>
+  </div>
+  <div class="eight wide column mobile only"><div class="ui divider"></div></div>
+  <div class="eight wide column">
+    <%= render partial: "users/google_account_card" %>
     <% if @user.joined_at? %>
       <div class="ui horizontal divider">Upcoming Events</div>
       <div class="upcoming_events" data-partial-path="<%= upcoming_events_user_path(id: @user_id_to_link) %>">
@@ -10,10 +14,5 @@
       <pre><%= @user.gcs.calendar_id %></pre>
       <div class="ui divider"></div>
     <% end %>
-    <%= render partial: "users/google_account_card" %>
-  </div>
-  <div class="eight wide column mobile only"><div class="ui divider"></div></div>
-  <div class="eight wide column">
-    <%= render partial: "users/sync_panel" %>
   </div>
 </div>
