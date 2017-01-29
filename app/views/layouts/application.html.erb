@@ -44,7 +44,7 @@
       </script>
     <% end %>
 
-    <% if Rails.env.production? && current_user %>
+    <% if current_user %>
       <script type="text/javascript" data-turbolinks-eval="false">
         window.intercomSettings = <%= current_user.intercom_settings.to_json.html_safe %>;
 
