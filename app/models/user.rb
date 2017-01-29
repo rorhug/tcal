@@ -85,8 +85,12 @@ class User < ApplicationRecord
     "https://calendar.google.com/calendar?authuser=#{email}"
   end
 
+  def admin_panel_url
+    "https://www.tcal.me/admin/users/#{id}"
+  end
+
   def for_raven
-    slice(*%w(id email google_name my_tcd_username my_tcd_login_success))
+    slice(*%w(id email google_name my_tcd_username my_tcd_login_success admin_panel_url))
   end
 
   def intercom_attributes(for_js: false)
@@ -105,7 +109,8 @@ class User < ApplicationRecord
       invited_by_user_id: invited_by_user_id,
       auto_sync_enabled: auto_sync_enabled,
       is_admin: is_admin,
-      invite_email_at: invite_email_at && invite_email_at.to_i
+      invite_email_at: invite_email_at && invite_email_at.to_i,
+      admin_panel_url: admin_panel_url
     }
 
     attrs
