@@ -97,6 +97,45 @@ CREATE TABLE schema_migrations (
 
 
 --
+-- Name: staff_members; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE staff_members (
+    id integer NOT NULL,
+    name text,
+    email text,
+    phone text,
+    job_title text,
+    location text,
+    department text,
+    sub_department text,
+    row_html text,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    disappeared_at timestamp without time zone
+);
+
+
+--
+-- Name: staff_members_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE staff_members_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: staff_members_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE staff_members_id_seq OWNED BY staff_members.id;
+
+
+--
 -- Name: sync_attempts; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -156,7 +195,8 @@ CREATE TABLE users (
     email text NOT NULL,
     auto_sync_enabled boolean DEFAULT true NOT NULL,
     is_admin boolean DEFAULT false NOT NULL,
-    invite_email_at timestamp without time zone
+    invite_email_at timestamp without time zone,
+    matching_staff_member_count integer
 );
 
 
@@ -184,6 +224,13 @@ ALTER SEQUENCE users_id_seq OWNED BY users.id;
 --
 
 ALTER TABLE ONLY que_jobs ALTER COLUMN job_id SET DEFAULT nextval('que_jobs_job_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY staff_members ALTER COLUMN id SET DEFAULT nextval('staff_members_id_seq'::regclass);
 
 
 --
@@ -222,6 +269,14 @@ ALTER TABLE ONLY que_jobs
 
 ALTER TABLE ONLY schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: staff_members_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY staff_members
+    ADD CONSTRAINT staff_members_pkey PRIMARY KEY (id);
 
 
 --
@@ -281,6 +336,6 @@ CREATE INDEX que_jobs_args_0 ON que_jobs USING btree (((args ->> 0)));
 
 SET search_path TO "$user", public;
 
-INSERT INTO schema_migrations (version) VALUES ('20160927143053'), ('20161018113229'), ('20161018224616'), ('20161019214527'), ('20161020230639'), ('20161022004528'), ('20161022005041'), ('20161023100135'), ('20161026073219');
+INSERT INTO schema_migrations (version) VALUES ('20160927143053'), ('20161018113229'), ('20161018224616'), ('20161019214527'), ('20161020230639'), ('20161022004528'), ('20161022005041'), ('20161023100135'), ('20161026073219'), ('20170203000827'), ('20170203011649'), ('20170203013416');
 
 
