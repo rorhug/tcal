@@ -266,6 +266,8 @@ class User < ApplicationRecord
   end
 
   def sync_blocked_reason
+    return "Sync off until MyTCD comes back on Tuesday"
+
     if ongoing_sync_job
       "There is already a sync in progress!"
     elsif !my_tcd_login_success? # Never reaches here, controller blocks with user_setup_complete?
