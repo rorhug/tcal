@@ -68,3 +68,5 @@ gem "sentry-raven"
 gem "premailer-rails"
 gem "nokogiri"
 gem 'whenever', require: false
+gem 'bulk_insert'
+gem 'pluck_to_hash'

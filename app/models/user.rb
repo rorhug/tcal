@@ -12,6 +12,7 @@ class User < ApplicationRecord
   attr_encrypted :my_tcd_password, key: Rails.application.secrets.encrypted_my_tcd_password_key
 
   before_save :tcd_login_details_changed!
+  before_save :check_is_staff_member!
 
   has_many :sync_attempts
   has_many :invitees, class_name: "User", foreign_key: :invited_by_user_id
@@ -29,6 +30,14 @@ class User < ApplicationRecord
         self.my_tcd_username = my_tcd_username.strip.gsub(/@tcd\.ie\z/, "")
       end
     end
+  end
+
+  def check_is_staff_member!
+    self.matching_staff_member_count = StaffMember.where(email: email).count
+  end
+
+  def is_staff_member?
+    matching_staff_member_count > 0
   end
 
   def set_joined_at_if_invited!
