@@ -18,7 +18,7 @@ class Admin::UsersController < ApplicationController
     results = if query.empty?
       []
     else
-      sanitized = query.gsub(/[^\w -]/, "")
+      sanitized = query.gsub(/[^\w -@]/, "")
       words = sanitized.gsub(" ", "|")
 
       User.where(
