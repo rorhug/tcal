@@ -39,10 +39,6 @@ class HomeController < ApplicationController
   def update_my_tcd_details
     @step = "my_tcd"
 
-    flash[:error] = "Connection to MyTCD unavailable!"
-    render :setup
-    return
-
     is_updated = current_user.update_attributes(
       params.require(:user).permit(:my_tcd_username, :my_tcd_password)
     )

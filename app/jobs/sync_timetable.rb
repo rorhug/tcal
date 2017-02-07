@@ -10,7 +10,7 @@ class SyncTimetable < Que::Job
 
     ActiveRecord::Base.transaction do
       # Write any changes you'd like to the database.
-      user.do_the_feckin_thing!(triggered_manually: triggered_manually)
+      user.do_the_feckin_thing!(triggered_manually: triggered_manually) #, force_dev: true)
 
       # It's best to destroy the job in the same transaction as any other
       # changes you make. Que will destroy the job for you after the run

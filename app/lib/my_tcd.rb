@@ -23,6 +23,8 @@ module MyTcd
       @agent = Mechanize.new do |agent|
         agent.user_agent_alias = "Mac Safari"
         agent.follow_meta_refresh = true
+        agent.open_timeout=120
+        agent.read_timeout=120
       end
     end
 
@@ -74,7 +76,7 @@ module MyTcd
           next login_form.click_button
 
         # JS Login Redirect, click here thingy
-        elsif page.title == "Log-in successful" && (here_link = page.link_with(text: "here"))
+        elsif page.title == "User Redirect" && (here_link = page.link_with(text: "click here to access the portal"))
           next here_link.click
 
         # Automatic Logout as was logged in on another session
@@ -119,7 +121,7 @@ module MyTcd
       end
 
       log_line("begin_term_events_parsing")
-      rows = event_list_page.css("table#ttb_timetableTable tbody tr");
+      rows = event_list_page.css("#ttb_timetableTable tbody tr");
 
       last_date = nil
       gcal_events = rows.map do |row|
@@ -256,7 +258,7 @@ Timetable kept in sync using https://www.tcal.me
     def get_default_timetable_page
       get_my_tcd_home
         .link_with(text: "My Timetable").click
-        .link_with(text: "View My Own Student Timetable").click
+        .link_with(text: " View My Own Student Timetable ").click
     end
 
     def log_line(msg)

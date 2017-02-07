@@ -9,9 +9,9 @@ set :output, "/home/rh/whenever_cron.log"
 
 require "./config/initializers/tcal_constants.rb"
 
-# every AUTO_SYNC_SETTINGS[:cron_interval], roles: [:app] do
-#   runner("User.enqueue_auto_syncs")
-# end
+every AUTO_SYNC_SETTINGS[:cron_interval], roles: [:app] do
+  runner("User.enqueue_auto_syncs")
+end
 
 every INTERCOM_SYNC_INTERVAL, roles: [:app] do
   runner("IntercomSync.new.sync_recently_changed_users")
