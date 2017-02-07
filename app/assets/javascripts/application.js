@@ -91,7 +91,7 @@ initializeFacebookSDK = function() {
             sync_run_at.html(response.run_at);
           } else {
             clearInterval(sync_status_interval);
-            Turbolinks.visit("/", { action: "replace" })
+            Turbolinks.visit(window.location.pathname, { action: "replace" });
           }
         }).fail(function() {
           sync_run_at.html("<span class=\"label tiny red\">Error getting status</span>");

@@ -50,26 +50,26 @@ module MyTcd
       (1..6).reduce(login_page) do |page, _| # try and get to the home page in 4 or less links
 
         # Home Success :)
-        if page.link_with(text: "My Timetable").present?
-          save_login_success!(true)
+        if page.link_with(text: "My Timetablea").present?
+          save_login_success!
           return page
 
         #Password change
-        elsif page.at_css("td.pagetitle").try(:text).try(:include?, "Password Change")
+        elsif page.at('h2:contains("Password Change")')
           notify_user_of_my_tcd_fail!(password_change: true)
-          raise MyTcdError, "MyTCD wants you to change your password. Go forth and do so before returning here."
+          raise PasswordError, "MyTCD wants you to change your password. Go forth and do so before returning here."
 
         # Invalid user/pass combo
-        elsif page.at_css("span.sitsmessagetitle").try(:text).try(:include?, "Username and Password invalid")
+        elsif page.at('strong:contains("Username and Password invalid")')
           notify_user_of_my_tcd_fail!
-          raise MyTcdError, "MyTCD says it doesn't recognise that username/password."
+          raise PasswordError, "MyTCD says it doesn't recognise that username/password."
 
         # Multiple Course Selection
         elsif multiple_course_form = page.form_with(action: "SIW_MCS")
           multiple_course_form.field_with(name: "SCJ_LIST.DUMMY.MENSYS.1").options.last.click
           next multiple_course_form.click_button
 
-        # Main Login Page (has to below password fail, it on after password fail!)
+        # Main Login Page (has to be below invalid login as that's really just this page with a message!)
         elsif login_form = page.form_with(action: "SIW_LGN")
           login_form.field_with!(name: "MUA_CODE.DUMMY.MENSYS.1").value = @user.my_tcd_username
           login_form.field_with!(name: "PASSWORD.DUMMY.MENSYS.1").value = @user.my_tcd_password
@@ -80,7 +80,7 @@ module MyTcd
           next here_link.click
 
         # Automatic Logout as was logged in on another session
-        elsif page.at_css("span.sitsmessagetitle").try(:text).try(:include?, "Automatic Logout")
+        elsif page.at('strong:contains("Automatic Logout")')
           # There's a 'here' link on this page which goes to login page anyway... (random/u565.html)
           next @agent.get(LOGIN_PAGE_URL)
 
@@ -96,7 +96,7 @@ module MyTcd
       raise MyTcdError, "Error logging into MyTCD (4)"
 
     rescue MyTcd::MyTcdError => e
-      save_login_success!(false)
+      save_login_success!(error: e)
 
       Raven.capture_exception(
         e,
@@ -268,8 +268,15 @@ Timetable kept in sync using https://www.tcal.me
       )
     end
 
-    def save_login_success!(did_log_in)
-      log_line("save_login_success! did_log_in=true")
+    def save_login_success!(error: nil)
+      did_log_in = !error
+      log_line("save_login_success! did_log_in=#{did_log_in}")
+
+      # if login worked last time, and the new error isn't a password error, don't mark them as login fail
+      # Will always fall through when changing user/pass as the go to nil after update
+      @user.reload
+      return if @user.my_tcd_login_success && !(error.instance_of?(PasswordError))
+
       @user.update_attributes!(
         my_tcd_last_attempt_at: Time.now,
         my_tcd_login_success: did_log_in
@@ -296,5 +303,8 @@ Timetable kept in sync using https://www.tcal.me
     def initialize(msg="Error logging into MyTCD...")
       super(msg)
     end
+  end
+
+  class PasswordError < MyTcdError
   end
 end
