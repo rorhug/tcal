@@ -50,7 +50,7 @@ module MyTcd
       (1..6).reduce(login_page) do |page, _| # try and get to the home page in 4 or less links
 
         # Home Success :)
-        if page.link_with(text: "My Timetablea").present?
+        if page.link_with(text: "My Timetable").present?
           save_login_success!
           return page
 
