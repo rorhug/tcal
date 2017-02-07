@@ -194,14 +194,15 @@ class User < ApplicationRecord
     )
   end
 
-  def self.enqueue_auto_syncs
+  def self.enqueue_auto_syncs(users_relation=nil) # TODO take a relation of users
     # (3*60*60)/(5*60)
     user_interval = AUTO_SYNC_SETTINGS[:user_interval]
     cron_interval = AUTO_SYNC_SETTINGS[:cron_interval]
     denominator = user_interval / cron_interval
     numerator = (Time.now.to_i % user_interval) / cron_interval
 
-    users = ready_for_sync.where("MOD(id, ?) = ?", denominator, numerator).to_a
+    users_relation ||= ready_for_sync.where("MOD(id, ?) = ?", denominator, numerator)
+    users = users_relation.to_a
 
     return if users.empty?
 
