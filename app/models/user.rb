@@ -180,7 +180,7 @@ class User < ApplicationRecord
 
   def enqueue_sync(triggered_manually: true, force: false)
     raise "Sync job already queued for user" if !force && ongoing_sync_job
-    ActiveRecord::Base.transaction do
+    ActiveRecord::Base.transaction do # possibly unecessary...
       SyncTimetable.enqueue(id, triggered_manually)
     end
   end
