@@ -1,6 +1,6 @@
 class Admin::UsersController < ApplicationController
   before_action :must_be_admin!
-  before_action :load_user, only: [:show]
+  before_action :load_user, only: [:show, :delete_calendar]
 
   def index
     @cols = %w(google_name)
@@ -46,6 +46,12 @@ class Admin::UsersController < ApplicationController
       end
       format.json { render json: @user }
     end
+  end
+
+  def delete_calendar
+    @user.gcs.delete_calendar!
+    flash[:success] = "Deleted calendar!"
+    redirect_to admin_user_path(@user)
   end
 
   private

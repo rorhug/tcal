@@ -40,6 +40,8 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :users, only: [:show, :index] do
       post :search, on: :collection
+
+      delete :calendar, action: :delete_calendar, on: :member
     end
   end
 end

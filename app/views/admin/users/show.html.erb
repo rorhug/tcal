@@ -13,6 +13,9 @@
         <%# LOADED ASYNC render partial: "upcoming_events" %>
       </div>
       <pre><%= @user.gcs.calendar_id %></pre>
+      <%= button_to calendar_admin_user_path, method: :delete, class: "ui button labeled icon basic" do %>
+        <i class="delete icon"></i> Delete Calendar
+      <% end %>
     <% end %>
   </div>
 </div>

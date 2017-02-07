@@ -62,7 +62,7 @@ class GoogleCalendarSync
     return @calendar_id = calendar.id
   end
 
-  def delete_calendar
+  def delete_calendar!
     if calendar_id
       cal_service.delete_calendar(calendar_id)
     end
@@ -121,14 +121,15 @@ class GoogleCalendarSync
     end
   end
 
+  # source_event_list needs to contain at least one event for ***
   def sync_events!(source_event_list)
-    event_mappings = unique_events_array(source_event_list).sort do |a, b|
+    event_mappings = unique_events_array(source_event_list).sort do |a, b| # sort required for correct first and last at ***
       a.start.date_time <=> b.start.date_time # ...sorting by start time
     end.map do |source_event|
       { source_event: source_event, gcal_event: nil }
     end
 
-    all_gcal_events = fetch_all_gcal_events( # sort required for correct first and last
+    all_gcal_events = fetch_all_gcal_events( # ***
       event_mappings.first[:source_event].start.date_time.yesterday,
       event_mappings.last[:source_event].start.date_time.tomorrow
     )
