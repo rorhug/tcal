@@ -64,6 +64,11 @@ module MyTcd
           notify_user_of_my_tcd_fail!
           raise PasswordError, "MyTCD says it doesn't recognise that username/password."
 
+        # Invalid user/pass combo
+        elsif page.at('strong:contains("Username Invalid")')
+          # notify_user_of_my_tcd_fail! Probably shouldn't notify people who haven't even filled in username on my accidental sync
+          raise PasswordError, "MyTCD won't accept that username."
+
         # Multiple Course Selection
         elsif multiple_course_form = page.form_with(action: "SIW_MCS")
           multiple_course_form.field_with(name: "SCJ_LIST.DUMMY.MENSYS.1").options.last.click
