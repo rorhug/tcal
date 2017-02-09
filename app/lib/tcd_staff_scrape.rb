@@ -27,7 +27,7 @@ class TcdStaffScrape
     form.field_with(name: "__EVENTARGUMENT").value = ""
     select_field = form.field_with(name: "ctl00$MainContent$UserControlSearchForPerson$DropDownListDepartments")
 
-    select_field.options[0,2].each_with_index do |option, i|
+    select_field.options.each_with_index do |option, i|
       next if i == 0 #first option is a placeholder
 
       department_name = option.text
