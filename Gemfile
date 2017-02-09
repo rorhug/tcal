@@ -68,3 +68,5 @@ gem "sentry-raven"
 gem "premailer-rails"
 gem "nokogiri"
 gem 'whenever', require: false
+gem 'activerecord-import'
+gem 'pluck_to_hash'

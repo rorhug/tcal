@@ -17,5 +17,8 @@ every INTERCOM_SYNC_INTERVAL, roles: [:app] do
   runner("IntercomSync.new.sync_recently_changed_users")
 end
 
+every 23.hours, roles: [:app] do
+  runner "TcdStaffScrape.new.do_it!"
+end
 
 # Learn more: http://github.com/javan/whenever
