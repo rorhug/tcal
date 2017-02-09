@@ -27,7 +27,7 @@ class TcdStaffScrape
     form.field_with(name: "__EVENTARGUMENT").value = ""
     select_field = form.field_with(name: "ctl00$MainContent$UserControlSearchForPerson$DropDownListDepartments")
 
-    select_field.options[0,10].each_with_index do |option, i|
+    select_field.options[0,2].each_with_index do |option, i|
       next if i == 0 #first option is a placeholder
 
       department_name = option.text
@@ -36,12 +36,28 @@ class TcdStaffScrape
 
       begin
         staff_from_page = get_people_from_page(form.submit, department_name)
+        staff_stored_by_email = StaffMember.where(department: department_name).reduce({}) do |hsh, member|
+          hsh[member.email] = member
+          hsh
+        end
+        staff_to_be_stored = []
 
-        staff_stored = StaffMember.where(department: department_name)
+        staff_from_page.each do |page_member|
+          next if page_member[:email].nil?
 
-        log_line("Bulk inserting #{staff_from_page.length}")
+          if staff_stored_by_email[page_member[:email]]
+            staff_stored_by_email.delete(page_member[:email])
+          else
+            staff_to_be_stored.push(page_member)
+          end
+        end
+
+        staff_whove_disappeared = staff_stored_by_email.values
+        StaffMember.where(id: staff_whove_disappeared.map(&:id)).update_all(disappeared_at: Time.now)
+
+        log_line("Bulk inserting #{staff_to_be_stored.length}")
         Rails.logger.silence do
-          StaffMember.bulk_insert(values: staff_from_page)
+          StaffMember.import(staff_to_be_stored)
         end
 
       rescue Mechanize::ResponseCodeError, Net::HTTP::Persistent::Error => e
