@@ -117,9 +117,17 @@ initializeFacebookSDK = function() {
     refresh_intercom();
   });
 
+
+  var page_load_ajax_setup_delay;
+  document.addEventListener("turbolinks:visit", function() {
+    clearInterval(page_load_ajax_setup_delay);
+  });
+
   document.addEventListener("turbolinks:load", function() {
-    init_sync_status_checker();
-    load_upcoming_events();
+    page_load_ajax_setup_delay = setTimeout(function() {
+      init_sync_status_checker();
+      load_upcoming_events();
+    }, 1500);
 
     $('.admin-user-search').search({
       apiSettings: {
