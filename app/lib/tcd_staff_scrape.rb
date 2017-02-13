@@ -70,7 +70,7 @@ class TcdStaffScrape
     people = []
 
     page.css("#DEPTSEARCHRESULT").each do |department_section|
-      sub_department_name = department_section.at_css(".panel-title").try(:text)
+      sub_department_name = department_section.at_css(".panel-title.visible-md").try(:text)
       department_section.css(".bs-callout").each do |row|
         person_attrs = {
           department: department_name,
