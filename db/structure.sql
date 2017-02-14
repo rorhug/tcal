@@ -2,11 +2,12 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.2
--- Dumped by pg_dump version 9.5.2
+-- Dumped from database version 9.6.2
+-- Dumped by pg_dump version 9.6.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
@@ -25,6 +26,20 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+--
+-- Name: citext; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION citext; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION citext IS 'data type for case-insensitive character strings';
 
 
 SET search_path = public, pg_catalog;
@@ -103,7 +118,7 @@ CREATE TABLE schema_migrations (
 CREATE TABLE staff_members (
     id integer NOT NULL,
     name text,
-    email text,
+    email citext,
     phone text,
     job_title text,
     location text,
@@ -220,35 +235,35 @@ ALTER SEQUENCE users_id_seq OWNED BY users.id;
 
 
 --
--- Name: job_id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: que_jobs job_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY que_jobs ALTER COLUMN job_id SET DEFAULT nextval('que_jobs_job_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: staff_members id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY staff_members ALTER COLUMN id SET DEFAULT nextval('staff_members_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: sync_attempts id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY sync_attempts ALTER COLUMN id SET DEFAULT nextval('sync_attempts_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
 
 
 --
--- Name: ar_internal_metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: ar_internal_metadata ar_internal_metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ar_internal_metadata
@@ -256,7 +271,7 @@ ALTER TABLE ONLY ar_internal_metadata
 
 
 --
--- Name: que_jobs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: que_jobs que_jobs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY que_jobs
@@ -264,7 +279,7 @@ ALTER TABLE ONLY que_jobs
 
 
 --
--- Name: schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY schema_migrations
@@ -272,7 +287,7 @@ ALTER TABLE ONLY schema_migrations
 
 
 --
--- Name: staff_members_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: staff_members staff_members_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY staff_members
@@ -280,7 +295,7 @@ ALTER TABLE ONLY staff_members
 
 
 --
--- Name: sync_attempts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: sync_attempts sync_attempts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY sync_attempts
@@ -288,11 +303,18 @@ ALTER TABLE ONLY sync_attempts
 
 
 --
--- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: index_staff_members_on_email; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_staff_members_on_email ON staff_members USING btree (email);
 
 
 --
@@ -348,6 +370,7 @@ INSERT INTO schema_migrations (version) VALUES
 ('20161026073219'),
 ('20170203000827'),
 ('20170203011649'),
-('20170203013416');
+('20170203013416'),
+('20170213172139');
 
 
