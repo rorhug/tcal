@@ -30,7 +30,7 @@ module MyTcd
 
     def test_login_success!
       log_line("test_login_success!")
-      get_my_tcd_home
+      get_my_tcd_home(for_login_test: true)
       @user.my_tcd_login_success
     end
 
@@ -42,7 +42,7 @@ module MyTcd
       )
     end
 
-    def get_my_tcd_home
+    def get_my_tcd_home(for_login_test: false)
       send_to_sentry = false
       log_line("get_my_tcd_home")
       login_page = @agent.get(LOGIN_PAGE_URL)
@@ -51,7 +51,7 @@ module MyTcd
 
         # Home Success :)
         if page.link_with(text: "My Timetable").present?
-          save_login_success!
+          save_login_success!(for_login_test: for_login_test)
           return page
 
         #Password change
@@ -100,17 +100,25 @@ module MyTcd
       send_to_sentry = true
       raise MyTcdError, "Error logging into MyTCD (4)"
 
-    rescue MyTcd::MyTcdError => e
-      save_login_success!(error: e)
+    rescue MyTcd::MyTcdError, SocketError => e
+      if e.is_a?(SocketError)
+        send_to_sentry = true
+        e = MyTcdError.new("MyTCD seems to be down... please try again later")
+      end
+      save_login_success!(error: e, for_login_test: for_login_test)
+
+      exception_extra = if @agent.current_page
+        {
+          agent_page_url: @agent.current_page.uri.try(:to_s),
+          agent_page_html: @agent.current_page.body
+        }
+      end
 
       Raven.capture_exception(
         e,
         level: "warning",
         user: @user.for_raven,
-        extra: {
-          agent_page_url: @agent.current_page.uri.try(:to_s),
-          agent_page_html: @agent.current_page.body
-        }
+        extra: exception_extra
       ) if send_to_sentry # Only care if it's an unknown error
 
       raise e # raise it again up to the controller or job runner
@@ -147,6 +155,11 @@ module MyTcd
       { events: gcal_events, status: :success }
     end
 
+    def format_location_string(mytcd_location)
+      # remove room brackets e.g. "LB01(Lloyd Institute (INS Building))"
+      mytcd_location.gsub(/[ \n]*[\(\)]/, ", ").gsub(/[\n \,]+\z/, "")
+    end
+
     def parse_to_gcal_event(attrs, base_date)
       start_time, end_time = attrs["Time"].first.split("-").map do |time_str|
         try_parse_time(time_str.strip)
@@ -154,8 +167,10 @@ module MyTcd
         base_date.dup.change(hour: time.hour, minute: time.min)
       end
 
-      # remove room brackets e.g. "LB01(Lloyd Institute (INS Building))"
-      event_location = attrs["Room"].first.to_s.gsub(/[ \n]*[\(\)]/, ", ").gsub(/[\n \,]+\z/, "")
+      event_locations = attrs["Room"].compact.map do |s|
+        format_location_string(s.to_s)
+      end.join(" ~~OR~~ ")
+
       lecturer = fix_casing(attrs["Lecturer"].first.to_s, surname: true)
       activity = attrs["Activity"].first.to_s
       module_code = attrs["Module"][1]
@@ -166,7 +181,7 @@ module MyTcd
         "Lecturer"    => lecturer,
         "Class Size"  => attrs["Size"].first,
         "Group"       => attrs["Group"].first,
-        "Location"    => event_location,
+        "Location"    => event_locations,
       }.reduce("") do |desciption, (attr_name, val)|
         val.present? ? desciption + "#{attr_name}: #{val}\n" : desciption
       end + %Q{
@@ -183,7 +198,7 @@ Timetable kept in sync using https://www.tcal.me
 
       event = Google::Apis::CalendarV3::Event.new({
         summary: event_summary,
-        location: event_location,
+        location: event_locations,
         description: event_description,
         start: Google::Apis::CalendarV3::EventDateTime.new(date_time: start_time.to_datetime, time_zone: "Europe/Dublin"),
         end:   Google::Apis::CalendarV3::EventDateTime.new(date_time: end_time.to_datetime,   time_zone: "Europe/Dublin"),
@@ -207,7 +222,7 @@ Timetable kept in sync using https://www.tcal.me
     def table_cell_to_event_attributes(td)
       # https://gist.github.com/RoryDH/319603b31fba656a836706411fb98352
 
-      td.at_css("strong").remove # this tag is redundant, gets in the way
+      td.at_css("strong").try(:remove) # this tag is redundant, gets in the way
 
       mousover_attr = td.attribute("onmouseover") # onmouseover contains extra attrs
       tooltip_function_text = mousover_attr.try(:value).try(:match, /\Atooltip\(\'(.+)\'\)\z/).try(:[], 1)
@@ -220,7 +235,7 @@ Timetable kept in sync using https://www.tcal.me
           pair = string_pair.split(":", 2).map(&:strip)
           if pair[0].present? && pair[1].present?
             event[pair[0]] ||= []
-            event[pair[0]].push(pair[1].strip)
+            event[pair[0]].push(pair[1])
           end
         end
       )
@@ -273,19 +288,23 @@ Timetable kept in sync using https://www.tcal.me
       )
     end
 
-    def save_login_success!(error: nil)
+    def save_login_success!(error: nil, for_login_test: false)
+
+      # If we're syncing and we get a non-password error don't
+      # mark them as login fail. This avoids them being excluded
+      # from sync for a reason unlrelated to wrong password.
+      return if !for_login_test && error && !(error.instance_of?(PasswordError))
+
       did_log_in = !error
       log_line("save_login_success! did_log_in=#{did_log_in}")
 
-      # if login worked last time, and the new error isn't a password error, don't mark them as login fail
-      # Will always fall through when changing user/pass as the go to nil after update
-      @user.reload
-      return if @user.my_tcd_login_success && !(error.instance_of?(PasswordError))
+      @user.my_tcd_login_success = did_log_in
 
-      @user.update_attributes!(
-        my_tcd_last_attempt_at: Time.now,
-        my_tcd_login_success: did_log_in
-      )
+      if for_login_test
+        @user.my_tcd_last_attempt_at = Time.now
+      end
+
+      @user.save!
     end
 
     def try_parse_time(time_string)

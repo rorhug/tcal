@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   helper_method :current_user, :user_setup_complete?
 
   before_action :authenticate!,
-    :ensure_is_tcd_email!,
+    :ensure_email_is_allowed!,
     :ensure_is_joined!,
     :ensure_my_tcd_login_success!
 
@@ -38,10 +38,12 @@ class ApplicationController < ActionController::Base
       end
     end
 
-    def ensure_is_tcd_email!
-      if current_user && !current_user.tcd_email?
+    def ensure_email_is_allowed!
+      return unless current_user
+
+      if !current_user.tcd_email? || current_user.is_staff_member?
         flash[:error] = "This service is only available to tcd.ie Google Accounts"
-        unless params >= { "controller" => "users", "action" => "setup", "step" => "google" }
+        unless params >= { "controller" => "home", "action" => "setup", "step" => "google" }
           redirect_to setup_step_path(step: "google")
         end
       end

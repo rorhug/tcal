@@ -1,7 +1,7 @@
 class HomeController < ApplicationController
   skip_before_action :authenticate!, only: [:index, :about]
   skip_before_action :ensure_my_tcd_login_success!, only: [:setup, :update_my_tcd_details, :about]
-  skip_before_action :ensure_is_tcd_email!, only: [:setup]
+  skip_before_action :ensure_email_is_allowed!, only: [:setup]
   before_action :load_user, only: [:setup]
 
   def index
@@ -39,7 +39,7 @@ class HomeController < ApplicationController
   def update_my_tcd_details
     @step = "my_tcd"
 
-    is_updated = current_user.update_attributes(
+    current_user.assign_attributes(
       params.require(:user).permit(:my_tcd_username, :my_tcd_password)
     )
 
@@ -48,7 +48,7 @@ class HomeController < ApplicationController
       return render :setup
     end
 
-    if is_updated
+    if current_user.save
       begin
         MyTcd::TimetableScraper.new(current_user).test_login_success!
 

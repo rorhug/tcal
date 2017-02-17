@@ -25,7 +25,7 @@ class User < ApplicationRecord
       # if login details change, invalidate the success check
       self.my_tcd_login_success = nil
 
-      # strip the username and remove
+      # strip the username and remove @tcd.ie if present
       if my_tcd_username.is_a?(String)
         self.my_tcd_username = my_tcd_username.strip.gsub(/@tcd\.ie\z/, "")
       end
@@ -33,7 +33,10 @@ class User < ApplicationRecord
   end
 
   def check_is_staff_member!
-    self.matching_staff_member_count = StaffMember.where(email: email).count
+    if email_changed?
+      # email will match on any casing in staffmembers table as email column is citext
+      self.matching_staff_member_count = StaffMember.where(email: email).count
+    end
   end
 
   def is_staff_member?

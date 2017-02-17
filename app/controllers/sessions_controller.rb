@@ -1,6 +1,6 @@
 class SessionsController < ApplicationController
   skip_before_action :authenticate!, only: [:new, :create, :destroy, :failure]
-  skip_before_action :ensure_is_tcd_email!,
+  skip_before_action :ensure_email_is_allowed!,
                      :ensure_is_joined!,
                      :ensure_my_tcd_login_success!,
                      only: [:destroy, :failure]
