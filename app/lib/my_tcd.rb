@@ -6,13 +6,13 @@ module MyTcd
 
   class TimetableScraper
     HTML_EVENT_ATTRIBUTES = {
-      "Date" => "",
-      "Module" => "",
-      "Size" => "",
-      "Group" => "",
-      "Activity" => "",
-      "Room" => "",
-      "Lecturer" => ""
+      "Date" => [],
+      "Module" => [],
+      "Size" => [],
+      "Group" => [],
+      "Activity" => [],
+      "Room" => [],
+      "Lecturer" => []
     }.freeze
 
     attr_reader :agent, :user, :for_auto_sync
