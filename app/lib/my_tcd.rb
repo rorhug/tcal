@@ -167,9 +167,7 @@ module MyTcd
         base_date.dup.change(hour: time.hour, minute: time.min)
       end
 
-      event_locations = attrs["Room"].compact.map do |s|
-        format_location_string(s.to_s)
-      end.join(" ~~OR~~ ")
+      event_locations = attrs["Room"].compact.map { |s| format_location_string(s.to_s) }
 
       lecturer = fix_casing(attrs["Lecturer"].first.to_s, surname: true)
       activity = attrs["Activity"].first.to_s
@@ -181,7 +179,7 @@ module MyTcd
         "Lecturer"    => lecturer,
         "Class Size"  => attrs["Size"].first,
         "Group"       => attrs["Group"].first,
-        "Location"    => event_locations,
+        "Location"    => event_locations.join(" ~~OR~~ "),
       }.reduce("") do |desciption, (attr_name, val)|
         val.present? ? desciption + "#{attr_name}: #{val}\n" : desciption
       end + %Q{
@@ -198,7 +196,7 @@ Timetable kept in sync using https://www.tcal.me
 
       event = Google::Apis::CalendarV3::Event.new({
         summary: event_summary,
-        location: event_locations,
+        location: event_locations.first,
         description: event_description,
         start: Google::Apis::CalendarV3::EventDateTime.new(date_time: start_time.to_datetime, time_zone: "Europe/Dublin"),
         end:   Google::Apis::CalendarV3::EventDateTime.new(date_time: end_time.to_datetime,   time_zone: "Europe/Dublin"),
