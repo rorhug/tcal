@@ -111,6 +111,7 @@ class GoogleCalendarSync
   def events_match?(e1, e2)
     e1.start.date_time.present? && e1.start.date_time == e2.start.date_time &&
     e1.end.date_time.present?   && e1.end.date_time   == e2.end.date_time   &&
+    e1.location == e2.location &&
     e1.description == e2.description &&
     !e1.recurring_event_id
   end
