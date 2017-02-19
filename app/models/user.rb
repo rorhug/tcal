@@ -40,7 +40,7 @@ class User < ApplicationRecord
   end
 
   def is_staff_member?
-    matching_staff_member_count > 0
+    matching_staff_member_count.to_i > 0
   end
 
   def set_joined_at_if_invited!
