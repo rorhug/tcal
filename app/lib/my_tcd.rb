@@ -169,14 +169,16 @@ module MyTcd
 
       event_locations = attrs["Room"].compact.map { |s| format_location_string(s.to_s) }
 
-      lecturer = fix_casing(attrs["Lecturer"].first.to_s, surname: true)
+      # lecturer = fix_casing(attrs["Lecturer"].first.to_s, surname: true)
+      lecturers = attrs["Lecturer"].compact.map { |lecturer| fix_casing(lecturer, surname: true) }
+
       activity = attrs["Activity"].first.to_s
       module_code = attrs["Module"][1]
       module_name = fix_casing(attrs["Module"][0].to_s)
 
       event_summary = [module_name, activity, module_code].select(&:present?).join(" | ")
       event_description = {
-        "Lecturer"    => lecturer,
+        "Lecturer"    => lecturers.join(", "),
         "Class Size"  => attrs["Size"].first,
         "Group"       => attrs["Group"].first,
         "Location"    => event_locations.join(" ~~OR~~ "),
