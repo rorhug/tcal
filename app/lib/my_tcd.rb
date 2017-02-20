@@ -167,49 +167,42 @@ module MyTcd
         base_date.dup.change(hour: time.hour, minute: time.min)
       end
 
-      event_locations = attrs["Room"].compact.map { |s| format_location_string(s.to_s) }
-
-      # lecturer = fix_casing(attrs["Lecturer"].first.to_s, surname: true)
+      locations = attrs["Room"].compact.map { |s| format_location_string(s.to_s) }
       lecturers = attrs["Lecturer"].compact.map { |lecturer| fix_casing(lecturer, surname: true) }
-
       activity = attrs["Activity"].first.to_s
-      module_code = attrs["Module"][1]
       module_name = fix_casing(attrs["Module"][0].to_s)
+      module_code = attrs["Module"][1]
 
-      event_summary = [module_name, activity, module_code].select(&:present?).join(" | ")
+      locations_title, locations_description = if locations.size == 1
+        ["Location", locations.first]
+      elsif locations.size > 1
+        ["Multiple Locations", "\n - " + locations.join("\n - ")]
+      end
+
       event_description = {
-        "Lecturer"    => lecturers.join(", "),
-        "Class Size"  => attrs["Size"].first,
-        "Group"       => attrs["Group"].first,
-        "Location"    => event_locations.join(" ~~OR~~ "),
+        "Lecturer".pluralize(lecturers.size)            => lecturers.join(", "),
+        "Group"                                         => attrs["Group"].first,
+        "Like our page"                                 => "https://www.facebook.com/TcalDotMe",
+        locations_title                                 => locations_description,
+        "Class Size"                                    => attrs["Size"].first,
+        "Module Code"                                   => module_code,
+        "Module Name"                                   => module_name,
+        "Activity"                                      => activity,
+        "Timetable kept in sync using"                  => "https://www.tcal.me"
       }.reduce("") do |desciption, (attr_name, val)|
-        val.present? ? desciption + "#{attr_name}: #{val}\n" : desciption
-      end + %Q{
-Like our page https://www.facebook.com/TcalDotMe
-Timetable kept in sync using https://www.tcal.me
-
-} +   {
-        "Module Code" => module_code,
-        "Module Name" => module_name, # so you can see fb link on ios cal
-        "Activity"    => activity
-      }.reduce("") do |desciption, (attr_name, val)|
-        val.present? ? desciption + "#{attr_name}: #{val}\n" : desciption
+        if val.present?
+          desciption + "#{attr_name}: #{val}\n"
+        else
+          desciption
+        end
       end
 
       event = Google::Apis::CalendarV3::Event.new({
-        summary: event_summary,
-        location: event_locations.first,
+        summary: [module_name, activity, module_code].select(&:present?).join(" | "),
+        location: locations.first,
         description: event_description,
         start: Google::Apis::CalendarV3::EventDateTime.new(date_time: start_time.to_datetime, time_zone: "Europe/Dublin"),
         end:   Google::Apis::CalendarV3::EventDateTime.new(date_time: end_time.to_datetime,   time_zone: "Europe/Dublin"),
-        # start: {
-        #   date_time: start_time.iso8601,
-        #   time_zone: GoogleCalendarSync::TIMEZONE_STRING
-        # },
-        # end: {
-        #   date_time: end_time.iso8601,
-        #   time_zone: GoogleCalendarSync::TIMEZONE_STRING
-        # },
         reminders: {
           use_default: false
         }
