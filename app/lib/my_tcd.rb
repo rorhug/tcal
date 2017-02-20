@@ -182,13 +182,13 @@ module MyTcd
       event_description = {
         "Lecturer".pluralize(lecturers.size)            => lecturers.join(", "),
         "Group"                                         => attrs["Group"].first,
-        "Like our page"                                 => "https://www.facebook.com/TcalDotMe",
+        "Like our page"                                 => "https://fb.me/TcalDotMe",
         locations_title                                 => locations_description,
         "Class Size"                                    => attrs["Size"].first,
         "Module Code"                                   => module_code,
         "Module Name"                                   => module_name,
         "Activity"                                      => activity,
-        "Timetable kept in sync using"                  => "https://www.tcal.me"
+        "Timetable kept in sync using"                  => "https://tcal.me"
       }.reduce("") do |desciption, (attr_name, val)|
         if val.present?
           desciption + "#{attr_name}: #{val}\n"
