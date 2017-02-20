@@ -34,7 +34,7 @@ class User < ApplicationRecord
 
   def check_is_staff_member!
     if email_changed?
-      # email will match on any casing in staffmembers table as email column is citext
+      # email will match on any casing in staff_members table as email column is citext
       self.matching_staff_member_count = StaffMember.where(email: email).count
     end
   end
