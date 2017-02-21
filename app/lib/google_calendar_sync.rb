@@ -110,17 +110,24 @@ class GoogleCalendarSync
     events_by_date
   end
 
-  def events_match?(e1, e2)
+  def event_basics_match?(e1, e2)
     e1.start.date_time.present? && e1.start.date_time == e2.start.date_time &&
     e1.end.date_time.present?   && e1.end.date_time   == e2.end.date_time   &&
-    e1.location == e2.location &&
-    e1.description == e2.description &&
+    e1.summary == e2.summary &&
     !e1.recurring_event_id
+  end
+
+  def event_details_match?(e1, e2)
+    e1.location == e2.location && e1.description == e2.description
+  end
+
+  def event_full_match?(e1, e2)
+    event_basics_match?(e1, e2) && event_details_match?(e1, e2)
   end
 
   def unique_events_array(events)
     events.each_with_object([]) do |event, uniqued|
-      uniqued.push(event) unless uniqued.any? { |e| events_match?(event, e) }
+      uniqued.push(event) unless uniqued.any? { |e| event_full_match?(event, e) }
     end
   end
 
@@ -137,14 +144,28 @@ class GoogleCalendarSync
       event_mappings.last[:source_event].start.date_time.tomorrow
     )
     events_to_delete = []
+    events_to_update = []
 
     all_gcal_events.each do |gcal_event|
-      mapping = event_mappings.find { |mapping| events_match?(mapping[:source_event], gcal_event) }
+      mapping = event_mappings.find { |m| event_basics_match?(m[:source_event], gcal_event) }
       if mapping
+
+        # puts mapping[:source_event].summary
+        # binding.pry if mapping[:source_event].summary.include?("MA2C03ygjhvhgc")
+        # puts "\n#{mapping[:source_event].start.date_time}"
+        # puts mapping[:source_event].description
+
+
         if mapping[:gcal_event] # if there's already gcal event added for that source_event
           events_to_delete.push(gcal_event)
         else
-          mapping[:gcal_event] = gcal_event # the source event is found, no gcal event yet though
+          mapping[:gcal_event] = gcal_event # the source event is found, no gcal event had previously found
+
+          unless event_full_match?(mapping[:source_event], gcal_event)
+            # set id on the source event so we know which event to overwrite
+            mapping[:source_event].id = gcal_event.id
+            events_to_update.push(mapping[:source_event])
+          end
         end
       else
         events_to_delete.push(gcal_event) # that source event doesn't exist at all
@@ -154,12 +175,15 @@ class GoogleCalendarSync
     event_ids_to_delete = events_to_delete.compact.map { |e| e.recurring_event_id || e.id }.uniq
     delete_remote_event_ids(event_ids_to_delete) if event_ids_to_delete.any?
 
-    # remove events who already have a google cal events and select the new source events from the hashes
+    update_events(events_to_update)
+
+    # select events who don't already have a google cal events and map them to the new source events from the hashes
     events_to_create = event_mappings.reject { |mapping| mapping[:gcal_event] }.map { |mapping| mapping[:source_event] }
     create_events(events_to_create) if events_to_create.any?
 
     {
       events_created: events_to_create.size,
+      events_updated: events_to_update.size,
       events_deleted: event_ids_to_delete.size
     }
   end
@@ -170,6 +194,17 @@ class GoogleCalendarSync
       cal_service.batch do |cal_batch|
         events.each do |event|
           cal_batch.insert_event(calendar_id, event, &callback)
+        end
+      end
+    end
+  end
+
+  def update_events(events)
+    callback = lambda { |event, err| raise err if err }
+    events.in_groups_of(250, false) do |events|
+      cal_service.batch do |cal_batch|
+        events.each do |event|
+          cal_batch.update_event(calendar_id, event.id, event, &callback)
         end
       end
     end

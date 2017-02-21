@@ -176,9 +176,15 @@ module MyTcd
       end
 
       locations = attrs["Room"].compact.map { |s| format_location_string(s.to_s) }
-      lecturers = attrs["Lecturer"].compact.map { |lecturer| fix_casing(lecturer, surname: true) }.join(", ")
       activity = attrs["Activity"].first.to_s.downcase.titlecase
-      module_name = fix_casing(attrs["Module"][0].to_s)
+
+      lecturers = attrs["Lecturer"].compact.map do |lecturer|
+        # MacMcFix
+        lecturer.titleize.gsub(/(?<=Mac|Mc|O')([a-z])/) { $1.capitalize }
+      end
+
+      # Telecoms Iii => III
+      module_name = attrs["Module"][0].to_s.titleize.gsub(/\bIi{1,6}\b/, &:upcase)
       module_code = attrs["Module"][1]
 
       locations_title, locations_description = if locations.size == 1
@@ -188,7 +194,7 @@ module MyTcd
       end
 
       event_description = {
-        "Lecturer".pluralize(lecturers.size)            => lecturers,
+        "Lecturer".pluralize(lecturers.size)            => lecturers.join(", "),
         "Group"                                         => attrs["Group"].first,
         "Like our page"                                 => "https://fb.me/TcalDotMe",
         locations_title                                 => locations_description,
@@ -321,12 +327,6 @@ module MyTcd
       rescue ArgumentError, TypeError
         nil
       end
-    end
-
-    def fix_casing(str, surname: false)
-      fixed = str.gsub(/\b([a-zA-Z]+)\b/) { $1.downcase.capitalize } # capitalize words
-      # MacMcFix  :  Telecoms Iii => III
-      surname ? fixed.gsub(/(?<=Mac|Mc)([a-z])/) { $1.capitalize } : fixed.gsub(/\bIi{1,6}\b/, &:upcase)
     end
   end
 

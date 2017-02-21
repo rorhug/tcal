@@ -41,10 +41,19 @@
           <div class="header"><%= "#{"Failed " unless attempt.successful?}#{attempt.triggered_manually? ? "Manual" : "Auto"} Sync" %></div>
           <div class="description">
             <%=
-              [:events_created, :events_deleted].map do |count_attr|
-                count = attempt.send(count_attr)
-                "#{pluralize(count, 'event')} #{count_attr.to_s.split("_")[1]}" if count > 0
-              end.compact.join(", ")
+              attempt.slice(
+                *[
+                  :events_created,
+                  :events_updated,
+                  :events_deleted
+                ]
+              ).select { |_, count| count > 0 }.each_with_index.map do |(attr, count), index|
+                if index == 0
+                  pluralize(count, 'event')
+                else
+                  count.to_s
+                end + " #{attr.to_s.split("_")[1]}"
+              end.to_a.compact.join(", ")
             %>
             <div><small>Finished <%= time_ago_in_words(attempt.finished_at) %> ago</small></div>
           </div>

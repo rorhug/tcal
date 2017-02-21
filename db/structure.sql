@@ -164,7 +164,8 @@ CREATE TABLE sync_attempts (
     finished_at timestamp without time zone NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    triggered_manually boolean DEFAULT true NOT NULL
+    triggered_manually boolean DEFAULT true NOT NULL,
+    events_updated integer DEFAULT 0 NOT NULL
 );
 
 
@@ -371,6 +372,7 @@ INSERT INTO schema_migrations (version) VALUES
 ('20170203000827'),
 ('20170203011649'),
 ('20170203013416'),
-('20170213172139');
+('20170213172139'),
+('20170221010100');
 
 
