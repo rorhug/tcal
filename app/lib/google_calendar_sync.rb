@@ -149,13 +149,6 @@ class GoogleCalendarSync
     all_gcal_events.each do |gcal_event|
       mapping = event_mappings.find { |m| event_basics_match?(m[:source_event], gcal_event) }
       if mapping
-
-        # puts mapping[:source_event].summary
-        # binding.pry if mapping[:source_event].summary.include?("MA2C03ygjhvhgc")
-        # puts "\n#{mapping[:source_event].start.date_time}"
-        # puts mapping[:source_event].description
-
-
         if mapping[:gcal_event] # if there's already gcal event added for that source_event
           events_to_delete.push(gcal_event)
         else

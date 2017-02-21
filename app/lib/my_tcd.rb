@@ -180,11 +180,11 @@ module MyTcd
 
       lecturers = attrs["Lecturer"].compact.map do |lecturer|
         # MacMcFix
-        lecturer.titleize.gsub(/(?<=Mac|Mc|O')([a-z])/) { $1.capitalize }
+        simple_titleize(lecturer).gsub(/(?<=Mac|Mc|O')([a-z])/) { $1.capitalize }
       end
 
       # Telecoms Iii => III
-      module_name = attrs["Module"][0].to_s.titleize.gsub(/\bIi{1,6}\b/, &:upcase)
+      module_name = simple_titleize(attrs["Module"][0].to_s).gsub(/\bIi{1,6}\b/, &:upcase)
       module_code = attrs["Module"][1]
 
       locations_title, locations_description = if locations.size == 1
@@ -327,6 +327,10 @@ module MyTcd
       rescue ArgumentError, TypeError
         nil
       end
+    end
+
+    def simple_titleize(str)
+      str.downcase.gsub(/\b(?<!['â`])[a-z]/) { |match| match.capitalize }
     end
   end
 
