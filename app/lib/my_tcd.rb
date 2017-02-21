@@ -183,8 +183,8 @@ module MyTcd
         simple_titleize(lecturer).gsub(/(?<=Mac|Mc|O')([a-z])/) { $1.capitalize }
       end
 
-      # Telecoms Iii => III
-      module_name = simple_titleize(attrs["Module"][0].to_s).gsub(/\bIi{1,6}\b/, &:upcase)
+      # Telecoms Iiv => IIV
+      module_name = simple_titleize(attrs["Module"][0].to_s).gsub(/\b[IV]{1,6}\b/i, &:upcase)
       module_code = attrs["Module"][1]
 
       locations_title, locations_description = if locations.size == 1
