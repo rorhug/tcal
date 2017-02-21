@@ -3,6 +3,14 @@ require 'google/apis/calendar_v3'
 module MyTcd
   # WEEKS_TO_SYNC = 50
   LOGIN_PAGE_URL = "https://my.tcd.ie/urd/sits.urd/run/siw_lgn"
+  ACTIVITY_COLOR_ID_MAPPING = {
+    "Laboratory" => 6,
+    "Tutorial" => 5,
+
+    # use default calendar color for these
+    "Lecture" => nil,
+    "Core" => nil
+  }
 
   class TimetableScraper
     HTML_EVENT_ATTRIBUTES = {
@@ -168,8 +176,8 @@ module MyTcd
       end
 
       locations = attrs["Room"].compact.map { |s| format_location_string(s.to_s) }
-      lecturers = attrs["Lecturer"].compact.map { |lecturer| fix_casing(lecturer, surname: true) }
-      activity = attrs["Activity"].first.to_s
+      lecturers = attrs["Lecturer"].compact.map { |lecturer| fix_casing(lecturer, surname: true) }.join(", ")
+      activity = attrs["Activity"].first.to_s.downcase.titlecase
       module_name = fix_casing(attrs["Module"][0].to_s)
       module_code = attrs["Module"][1]
 
@@ -180,7 +188,7 @@ module MyTcd
       end
 
       event_description = {
-        "Lecturer".pluralize(lecturers.size)            => lecturers.join(", "),
+        "Lecturer".pluralize(lecturers.size)            => lecturers,
         "Group"                                         => attrs["Group"].first,
         "Like our page"                                 => "https://fb.me/TcalDotMe",
         locations_title                                 => locations_description,
@@ -201,13 +209,19 @@ module MyTcd
         summary: [module_name, activity, module_code].select(&:present?).join(" | "),
         location: locations.first,
         description: event_description,
-        start: Google::Apis::CalendarV3::EventDateTime.new(date_time: start_time.to_datetime, time_zone: "Europe/Dublin"),
-        end:   Google::Apis::CalendarV3::EventDateTime.new(date_time: end_time.to_datetime,   time_zone: "Europe/Dublin"),
+        start: Google::Apis::CalendarV3::EventDateTime.new(
+          date_time: start_time.to_datetime,
+          time_zone: GoogleCalendarSync::TIMEZONE_STRING
+        ),
+        end: Google::Apis::CalendarV3::EventDateTime.new(
+          date_time: end_time.to_datetime,
+          time_zone: GoogleCalendarSync::TIMEZONE_STRING
+        ),
         reminders: {
           use_default: false
-        }
+        },
+        color_id: ACTIVITY_COLOR_ID_MAPPING[activity]
       })
-      event.color_id = "2" unless activity.downcase.include?("lecture")
 
       event
     end

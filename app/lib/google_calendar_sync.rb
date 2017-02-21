@@ -6,6 +6,7 @@ Google::Apis.logger.level = Logger::INFO
 
 class GoogleCalendarSync
   CALENDAR_SUMMARY = "Tcal#{ " - " + Rails.env unless Rails.env.production? }"
+  CALENDAR_COLOR_ID = 7
   TIMEZONE_STRING = "Europe/Dublin"
   MAX_SYNCS_PER_HOUR = 5
   # SYNC_BLOCKED_MESSAGES = {
@@ -56,7 +57,8 @@ class GoogleCalendarSync
     # create it
     calendar = Google::Apis::CalendarV3::Calendar.new(
       summary: CALENDAR_SUMMARY,
-      time_zone: TIMEZONE_STRING
+      time_zone: TIMEZONE_STRING,
+      color_id: CALENDAR_COLOR_ID
     )
     calendar = cal_service.insert_calendar(calendar)
     return @calendar_id = calendar.id
@@ -152,6 +154,7 @@ class GoogleCalendarSync
     event_ids_to_delete = events_to_delete.compact.map { |e| e.recurring_event_id || e.id }.uniq
     delete_remote_event_ids(event_ids_to_delete) if event_ids_to_delete.any?
 
+    # remove events who already have a google cal events and select the new source events from the hashes
     events_to_create = event_mappings.reject { |mapping| mapping[:gcal_event] }.map { |mapping| mapping[:source_event] }
     create_events(events_to_create) if events_to_create.any?
 
