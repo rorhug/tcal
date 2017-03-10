@@ -1,4 +1,4 @@
-<% if current_user && !current_user.oauth_refresh_token %>
+<% if current_user && !current_user.has_valid_refresh_token? %>
   <div class="ui negative message">
     <i class="close icon"></i>
     <div class="header">

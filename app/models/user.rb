@@ -189,7 +189,7 @@ class User < ApplicationRecord
     new_access_token, expires_at = auth_hash["credentials"]["token"], auth_hash["credentials"]["expires_at"]
     if new_access_token.is_a?(String) && new_access_token.length > 10 && expires_at
       user.oauth_access_token = new_access_token
-      user.oauth_access_token_expires_at = Time.at(expires_at)
+      user.oauth_access_token_expires_at = Time.at(expires_at).utc
     end
     user.auth_hash = auth_hash
 
@@ -310,9 +310,16 @@ class User < ApplicationRecord
       refresh_token: oauth_refresh_token
     )
 
-    access_token = access_token.refresh!
-    self.oauth_access_token = access_token.token
-    self.oauth_access_token_expires_at = Time.at(access_token.expires_at).utc
+    begin
+      access_token = access_token.refresh!
+    rescue OAuth2::Error => e
+      self.oauth_refresh_token = "_broken_"
+      save!
+      raise e
+    else
+      self.oauth_access_token = access_token.token
+      self.oauth_access_token_expires_at = Time.at(access_token.expires_at).utc
+    end
 
     save!
   end
@@ -323,6 +330,10 @@ class User < ApplicationRecord
     else
       true
     end
+  end
+
+  def has_valid_refresh_token?
+    oauth_refresh_token.present? && oauth_refresh_token.size > 10
   end
 
   def invites_left
