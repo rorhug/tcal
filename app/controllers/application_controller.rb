@@ -41,22 +41,24 @@ class ApplicationController < ActionController::Base
     def ensure_email_is_allowed!
       return unless current_user
 
-      if !current_user.tcd_email? || current_user.is_staff_member?
-        flash[:error] = "This service is only available to tcd.ie Google Accounts"
-        unless params >= { "controller" => "home", "action" => "setup", "step" => "google" }
-          redirect_to setup_step_path(step: "google")
-        end
+      if !current_user.tcd_email? || current_user.blocked_as_staff_member?
+        # flash[:error] = "This service is only available to tcd.ie Google Accounts"
+        redirect_to user_not_compatible_path
       end
     end
 
     def ensure_is_joined!
-      if current_user && !current_user.joined_at?
+      return unless current_user
+
+      unless current_user.joined_at?
         redirect_to invite_needed_invites_path
       end
     end
 
     def ensure_my_tcd_login_success!
-      if current_user && !current_user.my_tcd_login_success?
+      return unless current_user
+
+      unless current_user.my_tcd_login_success?
         redirect_to setup_step_path(step: "my_tcd")
       end
     end

@@ -5,7 +5,7 @@
   </div>
   <div class="eight wide column mobile only"><div class="ui divider"></div></div>
   <div class="eight wide column">
-    <%= render partial: "users/google_account_card" %>
+    <%= render partial: "users/google_account_card", locals: { user: @user } %>
     <%= link_to "JSON", admin_user_path(@user, format: :json) %>
     <% if @user.joined_at? %>
       <div class="ui horizontal divider">Upcoming Events</div>

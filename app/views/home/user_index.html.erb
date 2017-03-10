@@ -33,7 +33,7 @@
       <%# LOADED ASYNC render partial: "upcoming_events" %>
     </div>
     <div class="ui divider"></div>
-    <%= render partial: "users/google_account_card" %>
+    <%= render partial: "users/google_account_card", locals: { user: current_user } %>
   </div>
   <div class="eight wide column mobile only"><div class="ui divider"></div></div>
   <div class="eight wide column">

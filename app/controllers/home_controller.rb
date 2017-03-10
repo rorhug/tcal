@@ -1,7 +1,9 @@
 class HomeController < ApplicationController
   skip_before_action :authenticate!, only: [:index, :about]
-  skip_before_action :ensure_my_tcd_login_success!, only: [:setup, :update_my_tcd_details, :about]
-  skip_before_action :ensure_email_is_allowed!, only: [:setup]
+  skip_before_action :ensure_my_tcd_login_success!, only: [:setup, :update_my_tcd_details, :about, :user_not_compatible]
+  skip_before_action :ensure_email_is_allowed!, only: [:user_not_compatible]
+  skip_before_action :ensure_is_joined!, only: [:user_not_compatible]
+
   before_action :load_user, only: [:setup]
 
   def index
@@ -63,6 +65,13 @@ class HomeController < ApplicationController
       flash[:error] = "Error saving user details!"
       render :setup
     end
+  end
+
+  def user_not_compatible
+    if current_user.tcd_email? && !current_user.blocked_as_staff_member?
+      return redirect_to root_path
+    end
+    @staff = current_user.matching_staff_members.first
   end
 
   private

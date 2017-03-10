@@ -1,0 +1,9 @@
+example_id                                | status  | run_time        |
+----------------------------------------- | ------- | --------------- |
+./spec/mailers/user_invite_spec.rb[1:1:1] | passed  | 0.01604 seconds |
+./spec/mailers/user_invite_spec.rb[1:1:2] | passed  | 0.25004 seconds |
+./spec/models/staff_member_spec.rb[1:1]   | pending | 0.00001 seconds |
+./spec/models/user_spec.rb[1:1:1]         | passed  | 0.00457 seconds |
+./spec/models/user_spec.rb[1:1:2]         | passed  | 0.02484 seconds |
+./spec/models/user_spec.rb[1:1:3]         | passed  | 0.01055 seconds |
+./spec/models/user_spec.rb[1:1:4]         | passed  | 0.00734 seconds |

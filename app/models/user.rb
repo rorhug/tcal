@@ -32,15 +32,22 @@ class User < ApplicationRecord
     end
   end
 
+  # meaning of blocked_as_staff_member
+  # nil   - unblocked so far
+  # true  - automatically/manually blocked
+  # false - manually unblocked
   def check_is_staff_member!
-    if email_changed?
+    if email_changed? && blocked_as_staff_member == nil
+      Rails.logger.info("CHECK_IS_STAFF_MEMBER")
       # email will match on any casing in staff_members table as email column is citext
-      self.matching_staff_member_count = StaffMember.where(email: email).count
+      if matching_staff_members.any?
+        self.blocked_as_staff_member = true
+      end
     end
   end
 
-  def is_staff_member?
-    matching_staff_member_count.to_i > 0
+  def matching_staff_members
+    StaffMember.where(email: email)
   end
 
   def set_joined_at_if_invited!

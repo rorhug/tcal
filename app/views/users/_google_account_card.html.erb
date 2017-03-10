@@ -1,4 +1,4 @@
-<% google_segment_color = @user ? "green" : "yellow" %>
+<% google_segment_color = user ? "green" : "yellow" %>
 
 <div class="ui tall raised segment <%= google_segment_color %>">
   <span class="ui ribbon label <%= google_segment_color %>">Your Google Account</span>
@@ -6,23 +6,23 @@
   <div class="ui items">
     <div class="item">
       <div class="content">
-        <span class="header"><%= @user.google_name %></span>
+        <span class="header"><%= user.google_name %></span>
         <div class="meta">
-          <span><%= @user.email %></span>
+          <span><%= user.email %></span>
         </div>
         <div class="extra">
-          <% if @user.invited_by && !@user.invited_by.is_admin? %>
-            Invited by: <%= @user.invited_by.email %><br>
+          <% if user.invited_by && !user.invited_by.is_admin? %>
+            Invited by: <%= user.invited_by.email %><br>
           <% end %>
-          <% if @user.joined_at %>
-            Joined: <%= @user.joined_at.strftime("%a, %Y-%b-%e") %>
+          <% if user.joined_at %>
+            Joined: <%= user.joined_at.strftime("%a, %Y-%b-%e") %>
           <% else %>
-            Account Created: <%= @user.created_at.strftime("%a, %Y-%b-%e") %>
+            Account Created: <%= user.created_at.strftime("%a, %Y-%b-%e") %>
           <% end %>
         </div>
       </div>
       <div class="ui tiny image right floated mobile hidden">
-        <img src="<%= @user.image_url %>">
+        <img src="<%= user.image_url %>">
       </div>
     </div>
   </div>

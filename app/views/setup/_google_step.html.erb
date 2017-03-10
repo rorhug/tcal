@@ -1,4 +1,4 @@
-<%= render partial: "users/google_account_card" %>
+<%= render partial: "users/google_account_card", locals: { user: current_user } %>
 <%= button_to logout_user_path, method: :delete, class: "ui button labeled icon basic" do %>
   <i class="delete icon"></i> Logout
 <% end %>

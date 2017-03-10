@@ -70,3 +70,4 @@ gem "nokogiri"
 gem 'whenever', require: false
 gem 'activerecord-import'
 gem 'pluck_to_hash'
+gem "factory_girl_rails", "~> 4.0"
