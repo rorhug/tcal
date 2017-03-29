@@ -248,11 +248,7 @@ class User < ApplicationRecord
     sync_exception = nil
     begin
       scraper = MyTcd::TimetableScraper.new(self, silence_my_tcd_fail_email: triggered_manually)
-      scrape_result = if Rails.env.production? || force_dev
-        scraper.fetch_events
-      else
-        scraper.fetch_events(event_list_page: Nokogiri::HTML(File.read("random/update_timetable.html")))
-      end
+      scrape_result = scraper.fetch_all_events(use_template: Rails.env.development? && !force_dev)
 
       counts = if scrape_result[:status] == :success && scrape_result[:events].any?
         gcs.sync_events!(scrape_result[:events])
