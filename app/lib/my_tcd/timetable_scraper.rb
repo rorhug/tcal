@@ -185,7 +185,6 @@ module MyTcd
 
       student_exam_number = exam_number_page.search("td[text()=\"Examination Number:\"] ~ *").last.text
 
-
       # exam_timetable_page.css(".sitstablegrid")[0] other handy info
 
       header, *rows = exam_timetable_page.css(".sitstablegrid")[1].css("tr").map do |row|
