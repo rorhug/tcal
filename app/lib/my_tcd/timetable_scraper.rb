@@ -133,10 +133,10 @@ module MyTcd
 
       exams_link = home.link_with(text: "My Exams")
       if exams_link.present?
-        gcal_events += get_exam_timetable_events(exams_link.click)
+        gcal_events[:events] += get_exam_timetable_events(exams_link.click)
       end
 
-      { events: gcal_events, status: :success }
+      gcal_events
     end
 
     def get_timetable_events(event_list_page) # returns { events: [GoogleCalEvent, ...], status: (:success, :no_records) }
@@ -167,7 +167,8 @@ module MyTcd
         parse_to_gcal_event(event_attributes, last_date)
       end
       log_line("finish_term_events_parsing")
-      gcal_events
+
+      { events: gcal_events, status: :success }
     end
 
     def get_exam_timetable_events(my_exams_page)
