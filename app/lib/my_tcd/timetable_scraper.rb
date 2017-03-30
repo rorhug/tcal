@@ -178,13 +178,15 @@ module MyTcd
       exam_number_page = my_exams_page.link_with(
         class: "sv-list-group-item sv-list-group-item-overflow",
         text: "My Exam Number"
-      ).click
+      ).try(:click)
       exam_timetable_page = my_exams_page.link_with(
         class: "sv-list-group-item sv-list-group-item-overflow",
         text: "My Exams"
-      ).click
+      ).try(:click)
 
-      student_exam_number = exam_number_page.search("td[text()=\"Examination Number:\"] ~ *").last.text
+      return [] unless exam_timetable_page
+
+      student_exam_number = exam_number_page.search("td[text()=\"Examination Number:\"] ~ *").last.text if exam_number_page
 
       # exam_timetable_page.css(".sitstablegrid")[0] other handy info
 
