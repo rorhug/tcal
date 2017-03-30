@@ -188,6 +188,7 @@ module MyTcd
 
       # exam_timetable_page.css(".sitstablegrid")[0] other handy info
 
+      save_exam_page_student_data(exam_timetable_page.css(".sitstablegrid")[0])
       header, *rows = exam_timetable_page.css(".sitstablegrid")[1].css("tr").map do |row|
         row.children.select {|el| el.matches?("comment()") || el.matches?("th") || el.matches?("td") }
       end
@@ -235,6 +236,15 @@ module MyTcd
         }
         # color_id: ACTIVITY_COLOR_ID_MAPPING[activity]
       })
+    end
+
+    def save_exam_page_student_data(student_data_table)
+      @user.update_attributes!(
+        exam_page_student_number: student_data_table.search("th[text()=\"Student Number\"] ~ *").first.text.strip,
+        exam_page_student_name: student_data_table.search("th[text()=\"Student Name\"] ~ *").first.text.strip,
+        exam_page_student_course_year: student_data_table.search("th[text()=\"Student Course Year\"] ~ *").first.text.strip,
+        exam_page_course: student_data_table.search("th[text()=\"Course\"] ~ *").first.text.strip
+      )
     end
 
     def format_location_string(mytcd_location)

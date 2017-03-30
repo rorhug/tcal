@@ -212,7 +212,11 @@ CREATE TABLE users (
     auto_sync_enabled boolean DEFAULT true NOT NULL,
     is_admin boolean DEFAULT false NOT NULL,
     invite_email_at timestamp without time zone,
-    blocked_as_staff_member boolean
+    blocked_as_staff_member boolean,
+    exam_page_student_number text,
+    exam_page_student_name text,
+    exam_page_student_course_year text,
+    exam_page_course text
 );
 
 
@@ -374,6 +378,7 @@ INSERT INTO schema_migrations (version) VALUES
 ('20170203013416'),
 ('20170213172139'),
 ('20170221010100'),
-('20170308174615');
+('20170308174615'),
+('20170330010747');
 
 
