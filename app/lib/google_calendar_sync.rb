@@ -106,7 +106,7 @@ class GoogleCalendarSync
       dates[date] ||= []
       dates[date].push(event)
     end
-    events_by_date.delete(events_by_date.keys.last)
+    # events_by_date.delete(events_by_date.keys.last) maybe not a good idea after all
     events_by_date
   end
 
