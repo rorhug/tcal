@@ -19,6 +19,10 @@ class HomeController < ApplicationController
   def about
   end
 
+  def summer_landing_page
+    render 'summer_landing_page/index.html', layout: false
+  end
+
   def setup
     @step = params[:step]
 
