@@ -1,7 +1,9 @@
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
-  root "home#index"
+  # root "home#index"
+  root "home#summer_landing_page"
 
+  get "/uwotm8" => "home#index"
   get "/about" => "home#about"
   get :user_not_compatible, controller: :home
 
