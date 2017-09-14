@@ -115,6 +115,7 @@ module MyTcd
         user: @user.for_raven,
         extra: exception_extra
       ) if send_to_sentry # Only care if it's an unknown error
+      # TODO: Change this to send if it's not a passworderror
 
       raise e # raise it again up to the controller or job runner
     end
@@ -351,15 +352,14 @@ module MyTcd
 
       is_michaelmas = (1..8).exclude?(t.month)
       academic_year = is_michaelmas ? t.year : t.year - 1
+      start_week, end_week = is_michaelmas ? ["5", "17"] : ["21", "33"]
 
       update_timetable_form = {
         "P01" => "", #from_date.strftime("%d/%b/%Y"),
         "P02" => "", #to_date.strftime("%d/%b/%Y"),
         "P03" => "#{academic_year}/#{(academic_year + 1).to_s[2..3]}",
-        # ===== SHITE =====
-        "P04" => "16",
-        "P05" => "37",
-        # ===== ===== =====
+        "P04" => start_week,
+        "P05" => end_week,
         "P06" => "T",
         "P07" => "TOP",
         "P08" => form.field_with(name: "INSTANCE_NUMBER.DUMMY.MENSYS.1").value,
