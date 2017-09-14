@@ -132,10 +132,10 @@ module MyTcd
       end
       gcal_events = get_timetable_events(term_event_list_page)
 
-      exams_link = home.link_with(text: "My Exams")
-      if exams_link.present?
-        gcal_events[:events] += get_exam_timetable_events(exams_link.click)
-      end
+      # exams_link = home.link_with(text: "My Exams")
+      # if exams_link.present?
+      #   gcal_events[:events] += get_exam_timetable_events(exams_link.click)
+      # end
 
       gcal_events
     end
