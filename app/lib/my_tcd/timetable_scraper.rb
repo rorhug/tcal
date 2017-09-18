@@ -38,7 +38,6 @@ module MyTcd
     end
 
     def get_my_tcd_home(for_login_test: false)
-      send_to_sentry = false
       log_line("get_my_tcd_home")
       login_page = @agent.get(LOGIN_PAGE_URL)
 
@@ -84,20 +83,21 @@ module MyTcd
           # There's a 'here' link on this page which goes to login page anyway... (random/u565.html)
           next @agent.get(LOGIN_PAGE_URL)
 
+        # Successful login (intray present) but no timetable as didn't pass first if
+        elsif page.at_css("#CON_INTRAY_01_TITLE")
+          raise NoTimetableLinkError, "There is no student timetable on you MyTCD Account."
+
         # Unknown flow :/
         else
-          send_to_sentry = true
           raise MyTcdError, "Error logging into MyTCD (unknown flow)"
         end
       end
 
       # it could repeat 4 times without raising...
-      send_to_sentry = true
       raise MyTcdError, "Error logging into MyTCD (4)"
 
     rescue MyTcd::MyTcdError, SocketError => e
       if e.is_a?(SocketError)
-        send_to_sentry = true
         e = MyTcdError.new("MyTCD seems to be down... please try again later")
       end
       save_login_success!(error: e, for_login_test: for_login_test)
@@ -114,8 +114,7 @@ module MyTcd
         level: "warning",
         user: @user.for_raven,
         extra: exception_extra
-      ) if send_to_sentry # Only care if it's an unknown error
-      # TODO: Change this to send if it's not a passworderror
+      ) unless e.try(:skip_sentry) # Only care if it's an unknown error
 
       raise e # raise it again up to the controller or job runner
     end

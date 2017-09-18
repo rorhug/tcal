@@ -19,5 +19,14 @@ module MyTcd
   end
 
   class PasswordError < MyTcdError
+    def skip_sentry
+      true
+    end
+  end
+
+  class NoTimetableLinkError < MyTcdError
+    def skip_sentry
+      false
+    end
   end
 end
