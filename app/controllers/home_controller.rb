@@ -12,11 +12,7 @@ class HomeController < ApplicationController
       load_user
       user_index
     else
-      if params[:a] == "b"
-        landing_index
-      else
-        summer_landing_page
-      end
+      landing_index
     end
   end
 
@@ -34,6 +30,7 @@ class HomeController < ApplicationController
     when "google"
       # google step
     when "my_tcd"
+      @user.my_tcd_username = @user.my_tcd_username_estimate if @user.my_tcd_username.blank?
       # if @user.my_tcd_login_success == false # Only if SET to false
       #   flash[:error] ||= "Your MyTCD details didn't work last time, try re-entering them to continue."
       # end

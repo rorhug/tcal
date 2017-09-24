@@ -96,8 +96,7 @@ class User < ApplicationRecord
   end
 
   def should_show_invite_prompt?
-    last_sync_success = sync_attempts.last && !sync_attempts.last.error_message?
-    joined_at? && my_tcd_login_success? && (invites_left == User::MAX_INVITES) && last_sync_success
+    joined_at? && my_tcd_login_success? && (invites_left == User::MAX_INVITES) && (sync_attempts.last && !sync_attempts.last.error_message?)
   end
 
   def google_calendar_url
@@ -209,7 +208,8 @@ class User < ApplicationRecord
       auto_sync_enabled: true,
       my_tcd_login_success: true,
     ).where.not(
-      joined_at: nil
+      joined_at: nil,
+      blocked_as_staff_member: true
     )
   end
 

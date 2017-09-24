@@ -1,6 +1,9 @@
 <div class="ui error message thinner">
   <% if !current_user.tcd_email? %>
-    <p>Tcal is <strong>only</strong> for <strong>@tcd.ie</strong> email address holders.</p>
+    <p>Tcal is <strong>only</strong> for <strong>@tcd.ie</strong> google accounts.</p>
+    <%= button_to logout_user_path, method: :delete, class: "ui button labeled icon" do %>
+      <i class="delete icon"></i> Logout
+    <% end %>
   <% elsif current_user.blocked_as_staff_member? %>
     <div class="header">
       Sorry!
@@ -9,10 +12,12 @@
       <br>
       Dear <%= current_user.google_name %>,
       <br><br>
-      Tcal was designed for undergraduate students only...
       <% if @staff && @staff.department.present? %>
+        Tcal was designed for undergraduate students only...
         <br>
         Not staff from <%= @staff.department %>
+      <% else %>
+        Your account is currently suspended.
       <% end %>
 
       <br><br>
