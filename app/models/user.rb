@@ -206,10 +206,11 @@ class User < ApplicationRecord
   def self.ready_for_sync
     where(
       auto_sync_enabled: true,
-      my_tcd_login_success: true,
+      my_tcd_login_success: true
+    ).where(
+      "blocked_as_staff_member IS NOT TRUE"
     ).where.not(
-      joined_at: nil,
-      blocked_as_staff_member: true
+      joined_at: nil
     )
   end
 
