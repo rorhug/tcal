@@ -3,7 +3,7 @@ class Testimonial
 #     {
 #       enabled: :admin_only,
 #       name: "Owen",
-#       course: "Computer Science, 2nd Year",
+#       course: "Computer Science, 3rd Year",
 #       message: %Q{
 # Tcal is the sexiest tool to replace TCD's pathetic attempt at getting a useful calendar, MyDay.
 
@@ -13,7 +13,7 @@ class Testimonial
     {
       enabled: true,
       name: "Sam",
-      course: "2nd year BESS",
+      course: "3rd year BESS",
       message: %Q{
 It's beautiful
       }
@@ -21,7 +21,7 @@ It's beautiful
     {
       enabled: true,
       name: "Eoin",
-      course: "3rd year Science",
+      course: "4th year Science",
       message: %Q{
 It's f**king sweet
       }
@@ -29,7 +29,7 @@ It's f**king sweet
     {
       enabled: true,
       name: "Fiona",
-      course: "1st year BESS",
+      course: "2nd year BESS",
       message: %Q{
 Just syncing it now 👍  thanks... so handy!
       }
@@ -37,7 +37,7 @@ Just syncing it now 👍  thanks... so handy!
     {
       enabled: true,
       name: "Patrick",
-      course: "2nd year Sociology and Social Policy",
+      course: "3rd year Sociology and Social Policy",
       message: %Q{
 Unbelievably handy
       }
@@ -53,7 +53,7 @@ Tcal is dead handy
     {
       enabled: true,
       name: "Aaron",
-      course: "2nd year Business and German",
+      course: "3rd year Business and German",
       message: %Q{
 I actually turn up to lectures on time...
       }
@@ -61,7 +61,7 @@ I actually turn up to lectures on time...
     {
       enabled: true,
       name: "Conor",
-      course: "2nd year BESS",
+      course: "3rd year BESS",
       message: %Q{
 Mind=Blown.
       }
@@ -69,7 +69,7 @@ Mind=Blown.
     {
       enabled: true,
       name: "Conor",
-      course: "1st year Maths and Economics",
+      course: "2nd year Maths and Economics",
       message: %Q{
 An absolute godsend
       }
@@ -77,7 +77,7 @@ An absolute godsend
     {
       enabled: true,
       name: "Cian",
-      course: "2nd year Medicine",
+      course: "3rd year Medicine",
       message: %Q{
 How has trinity not had this before?
       }
@@ -85,7 +85,7 @@ How has trinity not had this before?
     {
       enabled: true,
       name: "Jack",
-      course: "2nd year BESS",
+      course: "3rd year BESS",
       message: %Q{
 ...much quicker, concise, better layout...
       }
@@ -109,7 +109,7 @@ Wish I had this back in first year!
     {
       enabled: true,
       name: "Bill",
-      course: "1st year MSISS",
+      course: "2nd year MSISS",
       message: %Q{
 No more bloody screenshots...
       }
@@ -117,7 +117,7 @@ No more bloody screenshots...
     {
       enabled: true,
       name: "Ally",
-      course: "2nd year Law",
+      course: "3rd year Law",
       message: %Q{
 It's my saviour
       }
