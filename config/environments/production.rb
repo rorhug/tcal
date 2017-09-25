@@ -81,10 +81,12 @@ Rails.application.configure do
   # require 'syslog/logger'
   # config.logger = ActiveSupport::TaggedLogging.new(Syslog::Logger.new 'app-name')
 
-  if ENV["RAILS_LOG_TO_STDOUT"].present? || (defined? Rails::Console)
+  if ENV["RAILS_LOG_TO_STDOUT"].present?
     logger           = ActiveSupport::Logger.new(STDOUT)
     logger.formatter = config.log_formatter
     config.logger = ActiveSupport::TaggedLogging.new(logger)
+  elsif defined? Rails::Console
+    ActiveRecord::Base.logger = Logger.new(STDOUT)
   end
 
   # Do not dump schema after migrations.
