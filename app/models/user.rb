@@ -309,7 +309,7 @@ class User < ApplicationRecord
 
     begin
       access_token = access_token.refresh!
-    rescue OAuth2::Error => e
+    rescue OAuth2::Error => e # whats the point in this + might error and set _broken_ on random google fail
       self.oauth_refresh_token = "_broken_"
       save!
       raise e

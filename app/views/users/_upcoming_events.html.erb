@@ -35,3 +35,5 @@
 <% else %>
   <p class="text grey"><em>No events anytime soon...</em></p>
 <% end %>
+
+<% if current_user.is_admin? %><pre><%= @user.gcs.calendar_id %></pre><% end %>
