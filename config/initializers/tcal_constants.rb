@@ -1,5 +1,5 @@
 AUTO_SYNC_SETTINGS = {
-  user_interval: 7.hours,
+  user_interval: 23.hours,
   cron_interval: 1.minutes
 }.freeze
 
