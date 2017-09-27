@@ -12,12 +12,30 @@
         </div>
         <div class="extra">
           <% if user.invited_by && !user.invited_by.is_admin? %>
-            Invited by: <%= user.invited_by.email %><br>
+            Invited by: <%= link_to_if current_user.is_admin?, user.invited_by.email, admin_user_path(user.invited_by) %><br>
           <% end %>
+
           <% if user.joined_at %>
             Joined: <%= user.joined_at.strftime("%a, %Y-%b-%e") %>
           <% else %>
             Account Created: <%= user.created_at.strftime("%a, %Y-%b-%e") %>
+          <% end %>
+
+          <% invitees = current_user.is_admin? ? user.invitees.order(id: :desc).limit(10) : [] %>
+          <% if invitees.any? %>
+            <div class="ui item">
+              <div><strong>Invitees</strong></div>
+              <div class="ui list no-top-margin">
+                <% invitees.each do |invitee| %>
+                  <div class="item">
+                    <i class="<%= invitee.joined_at? ? "thumbs outline up" : "mail" %> icon"></i>
+                    <div class="content">
+                      <%= link_to "#{invitee.my_tcd_username_estimate} - #{invitee.google_name}", admin_user_path(invitee) %>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
           <% end %>
         </div>
       </div>

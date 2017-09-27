@@ -121,7 +121,15 @@ No more bloody screenshots...
       message: %Q{
 It's my saviour
       }
-    },
+    }
+    # {
+    #   enabled: true,
+    #   name: "Nicolas",
+    #   course: "3rd year Computer Science",
+    #   message: %Q{
+
+    #   }
+    # },
   ]
 
   STANDARD_LIST = LIST.select { |t| t[:enabled] == true }.freeze
