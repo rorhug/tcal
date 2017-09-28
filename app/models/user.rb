@@ -135,10 +135,7 @@ class User < ApplicationRecord
   end
 
   def intercom_settings
-    intercom_attributes(for_js: true).merge({
-      app_id: Rails.application.secrets.intercom_app_id,
-      custom_launcher_selector: "#intercom_help"
-    })
+    intercom_attributes(for_js: true).merge(BASE_INTERCOM_SETTINGS)
   end
 
   def for_front_end
