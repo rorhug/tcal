@@ -1,1 +1,1 @@
-* * * * * root /root/runner.sh "User.enqueue_auto_syncs"
+# * * * * * root /root/runner.sh "User.enqueue_auto_syncs"
