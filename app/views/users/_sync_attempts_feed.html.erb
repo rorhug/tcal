@@ -56,6 +56,9 @@
               end.to_a.compact.join(", ")
             %>
             <div><small>Finished <%= time_ago_in_words(attempt.finished_at) %> ago</small></div>
+            <% if current_user.is_admin? %>
+              <div><small class="text red"><%= attempt.error_message %></small></div>
+            <% end %>
           </div>
         </div>
       </div>

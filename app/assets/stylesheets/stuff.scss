@@ -2,7 +2,7 @@
 $text-colors: blue, green, orange, pink, purple, red, teal, yellow, black, grey, white;
 @each $tc in $text-colors{
   .text.#{$tc}{
-  color: #{$tc};
+    color: #{$tc};
   }
 }
 
