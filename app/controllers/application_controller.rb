@@ -7,7 +7,8 @@ class ApplicationController < ActionController::Base
   before_action :authenticate!,
     :ensure_email_is_allowed!,
     :ensure_is_joined!,
-    :ensure_my_tcd_login_success!
+    :ensure_my_tcd_login_success!,
+    :update_last_user_agent!
 
   prepend_before_action :set_raven_context
 
@@ -66,5 +67,11 @@ class ApplicationController < ActionController::Base
     def set_raven_context
       Raven.user_context(current_user.for_raven) if current_user
       Raven.extra_context(params: params.to_unsafe_h, url: request.url)
+    end
+
+    def update_last_user_agent!
+      if current_user && request.user_agent.is_a?(String)
+        current_user.update_attributes!(last_user_agent: request.user_agent[0..500])
+      end
     end
 end

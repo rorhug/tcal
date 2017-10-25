@@ -216,7 +216,9 @@ CREATE TABLE users (
     exam_page_student_number text,
     exam_page_student_name text,
     exam_page_student_course_year text,
-    exam_page_course text
+    exam_page_course text,
+    last_user_agent text,
+    last_login_at timestamp without time zone
 );
 
 
@@ -363,7 +365,7 @@ CREATE INDEX que_jobs_args_0 ON que_jobs USING btree (((args ->> 0)));
 
 SET search_path TO "$user", public;
 
-INSERT INTO schema_migrations (version) VALUES
+INSERT INTO "schema_migrations" (version) VALUES
 ('20160927143053'),
 ('20161018113229'),
 ('20161018224616'),
@@ -379,6 +381,7 @@ INSERT INTO schema_migrations (version) VALUES
 ('20170213172139'),
 ('20170221010100'),
 ('20170308174615'),
-('20170330010747');
+('20170330010747'),
+('20171025192909');
 
 

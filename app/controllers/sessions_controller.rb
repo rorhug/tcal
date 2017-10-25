@@ -11,6 +11,7 @@ class SessionsController < ApplicationController
     unless user.has_valid_refresh_token?
       return redirect_to("/auth/google_oauth2?prompt=consent")
     end
+    user.update_attributes!(last_login_at: Time.now)
     session[:user_id] = user.id
     redirect_to user_setup_complete? ? root_path : setup_step_path(step: "my_tcd")
   rescue SecurityError
