@@ -18,15 +18,27 @@ module MyTcd
     end
   end
 
+  class NoTimetableLinkError < MyTcdError
+    def skip_sentry
+      false
+    end
+  end
+
   class PasswordError < MyTcdError
     def skip_sentry
       true
     end
   end
 
-  class NoTimetableLinkError < MyTcdError
-    def skip_sentry
-      false
+  class PasswordChangeError < PasswordError
+    def initialize(msg="MyTCD wants you to change your password. Go forth and do so before returning here.")
+      super(msg)
+    end
+  end
+
+  class PasswordInvalidError < PasswordError
+    def initialize(msg="MyTCD says it doesn't recognise that username/password.")
+      super(msg)
     end
   end
 end

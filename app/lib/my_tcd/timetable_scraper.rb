@@ -51,12 +51,12 @@ module MyTcd
         #Password change
         elsif page.at('h2:contains("Password Change")')
           notify_user_of_my_tcd_fail!(password_change: true)
-          raise PasswordError, "MyTCD wants you to change your password. Go forth and do so before returning here."
+          raise PasswordChangeError
 
         # Invalid user/pass combo
         elsif page.at('strong:contains("Username and Password invalid")')
           notify_user_of_my_tcd_fail!
-          raise PasswordError, "MyTCD says it doesn't recognise that username/password."
+          raise PasswordInvalidError
 
         # Invalid user/pass combo
         elsif page.at('strong:contains("Username Invalid")')
