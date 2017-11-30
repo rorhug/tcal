@@ -1,11 +1,31 @@
 <div class="ui grid stackable">
   <%= render layout: "info/what_is_tcal" do %>
-    <div class="ui center aligned basic segment">
-      <%= link_to "/auth/google_oauth2", class: "ui primary button fluid massive labeled icon", data: { no_turbolink: true } do %>
-        <i class="google icon"></i> Login
-      <% end %>
-      Login with Google to get started.
-    </div>
+    <% if true %>
+      <div class="ui icon red message">
+        <i class="frown icon"></i>
+        <div class="content">
+          <div class="header">
+            Disabled
+          </div>
+
+          <p>
+            Tcal has been shut down
+            be sure to
+            <a href="https://www.facebook.com/tcaldotme" target="_blank">
+              <strong>like our Facebook Page</strong>
+            </a> for updates!
+          </p>
+        </div>
+      </div>
+    <% else %>
+      <div class="ui center aligned basic segment">
+        <%= link_to "/auth/google_oauth2", class: "ui primary button fluid massive labeled icon", data: { no_turbolink: true } do %>
+          <i class="google icon"></i> Login
+        <% end %>
+        Login with Google to get started.
+      </div>
+    <% end %>
+
     <div class="ui divider"></div>
     <div class="fb-like"
       data-href="https://www.facebook.com/tcaldotme"
