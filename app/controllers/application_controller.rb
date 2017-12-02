@@ -16,6 +16,8 @@ class ApplicationController < ActionController::Base
     return @current_user if defined?(@current_user)
     return unless session[:user_id]
     @current_user = User.find_by_id(session[:user_id])
+    Rails.logger.info("current_user id=#{@current_user.try(:id)} email=#{@current_user.try(:email)}")
+    @current_user
   end
 
   def user_setup_complete?
