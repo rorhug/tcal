@@ -36,6 +36,11 @@ class AdminController < ApplicationController
     render json: { users: ([user_found_by_id] + results).compact.map(&:for_front_end) }
   end
 
+  def set_global_setting
+    GlobalSetting.set(params[:identifier], params[:value], current_user)
+    redirect_to root_path
+  end
+
   private
     def must_be_admin!
       unless current_user.is_admin?

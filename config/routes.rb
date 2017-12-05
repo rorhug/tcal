@@ -44,5 +44,7 @@ Rails.application.routes.draw do
 
       delete :calendar, action: :delete_calendar, on: :member
     end
+
+    post :set_global_setting
   end
 end

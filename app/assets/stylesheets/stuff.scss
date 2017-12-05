@@ -146,21 +146,26 @@ footer {
   border-right: none;
 }
 
+.ui.accordion.admin-accordion {
+  margin-bottom: 1px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
 // fix search result margins
 .ui.search.admin-user-search {
   .results {
     width: 100%;
     .result {
-     .image {
+      .image {
         width: initial;
       }
-     .image+.content {
+      .image+.content {
         margin: 0 4em 0 0;
       }
-
       .price {
         // color: initial;
-            color: rgba(0,0,0,.4);
+        color: rgba(0,0,0,.4);
       }
     }
   }

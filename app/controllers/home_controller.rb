@@ -81,9 +81,9 @@ class HomeController < ApplicationController
 
   private
     def user_index
-      @que_job = current_user.ongoing_sync_job
+      @que_job = current_user.get_ongoing_sync_job
       @attempts = current_user.sync_attempts.for_feed.to_a
-      @sync_block_reason = current_user.sync_blocked_reason
+      @sync_block_reason = current_user.sync_blocked_reason(job: @que_job)
 
       @invitees = ([User.new] * current_user.invites_left) + current_user.invitees.order(id: :desc).limit(10)
       render "user_index"

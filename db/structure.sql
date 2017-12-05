@@ -61,6 +61,39 @@ CREATE TABLE ar_internal_metadata (
 
 
 --
+-- Name: global_settings; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE global_settings (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    identifier text NOT NULL,
+    value_boolean boolean,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: global_settings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE global_settings_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: global_settings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE global_settings_id_seq OWNED BY global_settings.id;
+
+
+--
 -- Name: que_jobs; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -242,6 +275,13 @@ ALTER SEQUENCE users_id_seq OWNED BY users.id;
 
 
 --
+-- Name: global_settings id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY global_settings ALTER COLUMN id SET DEFAULT nextval('global_settings_id_seq'::regclass);
+
+
+--
 -- Name: que_jobs job_id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -275,6 +315,14 @@ ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regcl
 
 ALTER TABLE ONLY ar_internal_metadata
     ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
+
+
+--
+-- Name: global_settings global_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY global_settings
+    ADD CONSTRAINT global_settings_pkey PRIMARY KEY (id);
 
 
 --
@@ -315,6 +363,13 @@ ALTER TABLE ONLY sync_attempts
 
 ALTER TABLE ONLY users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: index_global_settings_on_identifier; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_global_settings_on_identifier ON global_settings USING btree (identifier);
 
 
 --
@@ -382,6 +437,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170221010100'),
 ('20170308174615'),
 ('20170330010747'),
-('20171025192909');
+('20171025192909'),
+('20171130134323');
 
 

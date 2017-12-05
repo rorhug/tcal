@@ -1,8 +1,27 @@
-<h5 class="ui top attached segment header">Admin Tools</h5>
-<div class="ui attached warning message">
-  <i class="warning icon"></i>
-  Careful now.
+<% uninvited_count = User.uninvited.count %>
+
+<div class="ui styled fluid top attached accordion admin-accordion">
+  <div class="title">
+    <i class="dropdown icon"></i>
+    Admin Tools
+  </div>
+  <div class="content">
+    <% GlobalSetting.get_all_latest.each do |setting| %>
+      <p><%=
+        link_to admin_set_global_setting_path(
+          identifier: setting.identifier,
+          value: !setting.value
+        ),
+        method: :post,
+        class: "ui fluid button spinner-on-click #{ setting.value ? "green" : "red basic" }" do
+      %>
+        <%= GlobalSetting::IDENTIFIERS[setting.identifier] %> <%= setting.value ? "On" : "Off" %>
+      <% end %></p>
+    <% end %>
+  </div>
 </div>
+
+<div class="ui attached warning mini message">Careful now!</div>
 
 <div class="ui segment attached">
   <div class="ui search admin-user-search">
@@ -13,7 +32,6 @@
   </div>
 </div>
 
-<% uninvited_count = User.uninvited.count %>
 <div class="ui segment bottom attached">
   <%= link_to admin_users_path, class: "ui fluid labeled button" do %>
     <div class="ui <%= "basic" if uninvited_count == 0 %> fluid blue button">
@@ -24,3 +42,4 @@
     </div>
   <% end %>
 </div>
+

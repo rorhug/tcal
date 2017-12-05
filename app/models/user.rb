@@ -194,7 +194,7 @@ class User < ApplicationRecord
   end
 
   def enqueue_sync(triggered_manually: true, force: false)
-    raise "Sync job already queued for user" if !force && ongoing_sync_job
+    raise "Sync job already queued for user" if !force && get_ongoing_sync_job
     ActiveRecord::Base.transaction do # possibly unecessary...
       SyncTimetable.enqueue(id, triggered_manually)
     end
@@ -274,13 +274,14 @@ class User < ApplicationRecord
     ).count >= GoogleCalendarSync::MAX_SYNCS_PER_HOUR
   end
 
-  def ongoing_sync_job
-    # return @ongoing_sync_job if defined?(@ongoing_sync_job) needs to be up to date
+  def get_ongoing_sync_job
+    # return @get_ongoing_sync_job if defined?(@get_ongoing_sync_job) needs to be up to date
     QueJob.for_job("SyncTimetable").for_user(self).first
   end
 
-  def sync_blocked_reason
-    if ongoing_sync_job
+  def sync_blocked_reason(**args) # include job: <QueJob> if job already loaded
+    job = args.has_key?(:job) ? args[:job] : get_ongoing_sync_job
+    if job
       "There is already a sync in progress!"
     elsif !my_tcd_login_success? # Never reaches here, controller blocks with user_setup_complete?
       "Your MyTCD settings need to be updated."

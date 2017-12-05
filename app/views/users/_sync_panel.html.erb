@@ -1,4 +1,4 @@
-<% unless @user.ongoing_sync_job %>
+<% unless @que_job %>
   <% if @sync_block_reason %>
     <em><%= @sync_block_reason %></em>
   <% end %>
@@ -12,7 +12,7 @@
   <% end %>
 <% end %>
 
-<div class="ui segment <%= "top " if @user.ongoing_sync_job %>attached">
+<div class="ui segment <%= "top " if @que_job %>attached">
   <%= render partial: "users/sync_attempts_feed" %>
 </div>
 

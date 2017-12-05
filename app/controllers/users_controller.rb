@@ -23,7 +23,7 @@ class UsersController < ApplicationController
     unless @user.my_tcd_login_success?
       return render json: {}
     end
-    que_job = @user.ongoing_sync_job
+    que_job = @user.get_ongoing_sync_job
     render json: { run_at: que_job && view_context.time_ago_in_words(que_job.run_at) }
   end
 

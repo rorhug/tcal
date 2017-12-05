@@ -82,8 +82,8 @@ initializeFacebookSDK = function() {
   var sync_status_interval;
   var init_sync_status_checker = function() {
     var sync_run_at = $("#sync-run-at");
-    var json_path = sync_run_at.data("json-path");
     if (sync_run_at[0]) {
+      var json_path = sync_run_at.data("json-path");
       clearInterval(sync_status_interval);
       sync_status_interval = setInterval(function() {
         $.getJSON(json_path).done(function(response) {
@@ -145,6 +145,8 @@ initializeFacebookSDK = function() {
       minCharacters: 1,
       selectFirstResult: true
     });
+
+    $('.ui.accordion').accordion();
   });
 })();
 

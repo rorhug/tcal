@@ -40,9 +40,9 @@ class Admin::UsersController < ApplicationController
   def show
     respond_to do |format|
       format.html do
-        @que_job = @user.ongoing_sync_job
+        @que_job = @user.get_ongoing_sync_job
         @attempts = @user.sync_attempts.for_feed.to_a
-        @sync_block_reason = @user.sync_blocked_reason
+        @sync_block_reason = @user.sync_blocked_reason(job: @que_job)
       end
       format.json { render json: @user }
     end
