@@ -16,7 +16,7 @@
         class: "ui fluid button spinner-on-click #{ setting.value ? "green" : "red basic" }" do
       %>
         <%= GlobalSetting::IDENTIFIERS[setting.identifier] %> <%= setting.value ? "On" : "Off" %>
-      <% end %></p>
+      <% end %><small><%= setting.created_at %></small></p>
     <% end %>
   </div>
 </div>
