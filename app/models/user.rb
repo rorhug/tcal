@@ -162,17 +162,18 @@ class User < ApplicationRecord
     # redeeming a pending invite
     user ||= where(google_uid: nil, email: auth_hash["info"]["email"]).where.not(invited_by_user_id: nil).first
 
-    # create them new, uninvited. Won't be able to use as joined_at isn't set
-    # filters above will pass on return visit as 1. needs joined_at, 2. needs an invited_by_user_id
-    user ||= new
+    # create them new
+    # if invite_required, they're created uninvited. Won't be able to use as joined_at isn't set
+    #    filters above will pass on return visit as 1. needs joined_at, 2. needs an invited_by_user_id
+    user ||= new.tap { |u| u.enable_account unless GlobalSetting.get("invite_required").value }
 
     # add the google uid if not there (new account/invite redeem)
     user.google_uid ||= auth_hash['uid']
     # assign email
     user.email = auth_hash["info"]["email"]
 
-    # add joined_at timestamp added if user is invited
-    if user.invited_by_user_id? && !user.joined_at?
+    # add joined_at timestamp added if user has been invited
+    if !user.joined_at? && user.invited_by_user_id?
       user.enable_account
     end
 
@@ -211,7 +212,9 @@ class User < ApplicationRecord
     )
   end
 
-  def self.enqueue_auto_syncs(users_relation=nil) # TODO take a relation of users
+  def self.enqueue_auto_syncs(users_relation=nil)
+    return unless GlobalSetting.get("auto_sync").value
+
     # (3*60*60)/(5*60)
     user_interval = AUTO_SYNC_SETTINGS[:user_interval]
     cron_interval = AUTO_SYNC_SETTINGS[:cron_interval]
