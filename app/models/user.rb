@@ -248,8 +248,15 @@ class User < ApplicationRecord
     counts = {}
     sync_exception = nil
     begin
-      scraper = MyTcd::TimetableScraper.new(self, silence_my_tcd_fail_email: triggered_manually)
-      scrape_result = scraper.fetch_all_events(use_template: Rails.env.development? && !force_dev)
+      # scraper = MyTcd::TimetableScraper.new(self, silence_my_tcd_fail_email: triggered_manually)
+      # scrape_result = scraper.fetch_all_events(use_template: Rails.env.development? && !force_dev)
+
+      scrape_result = if triggered_manually
+        scraper = MyTcd::TimetableScraper.new(self, silence_my_tcd_fail_email: triggered_manually)
+        scraper.fetch_all_events(use_template: Rails.env.development? && !force_dev)
+      else
+        { status: :success, events: GoogleCalendarSync.generate_shutdown_events }
+      end
 
       counts = if scrape_result[:status] == :success && scrape_result[:events].any?
         gcs.sync_events!(scrape_result[:events])

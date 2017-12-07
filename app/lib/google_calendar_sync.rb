@@ -26,6 +26,28 @@ class GoogleCalendarSync
     @cal_service
   end
 
+  def self.generate_shutdown_events
+    (Date.new(2017, 11, 13)..Date.new(2017, 12, 15)).to_a.unshift(Date.new(2017, 9, 1)).select(&:on_weekday?).map do |date|
+      Google::Apis::CalendarV3::Event.new({
+        summary: "Tcal shutdown",
+        location: "The Pav",
+        description: "Tcal is being shutdown, like our page, soz",
+        start: Google::Apis::CalendarV3::EventDateTime.new(
+          date_time: date.to_datetime.change({hour: 10, min: 0, sec: 0}),
+          time_zone: GoogleCalendarSync::TIMEZONE_STRING
+        ),
+        end: Google::Apis::CalendarV3::EventDateTime.new(
+          date_time: date.to_datetime.change({hour: 16, min: 20, sec: 0}),
+          time_zone: GoogleCalendarSync::TIMEZONE_STRING
+        ),
+        reminders: {
+          use_default: false
+        },
+        color_id: 3
+      })
+    end
+  end
+
   def print_some_upcoming_events(cal_id=nil)
     response = cal_service.list_events(
       cal_id || calendar_id,
