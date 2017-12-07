@@ -1,32 +1,39 @@
+<% unless @can_login %>
+  <div class="ui big top attached red icon message">
+    <i class="frown icon"></i>
+    <div class="content">
+      <div class="header">Unavailable</div>
+      <p>Tcal is no longer available as the college has requested it be disabled.</p>
+    </div>
+  </div>
+
+  <div class="ui bottom attached message">
+    <div class="content">
+      Like the <strong><a href="https://www.facebook.com/tcaldotme" target="_blank">Facebook Page</a></strong> for any future updates
+      or <strong><a href="mailto:info@tcal.me" class="item intercom_help">Message</a></strong> if you have any questions.
+      <br>
+      Thanks for all the support throughout!
+      <br>
+      <br>
+      - Rory <i class="peace hand icon"></i>
+    </div>
+  </div>
+
+  <div class="ui section divider"></div>
+<% end %>
+
 <div class="ui grid stackable">
   <%= render layout: "info/what_is_tcal" do %>
-    <% if true %>
-      <div class="ui icon red message">
-        <i class="frown icon"></i>
-        <div class="content">
-          <div class="header">
-            Disabled
-          </div>
-
-          <p>
-            Tcal has been shut down
-            be sure to
-            <a href="https://www.facebook.com/tcaldotme" target="_blank">
-              <strong>like our Facebook Page</strong>
-            </a> for updates!
-          </p>
-        </div>
-      </div>
-    <% else %>
+    <% if @can_login %>
       <div class="ui center aligned basic segment">
         <%= link_to "/auth/google_oauth2", class: "ui primary button fluid massive labeled icon", data: { no_turbolink: true } do %>
           <i class="google icon"></i> Login
         <% end %>
         Login with Google to get started.
       </div>
+      <div class="ui divider"></div>
     <% end %>
 
-    <div class="ui divider"></div>
     <div class="fb-like"
       data-href="https://www.facebook.com/tcaldotme"
       data-width="330"

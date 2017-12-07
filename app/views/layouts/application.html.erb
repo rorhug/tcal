@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Tcal | <%= $MAIN_SHLOGAN %></title>
+    <title>Tcal <%= "| DEV " if Rails.env.development? %>| <%= $MAIN_SHLOGAN %></title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -111,7 +111,7 @@
       <p><br></p>
       <div class="ui divider"></div>
       <div class="ui horizontal bulleted link list">
-        <a id="intercom_help" href="mailto:info@tcal.me" class="item">Need help?</a>
+        <a href="mailto:info@tcal.me" class="item intercom_help">Need help?</a>
         <% if !current_user || current_user.joined_at %>
           <%= link_to "About Tcal", about_path, class: "item" %>
           <a href="https://www.facebook.com/tcaldotme" target="_blank" class="item">
