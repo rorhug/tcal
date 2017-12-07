@@ -108,6 +108,9 @@ class HomeController < ApplicationController
           flash[:success] = nil
         end
       end
+
+      @can_login = params[:howerya].present? || GlobalSetting.get("login_enabled").value
+
       render "landing_index"
     end
 

@@ -7,5 +7,5 @@ INTERCOM_SYNC_INTERVAL = 5.minutes.freeze
 
 BASE_INTERCOM_SETTINGS = {
   app_id: Rails.application.secrets.intercom_app_id,
-  custom_launcher_selector: "#intercom_help"
+  custom_launcher_selector: ".intercom_help"
 }.freeze

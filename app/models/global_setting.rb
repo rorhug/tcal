@@ -1,7 +1,8 @@
 class GlobalSetting < ApplicationRecord
   IDENTIFIERS = {
     "auto_sync"       => "Auto Sync",
-    "invite_required" => "Invite Required"
+    "invite_required" => "Invite Required",
+    "login_enabled"   => "Login Enabled"
   }.freeze
   IDENTIFIER_KEYS = IDENTIFIERS.keys.freeze
 
