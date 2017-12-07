@@ -132,7 +132,7 @@ class User < ApplicationRecord
     }
 
     unless for_js
-      attrs[:last_successful_sync_at] = sync_attempts.where(error_message: nil).last.try(:finished_at)
+      attrs[:custom_attributes][:last_successful_sync_at] = sync_attempts.where(error_message: nil).last.try(:finished_at)
     end
 
     attrs
