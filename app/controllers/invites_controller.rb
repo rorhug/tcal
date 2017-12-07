@@ -9,6 +9,11 @@ class InvitesController < ApplicationController
       root_path
     end
 
+    flash[:error] = "Invites disabled..."
+    return redirect_to path_for_redirect
+
+    # BELOW UNUSED ATM
+
     # No more invites
     unless current_user.has_spare_invites?
       flash[:error] = "You've already used up your #{User::MAX_INVITES} invites"

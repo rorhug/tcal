@@ -131,6 +131,10 @@ class User < ApplicationRecord
       admin_panel_url: admin_panel_url
     }
 
+    unless for_js
+      attrs[:last_successful_sync_at] = sync_attempts.where(error_message: nil).last.try(:finished_at)
+    end
+
     attrs
   end
 

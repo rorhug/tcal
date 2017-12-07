@@ -19,4 +19,17 @@ class IntercomSync
       User.where(updated_at: (INTERCOM_SYNC_INTERVAL + 1.minute).ago..1.minute.from_now)
     )
   end
+
+  def sync_all_users
+    count_synced = 0
+    User.all.find_in_batches(batch_size: 80) do |users|
+      @client.users.submit_bulk_job(create_items: users.map(&:intercom_attributes))
+      count_synced += users.size
+      puts "users_sycned: #{count_synced}"
+      sleep 10
+    end
+    Rails.logger.info("intercom_sync_log users_sycned=#{count_synced}")
+    count_synced
+  end
+
 end
