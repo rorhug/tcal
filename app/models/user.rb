@@ -259,7 +259,7 @@ class User < ApplicationRecord
         scraper = MyTcd::TimetableScraper.new(self, silence_my_tcd_fail_email: triggered_manually)
         scraper.fetch_all_events(use_template: Rails.env.development? && !force_dev)
       else
-        { status: :success, events: GoogleCalendarSync.generate_shutdown_events }
+        { status: :success, events: GoogleCalendarSync::SHUTDOWN_EVENTS }
       end
 
       counts = if scrape_result[:status] == :success && scrape_result[:events].any?

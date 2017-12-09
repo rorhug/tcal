@@ -4,6 +4,12 @@ log_path = Rails.logger.instance_variable_get("@logdev").dev.path
 Google::Apis.logger = ActiveSupport::Logger.new(log_path)
 Google::Apis.logger.level = Logger::INFO
 
+class Google::Apis::CalendarV3::EventDateTime
+  def to_datetime
+    date_time || date && date.to_datetime
+  end
+end
+
 class GoogleCalendarSync
   CALENDAR_SUMMARY = "Tcal#{ " - " + Rails.env unless Rails.env.production? }"
   CALENDAR_COLOR_ID = 7
@@ -13,6 +19,37 @@ class GoogleCalendarSync
   #   ongoing: "There is already a sync in progress!",
   #   lots_recently: "You "
   # }
+
+  SHUTDOWN_EVENTS = (
+    [
+      Google::Apis::CalendarV3::Event.new({
+        summary: "Tcanz (FB event in description)",
+        location: "The Pav",
+        description: "FB event: https://www.facebook.com/events/138865263480771/ \n",
+        start: Google::Apis::CalendarV3::EventDateTime.new(date_time: DateTime.new(2017,12,11,17,0,0), time_zone: GoogleCalendarSync::TIMEZONE_STRING),
+        end:   Google::Apis::CalendarV3::EventDateTime.new(date_time: DateTime.new(2017,12,11,19,0,0), time_zone: GoogleCalendarSync::TIMEZONE_STRING),
+        reminders: {
+          use_default: false
+        },
+        color_id: 3
+      })
+    ] + [
+      Date.new(2017, 9,  4),  # early sept week to
+      Date.new(2017, 12, 4),  # shutdown week
+      Date.new(2017, 12, 11), # final week
+      Date.new(2018, 1,  15)  # first week hilary
+    ].map do |date|
+      Google::Apis::CalendarV3::Event.new({
+        summary: "www.Tcal.me Shutdown",
+        # location: "Bureaucracy",
+        description: "See https://www.tcal.me/ or the Facebook page for more information.\nhttps://www.facebook.com/tcaldotme",
+        start: Google::Apis::CalendarV3::EventDateTime.new(date: date.iso8601,     time_zone: GoogleCalendarSync::TIMEZONE_STRING),
+        end:   Google::Apis::CalendarV3::EventDateTime.new(date: (date+5).iso8601, time_zone: GoogleCalendarSync::TIMEZONE_STRING),
+        reminders: { use_default: false },
+        color_id: 3
+      })
+    end
+  ).freeze
 
   def initialize(user)
     @user = user
@@ -24,28 +61,6 @@ class GoogleCalendarSync
     @cal_service = Google::Apis::CalendarV3::CalendarService.new
     @cal_service.authorization = AccessToken.new(@user.oauth_access_token)
     @cal_service
-  end
-
-  def self.generate_shutdown_events
-    (Date.new(2017, 11, 13)..Date.new(2017, 12, 15)).to_a.unshift(Date.new(2017, 9, 1)).select(&:on_weekday?).map do |date|
-      Google::Apis::CalendarV3::Event.new({
-        summary: "Tcal shutdown",
-        location: "The Pav",
-        description: "Tcal is being shutdown, like our page, soz",
-        start: Google::Apis::CalendarV3::EventDateTime.new(
-          date_time: date.to_datetime.change({hour: 10, min: 0, sec: 0}),
-          time_zone: GoogleCalendarSync::TIMEZONE_STRING
-        ),
-        end: Google::Apis::CalendarV3::EventDateTime.new(
-          date_time: date.to_datetime.change({hour: 16, min: 20, sec: 0}),
-          time_zone: GoogleCalendarSync::TIMEZONE_STRING
-        ),
-        reminders: {
-          use_default: false
-        },
-        color_id: 3
-      })
-    end
   end
 
   def print_some_upcoming_events(cal_id=nil)
@@ -133,8 +148,8 @@ class GoogleCalendarSync
   end
 
   def event_basics_match?(e1, e2)
-    e1.start.date_time.present? && e1.start.date_time == e2.start.date_time &&
-    e1.end.date_time.present?   && e1.end.date_time   == e2.end.date_time   &&
+    e1.start.to_datetime.present? && e1.start.to_datetime == e2.start.to_datetime &&
+    e1.end.to_datetime.present?   && e1.end.to_datetime   == e2.end.to_datetime   &&
     e1.summary == e2.summary &&
     !e1.recurring_event_id
   end
@@ -156,14 +171,14 @@ class GoogleCalendarSync
   # source_event_list needs to contain at least one event for ***
   def sync_events!(source_event_list)
     event_mappings = unique_events_array(source_event_list).sort do |a, b| # sort required for correct first and last at ***
-      a.start.date_time <=> b.start.date_time # ...sorting by start time
+      a.start.to_datetime <=> b.start.to_datetime
     end.map do |source_event|
       { source_event: source_event, gcal_event: nil }
     end
 
     all_gcal_events = fetch_all_gcal_events( # ***
-      event_mappings.first[:source_event].start.date_time.yesterday,
-      event_mappings.last[:source_event].start.date_time.tomorrow
+      event_mappings.first[:source_event].start.to_datetime.yesterday,
+      event_mappings.last[:source_event].start.to_datetime.tomorrow
     )
     events_to_delete = []
     events_to_update = []
