@@ -13,7 +13,7 @@
           <div class="content">
             <div class="header"><%= event.summary %></div>
             <div class="description">
-              <%= event.start.date_time.strftime("%H:%M") %> - <%= event.end.date_time.strftime("%H:%M") %>
+              <%= event.start.to_datetime.strftime("%H:%M") %> - <%= event.end.to_datetime.strftime("%H:%M") %>
               <div><small><%= event.location %></small></div>
             </div>
           </div>

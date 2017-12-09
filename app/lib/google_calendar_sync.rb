@@ -8,6 +8,14 @@ class Google::Apis::CalendarV3::EventDateTime
   def to_datetime
     date_time || date && date.to_datetime
   end
+
+  def to_date
+    if date
+      date.is_a?(String) ? Date.parse(date) : date
+    elsif date_time
+      date_time.to_date
+    end
+  end
 end
 
 class GoogleCalendarSync
@@ -139,7 +147,7 @@ class GoogleCalendarSync
     ).items
 
     events_by_date = events.each_with_object({}) do |event, dates|
-      date = event.start.date_time.to_date
+      date = event.start.to_date
       dates[date] ||= []
       dates[date].push(event)
     end
