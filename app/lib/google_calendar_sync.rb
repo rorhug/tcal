@@ -30,18 +30,18 @@ class GoogleCalendarSync
 
   SHUTDOWN_EVENTS = (
     [
-      Google::Apis::CalendarV3::Event.new({
-        summary: "Tcanz (FB event in description)",
-        location: "The Pav",
-        description: "FB event: https://www.facebook.com/events/138865263480771/ \n",
-        start: Google::Apis::CalendarV3::EventDateTime.new(date_time: DateTime.new(2017,12,11,17,0,0), time_zone: GoogleCalendarSync::TIMEZONE_STRING),
-        end:   Google::Apis::CalendarV3::EventDateTime.new(date_time: DateTime.new(2017,12,11,19,0,0), time_zone: GoogleCalendarSync::TIMEZONE_STRING),
-        reminders: {
-          use_default: false
-        },
-        color_id: 3
-      })
-    ] + [
+    #   Google::Apis::CalendarV3::Event.new({
+    #     summary: "Tcanz (FB event in description)",
+    #     location: "The Pav",
+    #     description: "FB event: https://www.facebook.com/events/138865263480771/ \n",
+    #     start: Google::Apis::CalendarV3::EventDateTime.new(date_time: DateTime.new(2017,12,11,17,0,0), time_zone: GoogleCalendarSync::TIMEZONE_STRING),
+    #     end:   Google::Apis::CalendarV3::EventDateTime.new(date_time: DateTime.new(2017,12,11,19,0,0), time_zone: GoogleCalendarSync::TIMEZONE_STRING),
+    #     reminders: {
+    #       use_default: false
+    #     },
+    #     color_id: 3
+    #   })
+    # ] + [
       Date.new(2017, 9,  4),  # early sept week to
       Date.new(2017, 12, 4),  # shutdown week
       Date.new(2017, 12, 11), # final week
