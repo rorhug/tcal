@@ -109,7 +109,7 @@ class HomeController < ApplicationController
         end
       end
 
-      @can_login = params[:howerya].present? || GlobalSetting.get("login_enabled").value
+      @can_login = params[:revive].present? || GlobalSetting.get("login_enabled").value
 
       render "landing_index"
     end
