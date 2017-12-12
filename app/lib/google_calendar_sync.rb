@@ -43,8 +43,8 @@ class GoogleCalendarSync
     #   })
     # ] + [
       Date.new(2017, 9,  4),  # early sept week to
-      Date.new(2017, 12, 4),  # shutdown week
-      Date.new(2017, 12, 11), # final week
+      # Date.new(2017, 12, 4),  # shutdown week
+      # Date.new(2017, 12, 11), # final week
       Date.new(2018, 1,  15)  # first week hilary
     ].map do |date|
       Google::Apis::CalendarV3::Event.new({
