@@ -30,11 +30,11 @@ class ApplicationController < ActionController::Base
 
   private
     def authenticate!
-      if session[:user_id] && current_user
+      if !accessed_from_tcd_network && session[:user_id] && current_user
         if current_user.set_joined_at_if_invited!
           flash[:success] = "#{current_user.you_were_invited_message}, Welcome!"
         end
-        nil # method returns nil if user
+        nil # method returns nil if user, i.e. no redirect
       else
         reset_session
         redirect_to root_path # method returns a redirect if no user
@@ -75,5 +75,10 @@ class ApplicationController < ActionController::Base
       if current_user && request.user_agent.is_a?(String)
         current_user.update_attributes!(last_user_agent: request.user_agent[0..500])
       end
+    end
+
+    def accessed_from_tcd_network
+      request.remote_ip.start_with?("134.226")
+      # request.remote_ip.start_with?("127")
     end
 end

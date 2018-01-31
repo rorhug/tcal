@@ -349,8 +349,9 @@ class User < ApplicationRecord
     if is_admin?
       1
     else
-      left = User::MAX_INVITES - invitees.count
-      left > 0 ? left : 0
+      0 # SHUTDOWN: block inviting for everyone else
+      # left = User::MAX_INVITES - invitees.count
+      # left > 0 ? left : 0
     end
   end
 

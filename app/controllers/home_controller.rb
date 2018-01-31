@@ -109,7 +109,7 @@ class HomeController < ApplicationController
         end
       end
 
-      @can_login = GlobalSetting.get("login_enabled").value
+      @can_login = !accessed_from_tcd_network && GlobalSetting.get("login_enabled").value
       # @can_login = params[:revive].present? || GlobalSetting.get("login_enabled").value
       # TODO make custom links, hash(salt + id) of invited user
 
