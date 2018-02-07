@@ -1,11 +1,15 @@
 class SessionsController < ApplicationController
-  skip_before_action :authenticate!, only: [:new, :create, :destroy, :failure]
+  skip_before_action :authenticate!, only: [:create, :destroy, :failure]
   skip_before_action :ensure_email_is_allowed!,
                      :ensure_is_joined!,
                      :ensure_my_tcd_login_success!,
                      only: [:destroy, :failure]
 
   def create
+    unless login_available?
+      return raise_not_found
+    end
+
     user = User.from_omniauth(auth_hash)
     # MAYBE get refresh on login if not there, probably unecessary
     unless user.has_valid_refresh_token?

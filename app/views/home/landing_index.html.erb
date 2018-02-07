@@ -1,4 +1,4 @@
-<% unless @can_login %>
+<% unless login_available? %>
   <div class="ui big top attached red icon message">
     <i class="frown icon"></i>
     <div class="content">
@@ -24,7 +24,7 @@
 
 <div class="ui grid stackable">
   <%= render layout: "info/what_is_tcal" do %>
-    <% if @can_login %>
+    <% if login_available? %>
       <div class="ui center aligned basic segment">
         <%= link_to "/auth/google_oauth2", class: "ui primary button fluid massive labeled icon", data: { no_turbolink: true } do %>
           <i class="google icon"></i> Login

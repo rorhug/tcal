@@ -251,7 +251,8 @@ CREATE TABLE users (
     exam_page_student_course_year text,
     exam_page_course text,
     last_user_agent text,
-    last_login_at timestamp without time zone
+    last_login_at timestamp without time zone,
+    id_code text
 );
 
 
@@ -438,6 +439,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20170308174615'),
 ('20170330010747'),
 ('20171025192909'),
-('20171130134323');
+('20171130134323'),
+('20180205234437');
 
 

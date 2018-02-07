@@ -2,7 +2,7 @@ class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception unless Rails.env.development?
-  helper_method :current_user, :user_setup_complete?
+  helper_method :current_user, :user_setup_complete?, :login_available?
 
   before_action :authenticate!,
     :ensure_email_is_allowed!,
@@ -20,6 +20,13 @@ class ApplicationController < ActionController::Base
     @current_user
   end
 
+  def login_available?
+    return @_login_available if defined?(@_login_available)
+    # @login_available = params[:revive].present? || GlobalSetting.get("login_enabled").value
+    # TODO make custom links, hash(salt + id) of invited user
+    @_login_available = !accessed_from_tcd_network? && (GlobalSetting.get("login_enabled").value)# || valid_id_token_present?)
+  end
+
   def user_setup_complete?
     current_user && current_user.my_tcd_login_success?
   end
@@ -30,7 +37,7 @@ class ApplicationController < ActionController::Base
 
   private
     def authenticate!
-      if !accessed_from_tcd_network && session[:user_id] && current_user
+      if session[:user_id] && current_user && login_available?
         if current_user.set_joined_at_if_invited!
           flash[:success] = "#{current_user.you_were_invited_message}, Welcome!"
         end
@@ -77,7 +84,7 @@ class ApplicationController < ActionController::Base
       end
     end
 
-    def accessed_from_tcd_network
+    def accessed_from_tcd_network?
       request.remote_ip.start_with?("134.226")
       # request.remote_ip.start_with?("127")
     end
