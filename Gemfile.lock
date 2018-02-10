@@ -98,7 +98,7 @@ GEM
       railties (>= 3.0.0)
     faraday (0.12.2)
       multipart-post (>= 1.2, < 3)
-    ffi (1.9.21)
+    ffi (1.9.18)
     globalid (0.4.1)
       activesupport (>= 4.2.0)
     google-api-client (0.19.6)
@@ -336,6 +336,7 @@ DEPENDENCIES
   coffee-rails (~> 4.2)
   dotenv-rails
   factory_bot_rails (~> 4.8)
+  ffi (= 1.9.18)
   google-api-client
   intercom (~> 3)
   jbuilder (~> 2.5)
@@ -352,7 +353,7 @@ DEPENDENCIES
   que
   rails (~> 5.0.5, >= 5.0.0.1)
   rspec-rails (~> 3.7)
-  sass-rails (= 5.0.6)
+  sass-rails (~> 5.0)
   sentry-raven
   spring
   spring-watcher-listen (~> 2.0.0)
