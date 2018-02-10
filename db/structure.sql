@@ -409,6 +409,13 @@ CREATE UNIQUE INDEX index_users_on_google_uid ON users USING btree (google_uid);
 
 
 --
+-- Name: index_users_on_id_code; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_users_on_id_code ON users USING btree (id_code);
+
+
+--
 -- Name: que_jobs_args_0; Type: INDEX; Schema: public; Owner: -
 --
 
