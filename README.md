@@ -54,6 +54,13 @@ I used trello to manage feature ideas/requests and prioritise what to build. I a
   - [TcdStaffScrape](app/lib/tcd_staff_scrape.rb) Downloads the public directory of staff emails so to give an error notice when signing up. Probably was a bit unnecessary.
 
 
+If you're interested in how the UI, "setup wizard" etc. worked, check out
+
+- [controllers](app/controllers) HTTP endpoints
+- [views](app/views) HTML templates
+- [stylesheets](app/assets/stylesheets) Mainly includes small changes to [Semantic UI](https://semantic-ui.com/) (the css framework I used)
+- [javascripts](app/assets/javascripts) A sprinkle of front-end _magic!_
+- [mailers](app/mailers) Few notifications. The corresponding templates can be found in views
 
 
 
