@@ -1,9 +1,16 @@
 Tcal
 ====
 
+####Contents
+
+- [About](#about)
+- [Trello Board](#trello-board)
+- [Source code overview](#source-code-overview)
+- [Misc technical details](#misc-technical-details)
+
 [TODO Screenshot of UI]
 
-## Overview
+## About
 
 [Tcal](https://tcal.rory.ie/) was something I made for students in [TCD](https://www.tcd.ie/) to sync their timetable into Google Calendar.
 
@@ -34,14 +41,17 @@ TODO how I was caught/why you should use a VPN in college
 - 2017-12-10 [Tcal Shutdown at Odds With Trinity’s Fostering of Entrepreneurship](http://www.universitytimes.ie/2017/12/tcal-shutdown-at-odds-with-trinitys-fostering-of-entrepreneurship/)
 - 2017-12-13 [Tcal Risked Student Data, Says College](http://www.universitytimes.ie/2017/12/tcal-risked-student-data-says-college/)
 
-#### Trello Board
+## Trello Board
 
 I used trello to manage feature ideas/requests and prioritise what to build. I added a purple label to some interesting features I never built.
 
 ![trello board screenshot](board-dec-2017.png)
 
 
-## _"Interesting"_ files
+## Source code overview
+
+_"Interesting"_ files
+
 
 - Models/Database
 	- [User](app/models/user.rb) Represents a student user of the service. Includes methods for authentication, less trivial state checking and everyone's favourite: `do_the_feckin_thing!` (runs scraper => syncs calendar)
@@ -65,7 +75,7 @@ If you're interested in how the UI, "setup wizard" etc. worked, check out
 
 
 
-## Some technical details
+## Misc technical details
 
 ### Infra
 
@@ -103,7 +113,7 @@ sorry for no testing
 
 
 
-###Running it:
+### Running it:
 
 No need... [really!](https://tcal.rory.ie/ics/)
 
