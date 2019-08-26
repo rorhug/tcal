@@ -1,38 +1,30 @@
 Tcal
 ====
 
+
 ####Contents
 
 - [About](#about)
+- [How it worked](#how-it-worked)
 - [Trello Board](#trello-board)
 - [Source code overview](#source-code-overview)
 - [Misc technical details](#misc-technical-details)
-
-[TODO Screenshot of UI]
 
 ## About
 
 [Tcal](https://tcal.rory.ie/) was something I made for students in [TCD](https://www.tcd.ie/) to sync their timetable into Google Calendar.
 
-**If you are looking for a method that currently works, click [HERE!](https://tcal.rory.ie/ics/)**
+**If you are just looking for a method that currently works, click [HERE!](https://tcal.rory.ie/ics/)**
 
-The reason it no longer exists is because it asked students for their [SITS (student portal)](https://my.tcd.ie) password and stored it securely, enabling a seamless experience.
-Storing passwords in an encrypted yet recoverable format is not something I learned was "bad" later. I considered a few other options which I'll go through below.
+It no longer exists since it asked students for their [SITS (student portal)](https://my.tcd.ie) password. Storing passwords in an encrypted yet recoverable format is not something I learned was considered "bad" after launching it. I considered a few alternative options while ideating but chose to use this method as it was the best way I could achieve a seamless experience.
 
-I just wanted to build something cool, by myself and without jumping through the bureaucratic hoops of which Trinity is home to.
+I just wanted to build something cool, by myself and without jumping through the bureaucratic hoops of which tcd is home to.
 
-This wasn't something I realised was "bad" later... it was just the best way I could achieve a seamless experience (initially for myself and friends). It made it possible for a large number of students to sign up and never need to return as they could use the popular Apple/Google calendar apps instead of one of the universities many attempts at an "easy-to-use" lecture timetable.
+For a growing number of students it made it possible to sign up and successfully, never need to return. They could use the pre-installed and convenient Apple/Google calendar apps instead of one of the universities many attempts at web pages and proprietary apps.
 
-Students would:
+<img src="images/gcal-tcal.png" width="564" alt="exam event details in mac calendar">
 
- - Sign in their with @tcd Google account, knowingly accepting Calendar read/write permission
- - Enter their portal login details (with a link to an [explanation in simple English](https://tcal.rory.ie/about))
- - Enjoy _not_ having to sign in to the portal everyday, navigate to the timetable page, wait 30s+ for the slow DB to respond... before later settling for a screenshot which goes stale any time a class changes
-
-TODO When exam timetables came out after the initial release, I built a scraper for that too. This put 
-
-
-#### How I got caught! (todo better title for this section)
+#### How I got caught! 
 TODO how I was caught/why you should use a VPN in college
 
 #### UT Story
@@ -41,11 +33,28 @@ TODO how I was caught/why you should use a VPN in college
 - 2017-12-10 [Tcal Shutdown at Odds With Trinity’s Fostering of Entrepreneurship](http://www.universitytimes.ie/2017/12/tcal-shutdown-at-odds-with-trinitys-fostering-of-entrepreneurship/)
 - 2017-12-13 [Tcal Risked Student Data, Says College](http://www.universitytimes.ie/2017/12/tcal-risked-student-data-says-college/)
 
+## How it worked
+
+Students would:
+
+ - Sign in their with @tcd Google account, knowingly accepting only to share email address and Calendar read/write permissions
+ - Enter their portal login details (with a link to an [explanation in simple English](https://tcal.rory.ie/about))
+ - Enjoy _not_ having to sign in to the portal everyday, navigate to the timetable page, wait 30s+ for the slow DB to respond... before later settling for a screenshot which goes stale any time a class changes. 
+
+<img src="images/setup-mytcd.png" width="369" alt="exam event details in mac calendar">
+
+When exam timetables came out in the Winter of 2016, I built a scraper for that too. This put the exam times, venues, course code, exam number and even [seat number](#Reveal-seat-numbers) into calendar.
+
+
+<img src="images/exam-event.png" width="270" alt="exam event details in mac calendar">
+
+
+
 ## Trello Board
 
 I used trello to manage feature ideas/requests and prioritise what to build. I added a purple label to some interesting features I never built.
 
-![trello board screenshot](board-dec-2017.png)
+<img src="images/board-dec-2017.png" width="702" alt="trello board screenshot, December 2017">
 
 
 ## Source code overview
@@ -131,3 +140,30 @@ rails s
 
 <!--
 `CREATE EXTENSION IF NOT EXISTS "citext";`-->
+
+
+
+#### Reveal seat numbers
+
+1. Go to your exam timetable page on mytcd
+2. Bookmark the page
+3. Edit the bookmark and change the address/URL to be the code below rather than https://my.tcd.ie/...
+
+
+```javascript
+javascript:(function(){var t=document.getElementsByClassName("sitstablegrid")[1];t.innerHTML=t.innerHTML.replace(/<!---/g, '').replace(/--->/g, '');})()
+```
+
+4. Clicking the bookmark when on the exam page will show your seat number beside each exam.
+
+
+Here's that code expanded:
+
+```
+javascript:(
+	function() {
+		var table = document.getElementsByClassName("sitstablegrid")[1];
+		table.innerHTML = table.innerHTML.replace(/<!---/g, '').replace(/--->/g, '');
+	}
+)()
+```
