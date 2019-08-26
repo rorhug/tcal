@@ -39,17 +39,16 @@ Students would:
 
 <img src="images/setup-mytcd.png" width="369" alt="exam event details in mac calendar">
 
-TODO find a screenshot of home UI logged in
-
-It provided:
+Once logged in, the home page provided:
 
 - The next few class times and venues
 - The ability to manually trigger a sync
 - A list of recent manual/auto attempts to sync, whether they succeeded and how many events were changed
 - The ability your friends by email
 
+[TODO find a screenshot of home UI logged in]
 
-When exam timetables came out in the Winter of 2016, I built a scraper for that too. This put each exam time, place, course code, student exam number and even your [seat number](#Reveal-seat-numbers) into your calendar.
+When exam timetables came out in the Winter of 2016, I built a scraper for that too. This put each exam time, place, course code, student exam number and even [seat number](#Reveal-seat-numbers) into your calendar.
 
 <img src="images/exam-event.png" width="270" alt="exam event details in mac calendar">
 
@@ -60,9 +59,9 @@ During and after its life, I was asked by some why it was run anonymously. There
 
 Very early on, I attempted making an existing program to work for my own timetable. A friend of mine had [written one](https://github.com/jameseggers/tcd-calendar) when he was in CS. However, it connected with the calendar in a way Google no-longer allows. The college portal pages had also changed slightly since it was written, requiring changes to the way lecture times were gathered from them.
 
-I'm not certain exactly at which point I decided I would build it as a web-app, however I knew it would be necessary for the secure "sign-in with Google" functionality (unless I was to force my non-CS friends to get their own API keys). A web-app removed the requirement for users to understand how to download and run the code themselves with an added benefit of running it for them once a day to catch up with any timetable changes.
+I'm not certain exactly at which point I started planning it as a web-app, however I knew web would be necessary for the secure "sign-in with Google" functionality (unless I was to force my non-CS friends to get their own API keys). A web-app removed the requirement for users to understand how to download and run the code themselves with an added benefit of running it for them once a day, catching up with any timetable changes.
 
-The group of people who were to be my first customers were a few of my new class mates... and I didn't want to come across as a [narcissist](https://upload.wikimedia.org/wikipedia/en/f/f8/Thefacebook.png).
+The group of people who were to be the first customers/testers were a few of my new class mates and I didn't want to come across as a [narcissist](https://upload.wikimedia.org/wikipedia/en/f/f8/Thefacebook.png). As I shared it with more groups of people, I decided to hold back on putting a/my name on it. At the bottom of email based communications, I included "Tcal is not an official Trinity College service". Anyone could reply to one of these emails or contact me through the [in-app messenger](https://www.intercom.com/customer-support-software) and ask whatever. No one came asking for my identity directly but I did end up meeting some users IRL, which was no problem.
 
 #### How it was found
 
