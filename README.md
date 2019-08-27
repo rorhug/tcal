@@ -39,7 +39,7 @@ Students would:
 
 <img src="images/setup-mytcd.png" width="369" alt="exam event details in mac calendar">
 
-Once logged in, the home page provided:
+Once logged in, students were provided with:
 
 - The next few class times and venues
 - The ability to manually trigger a sync
@@ -70,6 +70,11 @@ The program logged in on behalf of 1300+ students around ~200k times between Oct
 Before the conversation arrived at that state, they told me I was one of a few students who was asked to visit based on the fact I had visited that site! I loaded homepage almost daily using college internet to check that it was online, accept any pending invites, respond to questions, etc. Therefore, my DNS lookup count would have been higher than anyone else.
 
 Moral of the story if you're a student, in any university, or any internet user for that matter: Use a VPN everywhere and always. I doubt TCD are monitoring all outgoing traffic and doing reverse lookups, but they are legally obliged to log all DNS lookups (i.e. what site you type into the address bar, when associated with your student number: creepy).
+
+A subsequent meeting with the Junior Dean and a DPC representative was the moment I was asked to shut it down.
+
+[How users reacted](post-disable-reaction.md)
+
 
 #### UT Story
 
@@ -228,3 +233,4 @@ javascript:(
 	}
 )()
 ```
+
