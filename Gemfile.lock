@@ -76,7 +76,7 @@ GEM
       execjs
     coffee-script-source (1.12.2)
     concurrent-ruby (1.0.5)
-    crass (1.0.3)
+    crass (1.0.5)
     css_parser (1.6.0)
       addressable
     declarative (0.0.10)
@@ -141,7 +141,7 @@ GEM
     logging (2.2.2)
       little-plugger (~> 1.1)
       multi_json (~> 1.10)
-    loofah (2.1.1)
+    loofah (2.3.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mail (2.7.0)
