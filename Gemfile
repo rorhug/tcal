@@ -67,7 +67,7 @@ gem "attr_encrypted"
 gem 'intercom', "~> 3"
 gem "sentry-raven"
 gem "premailer-rails"
-gem "nokogiri", '~> 1.8.2'
+gem "nokogiri", '~> 1.10.4'
 gem 'whenever', require: false
 gem 'activerecord-import'
 gem 'pluck_to_hash'

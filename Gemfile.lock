@@ -161,7 +161,7 @@ GEM
       mime-types-data (~> 3.2015)
     mime-types-data (3.2016.0521)
     mini_mime (1.0.0)
-    mini_portile2 (2.3.0)
+    mini_portile2 (2.4.0)
     minitest (5.11.3)
     multi_json (1.13.1)
     multi_xml (0.6.0)
@@ -172,8 +172,8 @@ GEM
       net-ssh (>= 2.6.5)
     net-ssh (4.2.0)
     nio4r (2.2.0)
-    nokogiri (1.8.2)
-      mini_portile2 (~> 2.3.0)
+    nokogiri (1.10.4)
+      mini_portile2 (~> 2.4.0)
     ntlm-http (0.1.1)
     oauth2 (1.4.0)
       faraday (>= 0.8, < 0.13)
@@ -343,7 +343,7 @@ DEPENDENCIES
   jquery-rails
   listen (~> 3.0.5)
   mechanize
-  nokogiri (~> 1.8.2)
+  nokogiri (~> 1.10.4)
   omniauth-google-oauth2
   pg (~> 0)
   pluck_to_hash
