@@ -46,8 +46,6 @@ Once logged in, students were provided with:
 - A list of recent manual/auto attempts to sync, whether they succeeded and how many events were changed
 - The ability your friends by email
 
-[TODO find a screenshot of home UI logged in]
-
 When exam timetables came out in the Winter of 2016, I built a scraper for that too. This put each exam time, place, course code, student exam number and even [seat number](#Reveal-seat-numbers) into your calendar.
 
 <img src="images/exam-event.png" width="270" alt="exam event details in mac calendar">
@@ -69,11 +67,15 @@ The program logged in on behalf of 1300+ students around ~200k times between Oct
 
 Before the conversation arrived at that state, they told me I was one of a few students who was asked to visit based on the fact I had visited that site! I loaded homepage almost daily using college internet to check that it was online, accept any pending invites, respond to questions, etc. Therefore, my DNS lookup count would have been higher than anyone else.
 
-Moral of the story if you're a student, in any university, or any internet user for that matter: Use a VPN everywhere and always. I doubt TCD are monitoring all outgoing traffic and doing reverse lookups, but they are legally obliged to log all DNS lookups (i.e. what site you type into the address bar, when associated with your student number: creepy).
+A subsequent meeting with the Junior Dean and a [Data Protection Comission](https://www.dataprotection.ie/) representative was the moment I was asked to shut it down.
 
-A subsequent meeting with the Junior Dean and a DPC representative was the moment I was asked to shut it down.
+Some users were [very unhappy.](post-disable-reaction.md)
 
-[How users reacted](post-disable-reaction.md)
+
+
+#### Moral of the story
+
+If you're a student, in any university, or any internet user for that matter, use a VPN everywhere and always. I doubt TCD are monitoring all outgoing traffic and doing reverse lookups, but they are legally obliged to log all DNS lookups (i.e. what site you type into the address bar and when is associated with your student number: creepy).
 
 
 #### UT Story
