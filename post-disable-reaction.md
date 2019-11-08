@@ -1,12 +1,16 @@
 ## Students responding to the shut down
 
+Users' names are replaced with _
+
+----
+
 This really sucks.
 
 That app was amazing and so much better than what they are providing.
 
 I don’t want this to end. Make it not end?
 
-Carly
+_
 
 ---
 
