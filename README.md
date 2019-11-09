@@ -109,7 +109,7 @@ I opted to abandon the project instead though and stop dealing with class timeta
 Ruby on Rails projects include a lot of boilerplate files. Here's a list of the _"interesting"_ stuff:
 
 - Scrape and Sync
-  - [TimetableScraper](app/lib/timetable_scraper.rb) - The spaghetti monster delivering the core functionality! (either blame me OR the obscurity of the mytcd authentication and template rendering...)
+  - [TimetableScraper](app/lib/my_tcd/timetable_scraper.rb) - The spaghetti monster delivering the core functionality! (either blame me OR the obscurity of the mytcd authentication and template rendering...)
   - [GoogleCalendarSync](app/lib/google_calendar_sync.rb) A far more pleasant class. `sync_events!` takes in a list of gcal events objects. It creates/updates/deletes them using a simple matching procedure on non-primary "Tcal" calendar which it creates pre-sync if not present.
   - [TcdStaffScrape](app/lib/tcd_staff_scrape.rb) Downloads the public directory of staff emails so to give an error notice when signing up. Probably was a bit unnecessary.
 
