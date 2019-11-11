@@ -13,15 +13,16 @@ Tcal
 
 ## About
 
-[Tcal](https://tcal.rory.ie/) was something I made for students in [Trinity College Dublin](https://www.tcd.ie/) to sync their timetable into Google Calendar.
-
-**If you are a TCD student who wants to do this today, click [HERE!](https://tcal.rory.ie/ics/)**
+Tcal was something I made for students in [Trinity College Dublin](https://www.tcd.ie/) to sync their timetable into Google Calendar.
 
 Tcal no longer exists since it asked students for their [SITS (student portal)](https://my.tcd.ie) password. For this reason, I was asked by the university to shut it down and turn over the list of usernames. Storing passwords in an encrypted, yet recoverable, format is something I knew was considered _"bad"_ before the initial launch. I explored a few alternative options while ideating, but chose to use this method as it was the best way I could achieve a seamless experience.
 
 Initially, I just wanted to build something cool, by myself and without jumping through the bureaucratic hoops of which tcd is home to.
 
-For a growing number of students, it made it possible to sign up and never need to return _(i.e. success)_. One could use the pre-installed and more convenient Apple/Google calendar apps instead of one of the universities many attempts proprietary apps and yearly web portal iterations.
+<img src="public/tcal_iphone_1.png" width="140" alt="lectures and tutorials available in google calendar interface">
+
+For a growing number of students, it made it possible to set it up and successfully never need to return. One could use the well designed, pre-installed Apple and Google calendar apps instead of one of the universities many attempts at proprietary apps and yearly web portal iterations.
+
 
 ## How it worked
 
@@ -69,13 +70,25 @@ Before the conversation arrived at that state, they told me I was one of a few s
 
 A subsequent meeting with the Junior Dean and a [Data Protection Comission](https://www.dataprotection.ie/) representative was the moment I was asked to shut it down.
 
-Some users were [very unhappy.](post-disable-reaction.md)
+
+Some users were very unhappy.
+
+> What an absolute travesty. If there's anything that can be done to make this not happen please contact me, I can rally a crowd in your favour. I can't bear going back to screenshots.
+
+
+> I am deeply saddened by this news. The service will be greatly missed.
+
+
+[Further responses here](post-disable-reaction.md)
 
 
 
-#### Moral of the story
 
-If you're a student, in any university, or any internet user for that matter, use a VPN everywhere and always. I doubt TCD are monitoring all outgoing traffic and doing reverse lookups, but they are legally obliged to log all DNS lookups (i.e. what site you type into the address bar and when is associated with your student number: creepy).
+
+#### Morals of the story
+
+- Don't store passwords
+- If you're a student, in any university, or any internet user for that matter, use a VPN everywhere and always. I doubt TCD are monitoring all outgoing traffic and doing reverse lookups, but they are legally obliged to log all DNS requests (i.e. what site you type into the address bar and when is associated with your student number: creepy).
 
 
 #### UT Story
@@ -97,7 +110,7 @@ I used trello to manage feature ideas/requests and prioritise what to build. I a
 Some ideas I had... which I really should have built in time!
  
 - **Integrate assignment deadlines:** Anyone could submit thee title and due date of an assignment (or other relevant event for a class) on the tcal site. It could then randomly select two people who take the same class with `Correct` and `Wrong` buttons. That event would then be added for everyone who took that class if both people hit `Correct`. If the mails get no response, it could ask someone else. 
-- **Timetables without password storage and scraping:** using the method described above, I could have kept Tcal online by letting people (or possibly a class rep or elected "Tcal rep") to maintain the timetable in their own calendar. Tcal could then deal with making that calendar available to everyone. Another method I considered for people who didn't trust Tcal with their password was to visit the timetable page, right-click, view-source and paste it into the web-app which would then parse it for them.
+- **Timetables without password storage and scraping:** using the method described above, I could have kept Tcal online by letting people (or possibly a class rep or elected "Tcal rep") to maintain the timetable in their own calendar. Tcal could then deal with making that calendar available to everyone. Another method I considered for people who didn't trust the service with their password was to visit the timetable page, right-click, view-source and paste it into the web-app which would then parse it for them.
 - **Student Deals/TARGETED ADVERTISING!!!:** One of the more _outlandish_ ideas I began developing was a way in which societies, the student union or even business in town could essentially advertise to students inside the calendar.
   - The heads of societies would have special access to enter upcoming events into Tcal. Any student could then subscribe to events for whichever societies they like and see them in the same place as their lectures.
   - While thinking about possible revenue streams, I considered building something which would allow a coffee shop, for example, to offer their student deal as an event inside the calendar. It could automatically appear for students whichever hour they have a break on that day (rather than overlapping with their classes). By including a single-use link in the event description, it could have been possible to limit the total number of redemptions and/or how many times one person could use it. A system such as this would have driven user growth through people wanting the same as their friends while also allowing businesses to directly monitor the return on their investment.
@@ -106,18 +119,20 @@ I opted to abandon the project instead though and stop dealing with class timeta
 
 ## Source code overview
 
-Ruby on Rails projects include a lot of boilerplate files. Here's a list of the _"interesting"_ stuff:
+The app was written in [Ruby on Rails](https://rubyonrails.org/).
+
+Rails projects include a lot of boilerplate files. Here's a list of the _"interesting"_ stuff:
 
 - Scrape and Sync
-  - [TimetableScraper](app/lib/my_tcd/timetable_scraper.rb) - The spaghetti monster delivering the core functionality! (either blame me OR the obscurity of the mytcd authentication and template rendering...)
+  - [TimetableScraper](app/lib/my_tcd/timetable_scraper.rb) - The spaghetti monster delivering the core functionality! (either blame me OR the obscurity of the mytcd authentication and template rendering...). This file logs in on behalf of a student and extracts timetable information.
   - [GoogleCalendarSync](app/lib/google_calendar_sync.rb) A far more pleasant class. `sync_events!` takes in a list of gcal events objects. It creates/updates/deletes them using a simple matching procedure on non-primary "Tcal" calendar which it creates pre-sync if not present.
-  - [TcdStaffScrape](app/lib/tcd_staff_scrape.rb) Downloads the public directory of staff emails so to give an error notice when signing up. Probably was a bit unnecessary.
+  - [TcdStaffScrape](app/lib/tcd_staff_scrape.rb) Downloads the public directory of staff emails so to give an error notice when signing up. Probably a bit overkill.
 
 - Models/Database
-	- [User](app/models/user.rb) Represents a student user of the service. Includes methods for authentication, less trivial state checking and everyone's favourite: `do_the_feckin_thing!` (runs scraper => syncs calendar).
-	- [SyncAttempt](app/models/sync_attempt.rb) A single scrape event containing the start/end time, number of events changed, error string.
-	- [QueJob](app/models/que_job.rb) Adding methods to query the current job queue, extending the functionality of the [Que](https://github.com/chanks/que) gem.
-	- [structure.sql](db/structure.sql) Automatically generated file containing the queries/statements to recreate the Postgres setup. Had to switch to the sql file over the usual `schema.rb` to support Que's usage of advanced Postgres features. This may seem complicated but proved far more manageable than running a separate queue store (e.g. redis).
+  - [User](app/models/user.rb) Represents a student user of the service. Includes methods for authentication, less trivial state checking and everyone's favourite: `do_the_feckin_thing!` (runs scraper => syncs calendar).
+  - [SyncAttempt](app/models/sync_attempt.rb) A single scrape event containing the start/end time, number of events changed, error string.
+  - [QueJob](app/models/que_job.rb) Adding methods to query the current job queue, extending the functionality of the [Que](https://github.com/chanks/que) gem.
+  - [structure.sql](db/structure.sql) Automatically generated file containing the queries/statements to recreate the Postgres setup. Had to switch to the sql file over the usual `schema.rb` to support Que's usage of advanced Postgres features. This may seem complicated but proved far more manageable than running a separate queue store (e.g. redis).
 
 
 If you're interested in how the UI, "setup wizard" etc. worked, check out
@@ -162,12 +177,14 @@ Obviously ssh was also available for me configure the servers, update the softwa
 
 ### Running it:
 
-No need... [seriously!](https://tcal.rory.ie/ics/)
+No need... seriously!
+
+There is now an official method by connecting your calendar with blackboard. I describe [how to set that up here.](https://tcal.rory.ie/ics/)
+
 
 But sure here it is anyway...
 
-
-Install Ruby and PostgreSQL (I used 9 but latest should work)
+Install Ruby and PostgreSQL.
 
 The versions I was using were: `Ruby 2.3.3` and `PostgreSQL 9.6.2`. The latest ones _should_ work, however.
 
@@ -182,7 +199,7 @@ create_db tcal_dev
 # create an env file
 touch .env
 # inside .env, place values for the environment variables used in config/secrets.yml
-# only SECRET_KEY_BASE, ENCRYPTED_MY_TCD_PASSWORD_KEY and the GOOGLE_ ones are required to get starteed
+# only SECRET_KEY_BASE, ENCRYPTED_MY_TCD_PASSWORD_KEY and the GOOGLE_ ones are required to get started
 # generate a SECRET_KEY_BASE using: bundle exec rake secret
 # for generating a ENCRYPTED_MY_TCD_PASSWORD_KEY, see the readme for the gem https://github.com/attr-encrypted/attr_encrypted
 
@@ -198,7 +215,7 @@ bundle exec rails s
 # visit localhost:3000 in your browser
 ```
 
-I haven't tried the above setup recently. If something isn't working, google it. Still stuck? [Open an issue.](https://github.com/rorydh/tcal/issues)
+I haven't actually tried the above setup recently. If something isn't working, google it. Still stuck? [Open an issue.](https://github.com/rorydh/tcal/issues)
 
 For newer versions of rails, anywhere `rake` is used, use `rails` instead. 
 
@@ -229,10 +246,10 @@ Here's that code expanded:
 
 ```
 javascript:(
-	function() {
-		var table = document.getElementsByClassName("sitstablegrid")[1];
-		table.innerHTML = table.innerHTML.replace(/<!---/g, '').replace(/--->/g, '');
-	}
+  function() {
+    var table = document.getElementsByClassName("sitstablegrid")[1];
+    table.innerHTML = table.innerHTML.replace(/<!---/g, '').replace(/--->/g, '');
+  }
 )()
 ```
 

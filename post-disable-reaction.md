@@ -1,6 +1,6 @@
 ## Students responding to the shut down
 
-Users' names are replaced with _
+*People's names are replaced with _*
 
 ----
 
