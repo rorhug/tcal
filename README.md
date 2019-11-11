@@ -42,10 +42,10 @@ Students would:
 
 Once logged in, students were provided with:
 
+- The ability to invite your friends by email
 - The next few class times and venues
 - The ability to manually trigger a sync
 - A list of recent manual/auto attempts to sync, whether they succeeded and how many events were changed
-- The ability your friends by email
 
 When exam timetables came out in the Winter of 2016, I built a scraper for that too. This put each exam time, place, course code, student exam number and even [seat number](#Reveal-seat-numbers) into your calendar.
 
