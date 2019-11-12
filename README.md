@@ -42,10 +42,12 @@ Students would:
 
 Once logged in, students were provided with:
 
-- The ability to invite your friends by email
 - The next few class times and venues
+- The ability to invite their friends by email
 - The ability to manually trigger a sync
 - A list of recent manual/auto attempts to sync, whether they succeeded and how many events were changed
+
+*TODO: look for a screenshot*
 
 When exam timetables came out in the Winter of 2016, I built a scraper for that too. This put each exam time, place, course code, student exam number and even [seat number](#Reveal-seat-numbers) into your calendar.
 
@@ -81,7 +83,7 @@ Some users were very unhappy.
 
 [Further responses here](post-disable-reaction.md)
 
-
+The [2018 IT services report](https://www.tcd.ie/itservices/assets/doc/general_external/IT-Services-Satisfaction-Survey-2018-Report-FINAL.pdf) included messages from disgrundled students under the "A sample of comments from the Students" section.
 
 
 
